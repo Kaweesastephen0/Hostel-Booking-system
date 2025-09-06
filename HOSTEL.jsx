@@ -1,9 +1,9 @@
 import React from 'react'
 
-function HOSTEL() {
+function HOSTELS() {
   return (
-    <div>HOSTEL</div>
+    <div>HOSTELS</div>
   )
 }
 
-export default HOSTEL
+export default HOSTELS
