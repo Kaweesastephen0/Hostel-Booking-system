@@ -5,7 +5,7 @@
   
 ## Stephen
 
-# 🏨 Uganda Hostel Booking System - Complete Setup Guide
+# 🏨 Complete Setup Guide
 
 A fully responsive MERN stack application for booking hostels across Uganda, featuring Kampala, Mukono, Jinja, and Gulu cities with UGX pricing.
 
