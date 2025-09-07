@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import HostelList from './components/HostelList';
+import Login from './components/Auth/Login';
 import hostelService from './services/hostelService';
 import './App.css';
 
 function App() {
   const [apiStatus, setApiStatus] = useState('checking');
   const [activeTab, setActiveTab] = useState('hostels');
+  const [showLogin, setShowLogin] = useState(false);
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
 
   useEffect(() => {
     checkApiHealth();
@@ -19,6 +22,21 @@ function App() {
       setApiStatus('disconnected');
       console.error('API connection failed:', error);
     }
+  };
+
+  const handleLoginClick = () => {
+    setIsRegisterMode(false);
+    setShowLogin(true);
+  };
+
+  const handleRegisterClick = () => {
+    setIsRegisterMode(true);
+    setShowLogin(true);
+  };
+
+  const closeLogin = () => {
+    setShowLogin(false);
+    setIsRegisterMode(false);
   };
 
   const renderApiStatus = () => {
@@ -43,7 +61,13 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-content">
-          <h1>🏨 Hostel Booking System</h1>
+          <div className="header-top">
+            <h1>🏨 Hostel Booking System</h1>
+            <div className="auth-buttons">
+              <button className="auth-btn login-btn" onClick={handleLoginClick}>🔑 Login</button>
+              <button className="auth-btn register-btn" onClick={handleRegisterClick}>📝 Register</button>
+            </div>
+          </div>
           <p>Discover affordable and comfortable hostels across Uganda - from Kampala to Gulu</p>
           
           <div className="header-stats">
@@ -235,6 +259,14 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Login Component */}
+      {showLogin && (
+        <Login 
+          onClose={closeLogin} 
+          isRegisterMode={isRegisterMode}
+        />
+      )}
     </div>
   );
 }
