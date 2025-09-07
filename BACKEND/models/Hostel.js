@@ -106,3 +106,4 @@ hostelSchema.index({ name: 'text', description: 'text' });
 const Hostel = mongoose.model('Hostel', hostelSchema);
 
 export default Hostel;
+

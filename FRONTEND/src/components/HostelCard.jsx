@@ -123,3 +123,4 @@ const HostelCard = ({ hostel }) => {
 };
 
 export default HostelCard;
+
