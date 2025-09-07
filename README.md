@@ -83,6 +83,7 @@ Hostel-Booking-system/
 │   │   │   ├── HostelCard.css
 │   │   │   ├── HostelList.jsx   # Hostel listing page
 │   │   │   └── HostelList.css
+|   |   |   |___
 │   │   ├── services/
 │   │   │   └── hostelService.js # API service
 │   │   ├── App.jsx              # Main app component
