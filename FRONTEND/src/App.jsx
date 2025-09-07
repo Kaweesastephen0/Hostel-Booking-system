@@ -92,7 +92,7 @@ function App() {
             <div className="about-content">
               <h2>About Uganda Hostel Booking System</h2>
               <p>
-                Welcome to our comprehensive hostel booking platform for Uganda! This MERN stack application 
+                Welcome to our comprehensive hostel booking platform for Uganda This application 
                 allows you to discover and book hostels across Uganda's beautiful cities.
               </p>
               
