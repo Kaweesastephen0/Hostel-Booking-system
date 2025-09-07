@@ -164,9 +164,8 @@ function App() {
               <h3>📋 Services</h3>
               <ul>
                 <li><a href="#booking">Online Booking</a></li>
-                <li><a href="#tours">City Tours</a></li>
-                <li><a href="#transport">Airport Transfer</a></li>
-                <li><a href="#events">Local Events</a></li>
+                {/* <li><a href="#transport">Paid Ut</a></li>
+                <li><a href="#events"></a></li> */}
                 <li><a href="#support">24/7 Support</a></li>
               </ul>
             </div>
