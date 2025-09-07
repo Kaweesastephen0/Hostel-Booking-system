@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "mocha --exit tests/*",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "seed": "node scripts/seedHostels.js"
   },
   "type": "module",
   "license": "MIT",
@@ -14,7 +15,10 @@
     "supertest": "^6.3.4"
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
     "ejs": "^3.1.10",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "mongoose": "^8.18.0"
   }
 }
