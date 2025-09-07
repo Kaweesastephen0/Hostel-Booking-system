@@ -283,3 +283,4 @@ const HostelList = () => {
 };
 
 export default HostelList;
+

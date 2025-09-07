@@ -1,303 +1,171 @@
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import connectDB from '../config/database.js';
 import Hostel from '../models/Hostel.js';
 
-// Load environment variables
 dotenv.config();
 
 const sampleHostels = [
   {
-    name: "Kampala City Backpackers",
-    description: "A vibrant hostel in the heart of Kampala, perfect for young travelers looking to explore Uganda's capital. Our modern facilities and friendly staff make this the ideal base for your city adventure. Located near major attractions and transport hubs.",
+    name: 'Kampala City Backpackers',
+    description:
+      'Affordable and friendly hostel located in the heart of Kampala. Ideal for backpackers and budget travelers.',
     location: {
-      address: "123 Kampala Road",
-      city: "Kampala",
-      state: "Central Region",
-      zipCode: "256",
-      coordinates: {
-        latitude: 0.3476,
-        longitude: 32.5825
-      }
+      address: '123 Kampala Road',
+      city: 'Kampala',
+      state: 'Central Region',
+      zipCode: '00100',
+      coordinates: { latitude: 0.3476, longitude: 32.5825 }
     },
-    amenities: ["Free WiFi", "Common Room", "Kitchen", "Laundry", "24/7 Reception", "Luggage Storage", "Airport Shuttle", "Tour Booking"],
+    amenities: ['WiFi', 'Breakfast', '24/7 Reception', 'Lounge'],
     roomTypes: [
-      {
-        type: "dormitory",
-        price: 25000,
-        capacity: 6,
-        available: 2
-      },
-      {
-        type: "double",
-        price: 60000,
-        capacity: 2,
-        available: 1
-      },
-      {
-        type: "single",
-        price: 45000,
-        capacity: 1,
-        available: 3
-      }
+      { type: 'single', price: 25000, capacity: 1, available: 10 },
+      { type: 'double', price: 45000, capacity: 2, available: 6 },
+      { type: 'dormitory', price: 20000, capacity: 8, available: 24 }
     ],
     images: [
-      {
-        url: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500",
-        alt: "Kampala City Backpackers exterior"
-      },
-      {
-        url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500",
-        alt: "Common room"
-      }
+      { url: 'https://placehold.co/600x400?text=Kampala+Backpackers+1', alt: 'Hostel exterior' }
     ],
     rating: 4.2,
-    reviews: [],
-    contact: {
-      phone: "+256 700 123 456",
-      email: "info@kampalabackpackers.com",
-      website: "www.kampalabackpackers.com"
-    },
-    policies: {
-      checkIn: "2:00 PM",
-      checkOut: "11:00 AM",
-      cancellation: "Free cancellation up to 24 hours before check-in",
-      petPolicy: "Pets not allowed"
-    }
+    contact: { phone: '+256701234567', email: 'contact@kampalabackpackers.ug' },
+    policies: { checkIn: '14:00', checkOut: '11:00', cancellation: '24 hours' }
   },
   {
-    name: "Mukono Garden Hostel",
-    description: "Nestled in the beautiful Mukono district with stunning views of Lake Victoria, this cozy hostel offers a peaceful retreat for nature lovers. Perfect for those seeking tranquility away from the city bustle.",
+    name: 'Mukono Garden Hostel',
+    description:
+      'Peaceful garden hostel near Lake Victoria with beautiful greenery and calm surroundings.',
     location: {
-      address: "456 Mukono Road",
-      city: "Mukono",
-      state: "Central Region",
-      zipCode: "256",
-      coordinates: {
-        latitude: 0.3533,
-        longitude: 32.7553
-      }
+      address: '45 Victoria Lane',
+      city: 'Mukono',
+      state: 'Central Region',
+      zipCode: '00200',
+      coordinates: { latitude: 0.353, longitude: 32.755 }
     },
-    amenities: ["Free WiFi", "Lake Views", "Garden", "Fireplace", "Outdoor Seating", "Parking", "Bicycle Rental", "Fishing"],
+    amenities: ['WiFi', 'Garden', 'Parking', 'Breakfast'],
     roomTypes: [
-      {
-        type: "dormitory",
-        price: 20000,
-        capacity: 8,
-        available: 4
-      },
-      {
-        type: "suite",
-        price: 85000,
-        capacity: 4,
-        available: 1
-      }
+      { type: 'single', price: 20000, capacity: 1, available: 8 },
+      { type: 'double', price: 85000, capacity: 2, available: 4 }
     ],
     images: [
-      {
-        url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500",
-        alt: "Mukono Garden Hostel lake view"
-      }
-    ],
-    rating: 4.7,
-    reviews: [],
-    contact: {
-      phone: "+256 700 234 567",
-      email: "stay@mukonogarden.com",
-      website: "www.mukonogarden.com"
-    },
-    policies: {
-      checkIn: "2:00 PM",
-      checkOut: "10:00 AM",
-      cancellation: "Free cancellation up to 48 hours before check-in",
-      petPolicy: "Pets welcome with additional fee"
-    }
-  },
-  {
-    name: "Jinja Adventure Hostel",
-    description: "Located near the source of the Nile River, this adventure-focused hostel offers the perfect base for water sports and outdoor activities. Enjoy white water rafting, kayaking, and amazing river views right outside your door.",
-    location: {
-      address: "789 Nile Crescent",
-      city: "Jinja",
-      state: "Eastern Region",
-      zipCode: "256",
-      coordinates: {
-        latitude: 0.4244,
-        longitude: 33.2042
-      }
-    },
-    amenities: ["Free WiFi", "Nile River Access", "Adventure Tours", "Kayak Rental", "BBQ Area", "Swimming Pool", "Bungee Jumping", "White Water Rafting"],
-    roomTypes: [
-      {
-        type: "dormitory",
-        price: 30000,
-        capacity: 4,
-        available: 1
-      },
-      {
-        type: "double",
-        price: 70000,
-        capacity: 2,
-        available: 2
-      },
-      {
-        type: "suite",
-        price: 110000,
-        capacity: 6,
-        available: 1
-      }
-    ],
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500",
-        alt: "Jinja Adventure Hostel Nile view"
-      }
+      { url: 'https://placehold.co/600x400?text=Mukono+Garden+1', alt: 'Garden view' }
     ],
     rating: 4.5,
-    reviews: [],
-    contact: {
-      phone: "+256 700 345 678",
-      email: "hello@jinjaadventure.com",
-      website: "www.jinjaadventure.com"
-    },
-    policies: {
-      checkIn: "3:00 PM",
-      checkOut: "11:00 AM",
-      cancellation: "Free cancellation up to 24 hours before check-in",
-      petPolicy: "Pets not allowed"
-    }
+    contact: { phone: '+256702345678', email: 'info@mukonogarden.ug' },
+    policies: { checkIn: '13:00', checkOut: '10:00', cancellation: '48 hours' }
   },
   {
-    name: "Gulu Cultural Hostel",
-    description: "Experience the rich culture of Northern Uganda in this beautifully designed hostel. Rich in Acholi culture and history, perfect for cultural enthusiasts and those wanting to learn about local traditions.",
+    name: 'Jinja Adventure Hostel',
+    description:
+      'Adventure-focused hostel close to the Nile River with access to rafting and kayaking.',
     location: {
-      address: "321 Cultural Lane",
-      city: "Gulu",
-      state: "Northern Region",
-      zipCode: "256",
-      coordinates: {
-        latitude: 2.7806,
-        longitude: 32.2992
-      }
+      address: '7 Nile Avenue',
+      city: 'Jinja',
+      state: 'Eastern Region',
+      zipCode: '00300',
+      coordinates: { latitude: 0.44, longitude: 33.2 }
     },
-    amenities: ["Free WiFi", "Cultural Center", "Library", "Garden", "Cultural Tours", "Local Crafts", "Traditional Music", "Museum Access"],
+    amenities: ['WiFi', 'Tour Desk', 'Bar', 'Breakfast'],
     roomTypes: [
-      {
-        type: "single",
-        price: 35000,
-        capacity: 1,
-        available: 2
-      },
-      {
-        type: "double",
-        price: 65000,
-        capacity: 2,
-        available: 1
-      }
+      { type: 'dormitory', price: 30000, capacity: 10, available: 30 },
+      { type: 'suite', price: 110000, capacity: 2, available: 3 }
     ],
     images: [
-      {
-        url: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=500",
-        alt: "Gulu Cultural Hostel facade"
-      }
-    ],
-    rating: 4.3,
-    reviews: [],
-    contact: {
-      phone: "+256 700 456 789",
-      email: "reservations@gulucultural.com",
-      website: "www.gulucultural.com"
-    },
-    policies: {
-      checkIn: "2:00 PM",
-      checkOut: "10:00 AM",
-      cancellation: "Free cancellation up to 48 hours before check-in",
-      petPolicy: "Pets not allowed"
-    }
-  },
-  {
-    name: "Kampala Tech Hub Hostel",
-    description: "Modern hostel designed for digital nomads and tech-savvy travelers in Uganda's tech capital. High-speed internet, co-working spaces, and a vibrant tech community atmosphere in the heart of Kampala.",
-    location: {
-      address: "555 Innovation Street, Nakawa",
-      city: "Kampala",
-      state: "Central Region",
-      zipCode: "256",
-      coordinates: {
-        latitude: 0.3476,
-        longitude: 32.5825
-      }
-    },
-    amenities: ["High-Speed WiFi", "Co-working Space", "Tech Events", "Gaming Room", "Coffee Bar", "Meeting Rooms", "Startup Networking", "Coding Bootcamps"],
-    roomTypes: [
-      {
-        type: "dormitory",
-        price: 40000,
-        capacity: 4,
-        available: 2
-      },
-      {
-        type: "single",
-        price: 70000,
-        capacity: 1,
-        available: 1
-      },
-      {
-        type: "suite",
-        price: 130000,
-        capacity: 2,
-        available: 1
-      }
-    ],
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=500",
-        alt: "Kampala Tech Hub Hostel co-working space"
-      }
+      { url: 'https://placehold.co/600x400?text=Jinja+Adventure+1', alt: 'Nile River nearby' }
     ],
     rating: 4.6,
-    reviews: [],
-    contact: {
-      phone: "+256 700 567 890",
-      email: "info@kampalatechhub.com",
-      website: "www.kampalatechhub.com"
+    contact: { phone: '+256703456789', email: 'hello@jinjaadventure.ug' },
+    policies: { checkIn: '15:00', checkOut: '11:00', cancellation: '72 hours' }
+  },
+  {
+    name: 'Gulu Cultural Hostel',
+    description:
+      'Cultural experiences in Northern Uganda with local cuisine and performances.',
+    location: {
+      address: '21 Culture Street',
+      city: 'Gulu',
+      state: 'Northern Region',
+      zipCode: '00400',
+      coordinates: { latitude: 2.7746, longitude: 32.2989 }
     },
-    policies: {
-      checkIn: "2:00 PM",
-      checkOut: "11:00 AM",
-      cancellation: "Free cancellation up to 24 hours before check-in",
-      petPolicy: "Pets welcome"
-    }
+    amenities: ['WiFi', 'Cultural Nights', 'Restaurant'],
+    roomTypes: [
+      { type: 'single', price: 35000, capacity: 1, available: 6 },
+      { type: 'double', price: 65000, capacity: 2, available: 4 }
+    ],
+    images: [
+      { url: 'https://placehold.co/600x400?text=Gulu+Cultural+1', alt: 'Cultural show' }
+    ],
+    rating: 4.1,
+    contact: { phone: '+256704567890', email: 'stay@gulucultural.ug' },
+    policies: { checkIn: '14:00', checkOut: '10:00', cancellation: '24 hours' }
+  },
+  {
+    name: 'Kampala Tech Hub Hostel',
+    description:
+      'Modern hostel for digital nomads with co-working space and fast WiFi.',
+    location: {
+      address: '99 Innovation Drive',
+      city: 'Kampala',
+      state: 'Central Region',
+      zipCode: '00500',
+      coordinates: { latitude: 0.35, longitude: 32.6 }
+    },
+    amenities: ['WiFi', 'Coworking Space', 'Coffee Bar'],
+    roomTypes: [
+      { type: 'suite', price: 130000, capacity: 2, available: 2 },
+      { type: 'double', price: 90000, capacity: 2, available: 5 }
+    ],
+    images: [
+      { url: 'https://placehold.co/600x400?text=Kampala+Tech+Hub+1', alt: 'Coworking space' }
+    ],
+    rating: 4.7,
+    contact: { phone: '+256705678901', email: 'team@kampalatechhub.ug' },
+    policies: { checkIn: '14:00', checkOut: '11:00', cancellation: '24 hours' }
   }
 ];
 
-const seedDatabase = async () => {
+async function seed() {
   try {
-    // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/uganda-hostel-booking');
-    console.log('✅ Connected to MongoDB');
+    await connectDB();
 
-    // Clear existing hostels
-    await Hostel.deleteMany({});
-    console.log('🗑️ Cleared existing hostels');
+    const databaseName = mongoose.connection.name;
+    console.log(`\n⚙️  Seeding database: ${databaseName}`);
 
-    // Insert sample hostels
-    const insertedHostels = await Hostel.insertMany(sampleHostels);
-    console.log(`✅ Successfully seeded ${insertedHostels.length} hostels`);
+    // Clear existing data
+    const result = await Hostel.deleteMany({});
+    console.log(`🧹 Cleared existing hostels: ${result.deletedCount} removed`);
 
-    // Display summary
-    console.log('\n📊 Seeded Uganda Hostels Summary:');
-    insertedHostels.forEach(hostel => {
-      console.log(`🏨 ${hostel.name} - ${hostel.location.city}, ${hostel.location.state} (Rating: ${hostel.rating})`);
-    });
+    // Insert sample data
+    const created = await Hostel.insertMany(sampleHostels);
+    console.log(`✅ Inserted ${created.length} hostels`);
 
-    console.log('\n🎉 Database seeding completed successfully!');
-    console.log('🚀 You can now start the application and browse hostels!');
-    process.exit(0);
+    console.log('🎉 Seeding complete!');
   } catch (error) {
-    console.error('❌ Error seeding database:', error);
-    process.exit(1);
+    console.error('❌ Seeding failed:', error);
+    process.exitCode = 1;
+  } finally {
+    await mongoose.connection.close();
+    console.log('🔌 MongoDB connection closed');
   }
-};
+}
 
-// Run the seeder
-seedDatabase();
+// Allow running with optional --drop to drop the collection entirely
+const shouldDrop = process.argv.includes('--drop');
+if (shouldDrop) {
+  (async () => {
+    try {
+      await connectDB();
+      await mongoose.connection.dropCollection('hostels').catch(() => {});
+      console.log('🗑️  Dropped hostels collection');
+    } catch (err) {
+      console.error('Drop failed:', err.message);
+      process.exitCode = 1;
+    } finally {
+      await mongoose.connection.close();
+    }
+  })().then(() => seed());
+} else {
+  seed();
+}
+
+

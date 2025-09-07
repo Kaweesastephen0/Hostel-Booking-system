@@ -43,7 +43,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-content">
-          <h1>🏨 Uganda Hostel Booking System</h1>
+          <h1>🏨 Hostel Booking System</h1>
           <p>Discover affordable and comfortable hostels across Uganda - from Kampala to Gulu</p>
           
           <div className="header-stats">
@@ -90,10 +90,10 @@ function App() {
         ) : (
           <div className="about-section">
             <div className="about-content">
-              <h2>About Uganda Hostel Booking System</h2>
+              <h2>About Hostel Booking System</h2>
               <p>
-                Welcome to our comprehensive hostel booking platform for Uganda! This MERN stack application 
-                allows you to discover and book hostels across Uganda's beautiful cities.
+                Welcome to our comprehensive hostel booking platform for Uganda, This application 
+                allows you to discover and book hostels across Uganda's beautiful cities near many universities.
               </p>
               
               <div className="features">
@@ -164,9 +164,8 @@ function App() {
               <h3>📋 Services</h3>
               <ul>
                 <li><a href="#booking">Online Booking</a></li>
-                <li><a href="#tours">City Tours</a></li>
-                <li><a href="#transport">Airport Transfer</a></li>
-                <li><a href="#events">Local Events</a></li>
+                {/* <li><a href="#transport">Paid Ut</a></li>
+                <li><a href="#events"></a></li> */}
                 <li><a href="#support">24/7 Support</a></li>
               </ul>
             </div>
@@ -231,7 +230,7 @@ function App() {
           </div>
           
           <div className="footer-bottom">
-            <p>&copy; 2024 Uganda Hostel Booking System. Built with ❤️ in Uganda using the MERN stack.</p>
+            <p>&copy; 2025 Hostel Booking System.</p>
             <p>Supporting local tourism and affordable accommodation across Uganda 🇺🇬</p>
           </div>
         </div>

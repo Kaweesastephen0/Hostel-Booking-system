@@ -180,3 +180,4 @@ router.get('/cities/list', async (req, res) => {
 });
 
 export default router;
+
