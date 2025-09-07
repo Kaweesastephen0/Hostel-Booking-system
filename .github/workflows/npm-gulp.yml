@@ -27,8 +27,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: |
-            client/package-lock.json
-            server/package-lock.json
+            FRONTEND/package-lock.json
+            BACKEND/package-lock.json
 
       - name: Install client dependencies
         run: npm ci
@@ -36,17 +36,17 @@ jobs:
 
       - name: Run client tests
         run: npm test -- --coverage --watchAll=false
-        working-directory: ./client
+        working-directory: ./FRONTEND
         env:
           CI: true
 
       - name: Install server dependencies
         run: npm ci
-        working-directory: ./server
+        working-directory: ./BACKEND
 
       - name: Run server tests
         run: npm test
-        working-directory: ./server
+        working-directory: ./BACKEND
 
   deploy-client:
     runs-on: ubuntu-latest
@@ -69,17 +69,17 @@ jobs:
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: ./client
+        working-directory: ./FRONTEND
 
       - name: Build client
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: ./client
+        working-directory: ./FRONTEND
         env:
           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
 
       - name: Deploy client to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: ./client
+        working-directory: ./FRONTEND
 
   deploy-server:
     runs-on: ubuntu-latest
@@ -95,19 +95,19 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: server/package-lock.json
+          cache-dependency-path: BACKEND/package-lock.json
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: ./server
+        working-directory: ./BACKEND
 
       - name: Build server
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: ./server
+        working-directory: ./BACKEND
 
       - name: Deploy server to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: ./server
+        working-directory: ./BACKEND
