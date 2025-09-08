@@ -3,8 +3,7 @@
 // Import React hooks - these are special functions that let us add features to our component
 import { useState } from "react"
 import "./signup.css"
-import axios from 'axios'
-
+import axios from "axios"
 
 // This is a React Functional Component - think of it as a blueprint for creating UI elements
 function Signup() {
@@ -55,8 +54,20 @@ function Signup() {
     setIsLoading(true)
 
     try {
-      // Use axios to send form data to the backend
-      const response = await axios.post('https://your-api-endpoint.com/signup', formData)
+      // Check if email or phone is already in use by querying the backend
+      const checkResponse = await axios.get("http://localhost:5000/signup", {
+        params: { email: formData.email, phone: formData.phone },
+      })
+
+      // If duplicates are found, the backend returns an object with taken fields
+      if (checkResponse.data.taken) {
+        setErrors(checkResponse.data.taken) // e.g., { email: "Email already in use", phone: "Phone already in use" }
+        setIsLoading(false)
+        return // Stop submission if duplicates are found
+      }
+
+      // Use axios to send form data to the backend for registration
+      const response = await axios.post("http://localhost:5000/signup", formData)
 
       // If the server returns success (e.g., 200 status), show success message
       if (response.status === 200) {

@@ -3,14 +3,29 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Updated gradient to hostel-friendly colors */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Updated to include Pexels image with fallback gradient */
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.7) 0%, rgba(118, 75, 162, 0.7) 100%), 
+              url('https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1') no-repeat center center/cover;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   padding: 20px;
   position: relative;
+  animation: backgroundPan 20s linear infinite; /* Added background pan animation */
 }
 
-/* Added animated background pattern for hostel theme */
+/* Animation for subtle background image movement */
+@keyframes backgroundPan {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+/* Adjusted pseudo-element for subtle overlay effect */
 .signup-container::before {
   content: "";
   position: absolute;
@@ -18,14 +33,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  background: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
+  opacity: 0.5; /* Lowered opacity to ensure image visibility */
   animation: float 6s ease-in-out infinite;
 }
 
 @keyframes float {
-  0%,
-  100% {
+  0%, 100% {
     transform: translateY(0px);
   }
   50% {
@@ -37,7 +52,7 @@
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
   padding: 40px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow for depth */
   backdrop-filter: blur(10px);
   width: 100%;
   max-width: 420px;
@@ -51,7 +66,6 @@
   margin-bottom: 30px;
 }
 
-/* Added logo container and branding styles */
 .logo-container {
   display: flex;
   align-items: center;
@@ -207,7 +221,6 @@
   color: #764ba2;
 }
 
-/* Added benefits section for hostel booking */
 .benefits {
   margin-top: 25px;
   padding-top: 20px;
@@ -233,10 +246,10 @@
   }
 }
 
-/* Enhanced mobile responsiveness for better UX */
 @media (max-width: 480px) {
   .signup-container {
     padding: 15px;
+    background-size: cover; /* Ensure image covers on smaller screens */
   }
 
   .signup-card {
@@ -259,7 +272,7 @@
 
   .input-group input {
     padding: 12px 14px;
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
   }
 
   .submit-btn {
@@ -277,7 +290,6 @@
   }
 }
 
-/* Added dark mode support */
 @media (prefers-color-scheme: dark) {
   .signup-card {
     background: rgba(30, 30, 30, 0.95);
