@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import HostelList from './components/HostelList';
-import Login from './components/Auth/Login';
+import Login from './components/Auth/login';
+import Register from './components/Auth/register';
 import hostelService from './services/hostelService';
 import './App.css';
 
@@ -9,6 +10,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('hostels');
   const [showLogin, setShowLogin] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [showRegister, setShowRegister] = useState(false); // State for Register modal
 
   useEffect(() => {
     checkApiHealth();
@@ -25,18 +27,21 @@ function App() {
   };
 
   const handleLoginClick = () => {
-    setIsRegisterMode(false);
+    setShowRegister(false); // Ensure Register is closed
     setShowLogin(true);
   };
 
   const handleRegisterClick = () => {
-    setIsRegisterMode(true);
-    setShowLogin(true);
+    setShowLogin(false); // Close Login modal
+    setShowRegister(true); // Open Register modal
   };
 
   const closeLogin = () => {
     setShowLogin(false);
-    setIsRegisterMode(false);
+  };
+
+  const closeRegister = () => {
+    setShowRegister(false);
   };
 
   const renderApiStatus = () => {
@@ -188,8 +193,6 @@ function App() {
               <h3>📋 Services</h3>
               <ul>
                 <li><a href="#booking">Online Booking</a></li>
-                {/* <li><a href="#transport">Paid Ut</a></li>
-                <li><a href="#events"></a></li> */}
                 <li><a href="#support">24/7 Support</a></li>
               </ul>
             </div>
@@ -260,13 +263,11 @@ function App() {
         </div>
       </footer>
 
-      {/* Login Component */}
-      {showLogin && (
-        <Login 
-          onClose={closeLogin} 
-          isRegisterMode={isRegisterMode}
-        />
-      )}
+      {/* Render Login modal */}
+      {showLogin && <Login onClose={closeLogin} isRegisterMode={isRegisterMode} />}
+
+      {/* Render Register modal */}
+      {showRegister && <Register onClose={closeRegister} />}
     </div>
   );
 }

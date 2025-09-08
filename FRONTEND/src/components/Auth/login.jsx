@@ -1,7 +1,12 @@
 import React from 'react';
 import styles from './Auth.module.css';
 
-function Login({ onClose }) {
+function Login({ onClose, isRegisterMode }) {
+  const handleRegisterClick = () => {
+    onClose(); // Close current modal
+    // You can trigger register modal or navigate manually here
+  };
+
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.authContainer} onClick={(e) => e.stopPropagation()}>
@@ -29,7 +34,7 @@ function Login({ onClose }) {
           </div>
 
           <div className={styles.alternative}>
-            <p>Not a member? Create an account</p>
+            <p>Not a member? <span onClick={handleRegisterClick} style={{ cursor: 'pointer', color: 'blue' }}>Create an account</span></p>
           </div>
         </form>
 
