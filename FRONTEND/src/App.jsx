@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import HostelList from './components/HostelList';
-import Login from './components/Auth/Login';
+import AddHostelForm from './components/forms/AddHostelForm';
+import AddRoomForm from './components/forms/AddRoomForm';
+//import Login from './components/Auth/Login';
 import hostelService from './services/hostelService';
 import './App.css';
 
@@ -9,6 +11,15 @@ function App() {
   const [activeTab, setActiveTab] = useState('hostels');
   const [showLogin, setShowLogin] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [showAddHostel, setShowAddHostel] = useState(false);
+  const [showAddRoom, setShowAddRoom] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [toast, setToast] = useState('');
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 2500);
+  };
 
   useEffect(() => {
     checkApiHealth();
@@ -101,6 +112,18 @@ function App() {
           🏨 Browse Hostels
         </button>
         <button 
+          className="nav-btn"
+          onClick={() => setShowAddHostel(true)}
+        >
+          ➕ Add Hostel
+        </button>
+        <button 
+          className="nav-btn"
+          onClick={() => setShowAddRoom(true)}
+        >
+          🛏️ Add Room
+        </button>
+        <button 
           className={`nav-btn ${activeTab === 'about' ? 'active' : ''}`}
           onClick={() => setActiveTab('about')}
         >
@@ -110,7 +133,7 @@ function App() {
 
       <main className="app-main">
         {activeTab === 'hostels' ? (
-          <HostelList />
+          <HostelList refreshKey={refreshKey} />
         ) : (
           <div className="about-section">
             <div className="about-content">
@@ -266,6 +289,36 @@ function App() {
           onClose={closeLogin} 
           isRegisterMode={isRegisterMode}
         />
+      )}
+
+      {showAddHostel && (
+        <AddHostelForm 
+          onClose={() => setShowAddHostel(false)}
+          onSuccess={() => {
+            setRefreshKey((k) => k + 1);
+            showToast('Hostel added successfully');
+          }}
+        />
+      )}
+
+      {showAddRoom && (
+        <AddRoomForm 
+          onClose={() => setShowAddRoom(false)}
+          onSuccess={() => {
+            setRefreshKey((k) => k + 1);
+            showToast('Room added successfully');
+          }}
+        />
+      )}
+
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)',
+          background: '#111', color: '#fff', padding: '10px 16px', borderRadius: 8,
+          boxShadow: '0 8px 20px rgba(0,0,0,0.2)', zIndex: 1100
+        }}>
+          {toast}
+        </div>
       )}
     </div>
   );

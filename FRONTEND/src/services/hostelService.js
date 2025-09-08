@@ -3,6 +3,28 @@ import axios from 'axios';
 const API_BASE_URL = 'http://localhost:5001/api';
 
 const hostelService = {
+  // Create a hostel
+  createHostel: async (data) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/hostels`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating hostel:', error);
+      throw error;
+    }
+  },
+
+  // Create a room
+  createRoom: async (data) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/rooms`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating room:', error);
+      throw error;
+    }
+  },
+
   // Get all hostels with optional filters
   getHostels: async (filters = {}) => {
     try {
