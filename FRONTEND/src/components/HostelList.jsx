@@ -3,7 +3,7 @@ import HostelCard from './HostelCard';
 import hostelService from '../services/hostelService';
 import './HostelList.css';
 
-const HostelList = () => {
+const HostelList = ({ refreshKey = 0 }) => {
   const [hostels, setHostels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,6 +34,11 @@ const HostelList = () => {
   useEffect(() => {
     loadHostels();
   }, [filters, pagination.currentPage]);
+
+  // Reload hostels when refresh key changes
+  useEffect(() => {
+    loadHostels();
+  }, [refreshKey]);
 
   const loadHostels = async () => {
     try {

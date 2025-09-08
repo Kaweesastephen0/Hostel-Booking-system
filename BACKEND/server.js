@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/database.js";
 import hostelRoutes from "./routes/hostels.js";
+import roomRoutes from "./routes/rooms.js";
 
 // Load environment variables
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/hostels", hostelRoutes);
+app.use("/api/rooms", roomRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

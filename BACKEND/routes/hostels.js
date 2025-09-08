@@ -3,6 +3,36 @@ import Hostel from '../models/Hostel.js';
 
 const router = express.Router();
 
+// POST /api/hostels - Create a hostel
+router.post('/', async (req, res) => {
+  try {
+    const { name, description, location } = req.body;
+
+    if (!name || !description || !location) {
+      return res.status(400).json({ success: false, message: 'name, description, and location are required' });
+    }
+
+    // Accept either structured object or a simple string for location
+    let normalizedLocation = location;
+    if (typeof location === 'string') {
+      // Minimal mapping: treat string as city, leave required fields with placeholders
+      normalizedLocation = {
+        address: 'N/A',
+        city: location,
+        state: 'N/A',
+        zipCode: 'N/A',
+        coordinates: { latitude: 0, longitude: 0 }
+      };
+    }
+
+    const hostel = await Hostel.create({ name, description, location: normalizedLocation });
+    return res.status(201).json({ success: true, data: hostel });
+  } catch (error) {
+    console.error('Error creating hostel:', error);
+    return res.status(500).json({ success: false, message: 'Error creating hostel', error: error.message });
+  }
+});
+
 // GET /api/hostels - Get all hostels with optional filtering
 router.get('/', async (req, res) => {
   try {
