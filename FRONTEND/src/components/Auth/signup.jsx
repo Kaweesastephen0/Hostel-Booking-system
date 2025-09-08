@@ -18,7 +18,9 @@ function Signup() {
     name: "", // User's full name (starts empty)
     email: "", // User's email address (starts empty)
     phone: "", // User's phone number (starts empty)
+    gender: "", // Added gender field
     password: "", // User's password (starts empty)
+    confirmPassword: "", // Added confirm password field
   })
 
   // This state keeps track of any validation errors for each form field
@@ -26,6 +28,9 @@ function Signup() {
 
   // This state tracks whether the form is currently being submitted (loading state)
   const [isLoading, setIsLoading] = useState(false)
+
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   // CONTROLLER (C) - Interaction and logic
   // This section handles user interactions and business logic, connecting Model and View
@@ -45,10 +50,30 @@ function Signup() {
     if (errors[name]) setErrors({ ...errors, [name]: "" })
   }
 
+  const validatePasswords = () => {
+    const newErrors = {}
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match"
+    }
+
+    if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters"
+    }
+
+    return newErrors
+  }
+
   // This function runs when the user submits the form (clicks the submit button)
   const onSubmit = async (e) => {
     // Prevent the default form submission behavior (which would reload the page)
     e.preventDefault()
+
+    const passwordErrors = validatePasswords()
+    if (Object.keys(passwordErrors).length > 0) {
+      setErrors(passwordErrors)
+      return
+    }
 
     // Set loading state to true (this will show "Creating Account..." on the button)
     setIsLoading(true)
@@ -66,14 +91,16 @@ function Signup() {
         return // Stop submission if duplicates are found
       }
 
+      const { confirmPassword, ...dataToSend } = formData
+
       // Use axios to send form data to the backend for registration
-      const response = await axios.post("http://localhost:5000/signup", formData)
+      const response = await axios.post("http://localhost:5000/signup", dataToSend)
 
       // If the server returns success (e.g., 200 status), show success message
       if (response.status === 200) {
         alert("Registration successful! Welcome to HostelStay!")
         // Reset the form by clearing all input values
-        setFormData({ name: "", email: "", phone: "", password: "" })
+        setFormData({ name: "", email: "", phone: "", gender: "", password: "", confirmPassword: "" })
       }
     } catch (error) {
       // Handle any errors from the API (e.g., 400 or 500 status)
@@ -104,32 +131,102 @@ function Signup() {
 
         {/* FORM ELEMENT - onSubmit connects to our onSubmit function */}
         <form onSubmit={onSubmit} className="signup-form">
-          {/* ARRAY MAP METHOD - This creates multiple input fields from an array */}
-          {/* Instead of writing 4 separate input elements, we use .map() to generate them */}
-          {[
-            { name: "name", type: "text", placeholder: "Full Name", icon: "👤" },
-            { name: "email", type: "email", placeholder: "Email Address", icon: "📧" },
-            { name: "phone", type: "tel", placeholder: "Phone Number", icon: "📱" },
-            { name: "password", type: "password", placeholder: "Password", icon: "🔒" },
-          ].map(({ name, type, placeholder, icon }) => (
-            // Each input field gets wrapped in a div with class "input-group"
-            // 'key' is required by React when creating lists of elements
-            <div key={name} className="input-group">
-              <label>
-                {icon} {placeholder}
-              </label>
+          {/* Name Field */}
+          <div className="input-group">
+            <label>👤 Full Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your full name"
+              className={errors.name ? "error" : ""}
+            />
+            {errors.name && <span className="error-text">{errors.name}</span>}
+          </div>
+
+          {/* Email Field */}
+          <div className="input-group">
+            <label>📧 Email Address</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email address"
+              className={errors.email ? "error" : ""}
+            />
+            {errors.email && <span className="error-text">{errors.email}</span>}
+          </div>
+
+          {/* Phone Field */}
+          <div className="input-group">
+            <label>📱 Phone Number</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Enter your phone number"
+              className={errors.phone ? "error" : ""}
+            />
+            {errors.phone && <span className="error-text">{errors.phone}</span>}
+          </div>
+
+          <div className="input-group">
+            <label>⚧ Gender</label>
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              className={errors.gender ? "error" : ""}
+            >
+              <option value="">Select your gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            {errors.gender && <span className="error-text">{errors.gender}</span>}
+          </div>
+
+          <div className="input-group">
+            <label>🔒 Password</label>
+            <div className="password-input-container">
               <input
-                type={type} // Input type (text, email, tel, password)
-                name={name} // Name attribute (matches our state keys)
-                value={formData[name]} // Current value from our state
-                onChange={handleChange} // Function to call when user types
-                placeholder={`Enter your ${placeholder.toLowerCase()}`} // Placeholder text
-                className={errors[name] ? "error" : ""} // Add 'error' class if there's an error
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                className={errors.password ? "error" : ""}
               />
-              {/* CONDITIONAL RENDERING - Only show error message if there's an error for this field */}
-              {errors[name] && <span className="error-text">{errors[name]}</span>}
+              <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? "🙈" : "👁️"}
+              </button>
             </div>
-          ))}
+            {errors.password && <span className="error-text">{errors.password}</span>}
+          </div>
+
+          <div className="input-group">
+            <label>🔒 Confirm Password</label>
+            <div className="password-input-container">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm your password"
+                className={errors.confirmPassword ? "error" : ""}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
+            {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}
+          </div>
 
           {/* SUBMIT BUTTON - disabled when loading to prevent multiple submissions */}
           <button type="submit" disabled={isLoading} className="submit-btn">
