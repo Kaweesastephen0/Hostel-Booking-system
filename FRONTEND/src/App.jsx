@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import HostelList from './components/HostelList';
-import Login from './components/Auth/Login';
+import Login from './components/Auth/login';
+import Register from './components/Auth/signup';
 import hostelService from './services/hostelService';
 import './App.css';
 
