@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import HostelList from './components/HostelList';
-import AddHostelForm from './components/forms/AddHostelForm';
-import AddRoomForm from './components/forms/AddRoomForm';
-//import Login from './components/Auth/Login';
+import Login from './components/Auth/Login';
 import hostelService from './services/hostelService';
 import './App.css';
 
@@ -11,15 +9,6 @@ function App() {
   const [activeTab, setActiveTab] = useState('hostels');
   const [showLogin, setShowLogin] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(false);
-  const [showAddHostel, setShowAddHostel] = useState(false);
-  const [showAddRoom, setShowAddRoom] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [toast, setToast] = useState('');
-
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(''), 2500);
-  };
 
   useEffect(() => {
     checkApiHealth();
@@ -36,18 +25,21 @@ function App() {
   };
 
   const handleLoginClick = () => {
-    setIsRegisterMode(false);
+    setShowRegister(false); // Ensure Register is closed
     setShowLogin(true);
   };
 
   const handleRegisterClick = () => {
-    setIsRegisterMode(true);
-    setShowLogin(true);
+    setShowLogin(false); // Close Login modal
+    setShowRegister(true); // Open Register modal
   };
 
   const closeLogin = () => {
     setShowLogin(false);
-    setIsRegisterMode(false);
+  };
+
+  const closeRegister = () => {
+    setShowRegister(false);
   };
 
   const renderApiStatus = () => {
@@ -211,8 +203,6 @@ function App() {
               <h3>📋 Services</h3>
               <ul>
                 <li><a href="#booking">Online Booking</a></li>
-                {/* <li><a href="#transport">Paid Ut</a></li>
-                <li><a href="#events"></a></li> */}
                 <li><a href="#support">24/7 Support</a></li>
               </ul>
             </div>
@@ -289,36 +279,6 @@ function App() {
           onClose={closeLogin} 
           isRegisterMode={isRegisterMode}
         />
-      )}
-
-      {showAddHostel && (
-        <AddHostelForm 
-          onClose={() => setShowAddHostel(false)}
-          onSuccess={() => {
-            setRefreshKey((k) => k + 1);
-            showToast('Hostel added successfully');
-          }}
-        />
-      )}
-
-      {showAddRoom && (
-        <AddRoomForm 
-          onClose={() => setShowAddRoom(false)}
-          onSuccess={() => {
-            setRefreshKey((k) => k + 1);
-            showToast('Room added successfully');
-          }}
-        />
-      )}
-
-      {toast && (
-        <div style={{
-          position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)',
-          background: '#111', color: '#fff', padding: '10px 16px', borderRadius: 8,
-          boxShadow: '0 8px 20px rgba(0,0,0,0.2)', zIndex: 1100
-        }}>
-          {toast}
-        </div>
       )}
     </div>
   );

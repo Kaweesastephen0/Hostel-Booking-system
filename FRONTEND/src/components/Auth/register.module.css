@@ -1,0 +1,119 @@
+/* this will be used by these two(login and register hence reducing duplicate code) */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    display: flex;
+    justify-content: center;
+    /* height: 100vh;
+    background-image: url('https://images.pexels.com/photos/6932280/pexels-photo-6932280.jpeg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center; */
+    color: #fff;
+    
+    font-family: 'Roboto', sans-serif;
+    
+}
+.authContainer{
+   background-color: #361414;
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   
+   box-shadow: 0 20px 35px rgba(0,0,1,0.9);
+   border-radius: 50px;
+   box-sizing: border-box;
+   
+
+}
+
+.authForm{
+   box-sizing: border-box;
+    padding: 35px 100px;
+    color: #fff;
+    background-color: inherit;
+    border-radius: 50px;
+    
+
+}
+.authForm h2{
+    letter-spacing: 3px;
+    text-align: center;
+    font-weight: 900;
+    font-family:'Times New Roman', Times, serif;
+    
+}
+.authForm p{
+    font-weight: 600;
+    font-style: italic;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 18px;
+    text-align: center;
+    
+}
+.authPic{
+   
+    overflow: hidden;
+    width: 100%;
+    height: 610px;
+    /* border-radius: 20px; */
+    border-bottom-right-radius: 20px;
+    border-top-right-radius: 20px;
+    
+}
+.authPic  img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    
+    
+}
+.formElements{
+    margin-top: 10px;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+     font-weight: 900;
+}
+.formElements input{
+    height: 35px;
+    background-color: gainsboro;
+    border: none;
+    border-radius: 20px;
+    color: black;
+    padding-left: 20px;
+    
+}
+ .rememberMe input{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: gainsboro;
+}
+button{
+    width: 300px;
+    background-color: black;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+.genderOptions{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    margin-top: 10px;
+}
+.genderOptions input{
+    margin-right: 5px;
+}
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it’s above other content */
+}
