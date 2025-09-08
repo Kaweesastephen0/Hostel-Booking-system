@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Auth.module.css';
+import styles from './login.module.css';
 
 function Login({ onClose, isRegisterMode }) {
   const handleRegisterClick = () => {
