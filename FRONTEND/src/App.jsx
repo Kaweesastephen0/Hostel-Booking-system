@@ -9,7 +9,7 @@ function App() {
   const [apiStatus, setApiStatus] = useState('checking');
   const [activeTab, setActiveTab] = useState('hostels');
   const [showLogin, setShowLogin] = useState(false);
-  const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [isRegisterMode] = useState(false);
   const [showRegister, setShowRegister] = useState(false); // State for Register modal
 
   useEffect(() => {
