@@ -4,7 +4,7 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
-  "forwardPorts": [5173, 5001, 27017], // ⭐ Ports for React, Express, and MongoDB
+  "forwardPorts": [5173, 5001, 27017], // Ports for React, Express, and MongoDB
   "portsAttributes": {
     "3000": {
       "label": "React Client",

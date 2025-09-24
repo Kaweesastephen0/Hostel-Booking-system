@@ -118,7 +118,7 @@ Hostel-Booking-system/
 
 ### Frontend Features
 - ✅ **Fully Responsive Design** - Works perfectly on all devices (320px to 4K)
-- ✅ **Advanced Filtering** - Filter by city, region, price, room type, amenities, rating
+- ✅ **Filtering** - Filter by city, region, price, room type, amenities, rating
 - ✅ **Search Functionality** - Full-text search across hostel names and descriptions
 - ✅ **Pagination Support** - Efficient data loading with page navigation
 - ✅ **Real-time API Status** - Connection monitoring with retry functionality
@@ -129,7 +129,7 @@ Hostel-Booking-system/
 ### Backend Features
 - ✅ **RESTful API Design** - Clean, well-structured API endpoints
 - ✅ **MongoDB Integration** - Robust database with Mongoose ODM
-- ✅ **Advanced Filtering** - Complex query building with multiple filters
+- ✅ **Filtering** - Complex query building with multiple filters
 - ✅ **Search Capabilities** - Full-text search with regex patterns
 - ✅ **Pagination Support** - Efficient data retrieval with pagination
 - ✅ **Error Handling** - Comprehensive error handling middleware
@@ -146,30 +146,16 @@ Hostel-Booking-system/
 ## 🇺🇬 Uganda-Specific Features
 
 ### Cities Covered
-- **🏙️ Kampala** - Uganda's capital city with urban hostels
-- **🌊 Mukono** - Lake Victoria views and peaceful retreats
-- **🚣 Jinja** - Adventure capital with Nile River activities
-- **🎭 Gulu** - Cultural experiences in Northern Uganda
+- **🏙️ Kampala**
+- **🌊 Mukono**
+- **🚣 Jinja**
+- **🎭 Gulu** 
 
 ### Localization
 - **UGX Currency** - All prices displayed in Ugandan Shillings
 - **Local Phone Numbers** - +256 country code format
-- **Regional Information** - Central, Eastern, and Northern regions
-- **Cultural Context** - Descriptions tailored to Uganda's tourism
-
-## 📱 Responsive Design
-
-### Breakpoints
-- **Mobile**: 320px - 480px (portrait phones)
-- **Tablet**: 768px - 1024px (tablets and small laptops)
-- **Desktop**: 1024px+ (laptops and desktops)
-- **Large Screens**: 1200px+ (large monitors)
-
-### Mobile Features
-- **Touch-Friendly** - Large buttons and touch targets
-- **Optimized Navigation** - Collapsible navigation on small screens
-- **Fluid Typography** - Text scales appropriately across devices
-- **Efficient Layouts** - Single-column layouts on mobile
+- **Regional Information** 
+- **Cultural Context** 
 
 ## 🛠️ Development
 
@@ -182,16 +168,11 @@ You can add new hostels by:
 ### Customizing the Schema
 Modify `BACKEND/models/Hostel.js` to add new fields or change existing ones.
 
-### Styling
-- **Main App Styles**: `FRONTEND/src/App.css`
-- **Hostel Card Styles**: `FRONTEND/src/components/HostelCard.css`
-- **Hostel List Styles**: `FRONTEND/src/components/HostelList.css`
-
 ## 🐛 Troubleshooting
 
 ### Backend Issues
 - Ensure MongoDB is running
-- Check the connection string in your `.env` file
+- Check the connection string in the `.env` file
 - Verify all dependencies are installed
 - Check console for error messages
 
@@ -207,17 +188,7 @@ Modify `BACKEND/models/Hostel.js` to add new fields or change existing ones.
 - Verify the database name in your connection string
 - Check MongoDB logs for connection issues
 
-## 📊 Sample Data
-
-The seeder script includes 5 sample hostels:
-
-1. **Kampala City Backpackers** - Central Region (UGX 25,000-60,000)
-2. **Mukono Garden Hostel** - Central Region, Lake Victoria views (UGX 20,000-85,000)
-3. **Jinja Adventure Hostel** - Eastern Region, Nile River activities (UGX 30,000-110,000)
-4. **Gulu Cultural Hostel** - Northern Region, Acholi culture (UGX 35,000-65,000)
-5. **Kampala Tech Hub Hostel** - Central Region, tech-focused (UGX 40,000-130,000)
-
-## 🔮 Future Enhancements
+## 🔮 Features Being worked On
 
 - **User Authentication** - User registration and login
 - **Booking System** - Complete booking and payment integration
@@ -225,17 +196,3 @@ The seeder script includes 5 sample hostels:
 - **Image Upload** - Hostel image management
 - **Admin Dashboard** - Hostel management interface
 - **Email Notifications** - Booking confirmations
-- **Mobile App** - React Native mobile application
-- **Multi-language Support** - Local languages (Luganda, Acholi)
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request

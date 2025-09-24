@@ -64,7 +64,7 @@ const sampleHostels = [
       zipCode: '00300',
       coordinates: { latitude: 0.44, longitude: 33.2 }
     },
-    amenities: ['WiFi', 'Tour Desk', 'Bar', 'Breakfast'],
+    amenities: ['WiFi', 'Bar', 'Breakfast'],
     roomTypes: [
       { type: 'dormitory', price: 30000, capacity: 10, available: 30 },
       { type: 'suite', price: 110000, capacity: 2, available: 3 }
