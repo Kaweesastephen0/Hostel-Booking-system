@@ -26,12 +26,12 @@ app.use("/api/rooms", roomRoutes);
 app.get("/api/health", (req, res) => {
     res.json({ 
         success: true, 
-        message: "Uganda Hostel Booking API is running!",
+        message: "Hostel Booking API is running!",
         timestamp: new Date().toISOString()
     });
 });
 
-// Legacy endpoint (keeping for backward compatibility)
+// Legacy endpoint for keeping the backward compatibility.
 app.get("/api/notes", (req, res) => {
     res.json({ 
         success: true, 
@@ -60,7 +60,7 @@ app.all('/', (req, res) => {
 const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => {
-    console.log(`🚀 Uganda Hostel Booking API started on port ${PORT}!!`);
+    console.log(`🚀 Hostel Booking API started on port ${PORT}!!`);
     console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
     console.log(`🏨 Hostels API: http://localhost:${PORT}/api/hostels`);
 });
