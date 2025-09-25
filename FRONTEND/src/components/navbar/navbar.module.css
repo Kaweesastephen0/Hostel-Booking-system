@@ -1,0 +1,10 @@
+.form{
+    display: flex;
+    gap: 5px;
+    margin-right: 0;
+}
+
+.navbar{
+    margin-bottom: 10px;
+    display: flex;
+}

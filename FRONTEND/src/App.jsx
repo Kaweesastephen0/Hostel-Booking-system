@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import HostelList from './components/HostelList';
 import Login from './components/Auth/login';
-import Register from './components/Auth/signup';
 import AddHostelForm from './components/forms/AddHostelForm';
 import AddRoomForm from './components/forms/AddRoomForm';
 import hostelService from './services/hostelService';
-import Navbar from './components/navbar/navbar';
+import Header from './components/header/Header';
 import About from './components/about/About';
 import Footer from './components/footer/footer';
 import './App.css';
@@ -16,11 +15,11 @@ class ErrorBoundary extends React.Component {
     super(props);
     this.state = { hasError: false };
   }
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
+  // static getDerivedStateFromError(error) {
+  //   return { hasError: true };
+  // }
   componentDidCatch(error, errorInfo) {
-    // You can log error to an error reporting service here
+    // log error to an error reporting service 
     console.error('ErrorBoundary caught:', error, errorInfo);
   }
   render() {
@@ -70,12 +69,12 @@ function App() {
   };
 
   // Show forms, refresh list after success
-  const handleAddHostel = () => {
-    setShowAddHostel(true);
-  };
-  const handleAddRoom = () => {
-    setShowAddRoom(true);
-  };
+  // const handleAddHostel = () => {
+  //   setShowAddHostel(true);
+  // };
+  // const handleAddRoom = () => {
+  //   setShowAddRoom(true);
+  // };
   const closeAddHostel = () => {
     setShowAddHostel(false);
   };
@@ -107,40 +106,11 @@ function App() {
   return (
     <ErrorBoundary>
       <div className="app">
-        <header className="app-header">
-          <div className="header-content">
-            <Navbar/>
-            <div className="header-top">
-              
-              <div className="auth-buttons">
-                <button className="auth-btn login-btn" onClick={handleLoginClick}>🔑 Login</button>
-                <button className="auth-btn register-btn" onClick={handleRegisterClick}>📝 Register</button>
-              </div>
-            </div>
-            <p>Discover affordable and comfortable hostels across Uganda - from Kampala to Gulu</p>
-        
-            <div className="header-stats">
-              <div className="stat-item">
-                <div className="stat-number">50+</div>
-                <div className="stat-label">Hostels</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-number">4</div>
-                <div className="stat-label">Cities</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-number">1000+</div>
-                <div className="stat-label">Happy Guests</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-number">24/7</div>
-                <div className="stat-label">Support</div>
-              </div>
-            </div>
-            
-            {renderApiStatus()}
-          </div>
-        </header>
+        <Header 
+          onLogin={handleLoginClick} 
+          onRegister={handleRegisterClick} 
+          renderApiStatus={renderApiStatus}
+        />
 
         <div className="app-nav">
           <button 
