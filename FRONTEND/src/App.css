@@ -78,6 +78,7 @@ body {
   margin-bottom: 0.5rem;
   flex-wrap: wrap;
   gap: 1rem;
+  margin-top: 1rem;
 }
 
 .header-content h1 {

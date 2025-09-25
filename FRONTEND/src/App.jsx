@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import HostelList from './components/HostelList';
 import Login from './components/Auth/login';
-import AddHostelForm from './components/forms/AddHostelForm';
-import AddRoomForm from './components/forms/AddRoomForm';
 import hostelService from './services/hostelService';
 import Header from './components/header/Header';
 import About from './components/about/About';
 import Footer from './components/footer/footer';
+import AdminPanel from './components/admin/AdminPanel';
 import './App.css';
 
 // ErrorBoundary component
@@ -35,8 +34,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('hostels');
   const [showLogin, setShowLogin] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(false);
-  const [showAddHostel, setShowAddHostel] = useState(false);
-  const [showAddRoom, setShowAddRoom] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
@@ -75,15 +73,15 @@ function App() {
   // const handleAddRoom = () => {
   //   setShowAddRoom(true);
   // };
-  const closeAddHostel = () => {
-    setShowAddHostel(false);
-  };
-  const closeAddRoom = () => {
-    setShowAddRoom(false);
-  };
-  const refreshHostels = () => {
-    setRefreshKey(prev => prev + 1);
-  };
+  // const closeAddHostel = () => {
+  //   setShowAddHostel(false);
+  // };
+  // const closeAddRoom = () => {
+  //   setShowAddRoom(false);
+  // };
+  // const refreshHostels = () => {
+  //   setRefreshKey(prev => prev + 1);
+  // };
 
   const renderApiStatus = () => {
     switch (apiStatus) {
@@ -120,29 +118,25 @@ function App() {
             🏨 Browse Hostels
           </button>
           <button 
-            className="nav-btn"
-            onClick={() => setShowAddHostel(true)}
-          >
-            ➕ Add Hostel
-          </button>
-          <button 
-            className="nav-btn"
-            onClick={() => setShowAddRoom(true)}
-          >
-            🛏️ Add Room
-          </button>
-          <button 
             className={`nav-btn ${activeTab === 'about' ? 'active' : ''}`}
             onClick={() => setActiveTab('about')}
           >
             ℹ️ About
+          </button>
+          <button 
+            className="nav-btn admin-btn"
+            onClick={() => setShowAdmin((prev) => !prev)}
+          >
+             {showAdmin ? 'Close Admin Panel' : 'Admin Panel'}
           </button>
         </div>
 
       
 
         <main className="app-main">
-          {activeTab === 'hostels' ? (
+          {showAdmin ? (
+            <AdminPanel />
+          ) : activeTab === 'hostels' ? (
             <HostelList refreshKey={refreshKey} />
           ) : (
             <About/>
@@ -158,26 +152,6 @@ function App() {
             <Login 
               onClose={closeLogin} 
               isRegisterMode={isRegisterMode}
-            />
-          )}
-          {/* Add Hostel Modal */}
-          {showAddHostel && (
-            <AddHostelForm 
-              onClose={closeAddHostel}
-              onSuccess={() => {
-                closeAddHostel();
-                refreshHostels();
-              }}
-            />
-          )}
-          {/* Add Room Modal */}
-          {showAddRoom && (
-            <AddRoomForm 
-              onClose={closeAddRoom}
-              onSuccess={() => {
-                closeAddRoom();
-                refreshHostels();
-              }}
             />
           )}
       </div>
