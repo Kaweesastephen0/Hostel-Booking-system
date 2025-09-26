@@ -121,7 +121,7 @@ function App() {
             className={`nav-btn ${activeTab === 'about' ? 'active' : ''}`}
             onClick={() => setActiveTab('about')}
           >
-            ℹ️ About
+            ℹ️ App Config
           </button>
           <button 
             className="nav-btn admin-btn"

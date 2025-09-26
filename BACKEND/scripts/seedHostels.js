@@ -24,7 +24,7 @@ const sampleHostels = [
       { type: 'dormitory', price: 20000, capacity: 8, available: 24 }
     ],
     images: [
-      { url: 'https://placehold.co/600x400?text=Kampala+Backpackers+1', alt: 'Hostel exterior' }
+      { url: 'https://images.adsttc.com/media/images/603f/d0a9/f91c/8119/8000/030a/large_jpg/_FI_.jpg?1614794867', alt: 'Hostel exterior' }
     ],
     rating: 4.2,
     contact: { phone: '+256701234567', email: 'contact@kampalabackpackers.ug' },
@@ -47,7 +47,7 @@ const sampleHostels = [
       { type: 'double', price: 85000, capacity: 2, available: 4 }
     ],
     images: [
-      { url: 'https://placehold.co/600x400?text=Mukono+Garden+1', alt: 'Garden view' }
+      { url: 'https://c8.alamy.com/comp/2GNCB96/modern-youth-hostel-building-accommodation-for-travellers-building-exterior-2GNCB96.jpg', alt: 'Garden view' }
     ],
     rating: 4.5,
     contact: { phone: '+256702345678', email: 'info@mukonogarden.ug' },
@@ -70,7 +70,7 @@ const sampleHostels = [
       { type: 'suite', price: 110000, capacity: 2, available: 3 }
     ],
     images: [
-      { url: 'https://placehold.co/600x400?text=Jinja+Adventure+1', alt: 'Nile River nearby' }
+      { url: 'https://i.pinimg.com/736x/79/23/92/7923927ccb89d00441c99bb9c619389c.jpg', alt: 'Nile River nearby' }
     ],
     rating: 4.6,
     contact: { phone: '+256703456789', email: 'hello@jinjaadventure.ug' },
@@ -93,7 +93,7 @@ const sampleHostels = [
       { type: 'double', price: 65000, capacity: 2, available: 4 }
     ],
     images: [
-      { url: 'https://placehold.co/600x400?text=Gulu+Cultural+1', alt: 'Cultural show' }
+      { url: 'https://c8.alamy.com/comp/2GNCB9J/modern-youth-hostel-building-accommodation-for-students-and-young-people-building-exterior-2GNCB9J.jpg', alt: 'Cultural show' }
     ],
     rating: 4.1,
     contact: { phone: '+256704567890', email: 'stay@gulucultural.ug' },
@@ -116,7 +116,7 @@ const sampleHostels = [
       { type: 'double', price: 90000, capacity: 2, available: 5 }
     ],
     images: [
-      { url: 'https://placehold.co/600x400?text=Kampala+Tech+Hub+1', alt: 'Coworking space' }
+      { url: 'https://thearchitectsdiary.com/wp-content/uploads/2017/11/Mess_2_View_2-Large.jpg', alt: 'Coworking space' }
     ],
     rating: 4.7,
     contact: { phone: '+256705678901', email: 'team@kampalatechhub.ug' },
