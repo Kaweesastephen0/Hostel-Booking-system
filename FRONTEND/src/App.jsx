@@ -35,7 +35,7 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
+  //const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     checkApiHealth();
@@ -118,12 +118,6 @@ function App() {
             🏨 Browse Hostels
           </button>
           <button 
-            className={`nav-btn ${activeTab === 'about' ? 'active' : ''}`}
-            onClick={() => setActiveTab('about')}
-          >
-            ℹ️ App Config
-          </button>
-          <button 
             className="nav-btn admin-btn"
             onClick={() => setShowAdmin((prev) => !prev)}
           >
@@ -137,7 +131,7 @@ function App() {
           {showAdmin ? (
             <AdminPanel />
           ) : activeTab === 'hostels' ? (
-            <HostelList refreshKey={refreshKey} />
+            <HostelList />
           ) : (
             <About/>
           )}
