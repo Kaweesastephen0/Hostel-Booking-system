@@ -1,15 +1,16 @@
-const express = require('express');
-const router = express.Router();
-const {
+import express from 'express';
+import {
   register,
   login,
   forgotPassword,
   resetPassword
-} = require('../controllers/authController');
+} from '../controllers/authController.js';
+
+const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 
-module.exports = router;
+export default router;

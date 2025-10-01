@@ -1,7 +1,7 @@
-const User = require('../models/User');
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
-const jwt = require('jsonwebtoken');
+import User from '../models/User.js';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
+import jwt from 'jsonwebtoken';
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'your-secret-key', {
@@ -9,7 +9,7 @@ const generateToken = (id) => {
   });
 };
 
-exports.register = async (req, res) => {
+export const register = async (req, res) => {
   try {
     const { firstName, surname, email, userType, studentNumber, nin, password } = req.body;
 
@@ -57,7 +57,7 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -80,7 +80,7 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.forgotPassword = async (req, res) => {
+export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -138,7 +138,7 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-exports.resetPassword = async (req, res) => {
+export const resetPassword = async (req, res) => {
   try {
     const { email, resetCode, newPassword } = req.body;
 
