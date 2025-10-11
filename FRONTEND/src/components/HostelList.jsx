@@ -2,6 +2,7 @@ import { Menu, Home, UserPlus } from 'lucide-react';
 import SearchBar from './SearchBar';
 import styles from './HostelList.module.css';
 import { useNavigate } from 'react-router-dom'; 
+import FeaturedProperties from './featuredHostels';
 
 
 function HostelList() {
@@ -138,6 +139,8 @@ function HostelList() {
             <SearchBar />
           </div>
         </section>
+
+        <FeaturedProperties />
 
         <section className={styles.listingsSection}>
           <div>
