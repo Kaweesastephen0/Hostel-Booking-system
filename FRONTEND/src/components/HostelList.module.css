@@ -1,0 +1,365 @@
+.container {
+  min-height: 100vh;
+  background: white;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 50;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+}
+
+.menuBtn {
+  background: none;
+  border: none;
+  color: #374151;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.menuBtn:hover {
+  color: #111827;
+}
+
+.sortOptions {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.sortOption {
+  padding-right: 32px;
+  border-right: 1px solid #d1d5db;
+}
+
+.sortOption:last-child {
+  border-right: none;
+  padding-right: 16px;
+}
+
+.sortLabel {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.sortValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.branding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.brandingTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brandIcon {
+  color: #2563eb;
+}
+
+.brandName {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.brandPhone {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #4b5563;
+}
+
+.userBtn {
+  background: none;
+  border: none;
+  color: #374151;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.userBtn:hover {
+  color: #111827;
+}
+
+.main {
+  padding-top: 80px;
+}
+
+.heroSection {
+  position: relative;
+}
+
+.heroContent {
+  display: flex;
+}
+
+.quickBookingSidebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2563eb;
+  width: 96px;
+}
+
+.quickBookingText {
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 2px;
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  padding: 48px 0;
+}
+
+.heroImageWrapper {
+  flex: 1;
+  position: relative;
+  height: 700px;
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.heroTextOverlay {
+  position: absolute;
+  top: 25%;
+  left: 64px;
+  max-width: 560px;
+}
+
+.heroTitle {
+  color: white;
+}
+
+.heroTitleMain {
+  display: block;
+  font-size: 70px;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1.1;
+  text-shadow: 1px 1px 0px #ccc, 2px 2px 0px #bbb, 3px 3px 0px #aaa, 4px 4px 0px #999, 5px 5px 0px #888;
+}
+
+.heroTitleSub {
+  display: block;
+  margin-top: 16px;
+  font-size: 24px;
+  letter-spacing: 6px;
+  color: #60a5fa;
+}
+
+.searchBarWrapper {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 1400px;
+  z-index: 10;
+}
+
+.listingsSection {
+  padding: 80px 64px 48px;
+}
+
+.sectionTitle {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f2937;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.listingsScroll {
+  position: relative;
+}
+
+.listingsContainer {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  padding-bottom: 24px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.listingsContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.hostelCard {
+  flex: 0 0 350px;
+  scroll-snap-align: start;
+  cursor: pointer;
+}
+
+.cardInner {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s;
+}
+
+.cardInner:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.cardImageWrapper {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.cardInner:hover .cardImage {
+  transform: scale(1.1);
+}
+
+.rentBadge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #111827;
+  color: white;
+  padding: 16px 29px;
+  font-size: 15px;
+  font-weight: 600;
+ 
+}
+
+.cardContent {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardInfoRow {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 12px;
+}
+
+.cardInfoLabel {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.cardInfoValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.cardPriceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+}
+
+.cardPriceLabel {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cardPrice {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+@media (max-width: 768px) {
+  .sortOptions {
+    display: none;
+  }
+
+  .headerContent {
+    padding: 16px;
+  }
+
+  .quickBookingSidebar {
+    width: 64px;
+  }
+
+  .quickBookingText {
+    font-size: 14px;
+    padding: 32px 0;
+  }
+
+  .heroImageWrapper {
+    height: 500px;
+  }
+
+  .heroTextOverlay {
+    left: 32px;
+    max-width: 400px;
+  }
+
+  .heroTitleMain {
+    font-size: 40px;
+  }
+
+  .heroTitleSub {
+    font-size: 18px;
+  }
+
+  .searchBarWrapper {
+    width: 95%;
+    bottom: -120px;
+  }
+
+  .listingsSection {
+    padding: 140px 16px 48px;
+  }
+
+  .sectionTitle {
+    font-size: 24px;
+  }
+
+  .hostelCard {
+    flex: 0 0 280px;
+  }
+
+  .cardImageWrapper {
+    height: 240px;
+  }
+}
