@@ -78,12 +78,11 @@ export default function SearchBar() {
   const semesterOptions = [
     '1 Semester',
     '2 Semesters',
-    'Full Academic Year',
     'Semester holiday',
     
   ];
 
-  const roomTypes = ['Single', 'Double', 'Shared Dorm', 'Studio'];
+  const roomTypes = ['Single', 'Double', 'Shared Dorm'];
 
   const handleSearch = () => {
     const searchData = {

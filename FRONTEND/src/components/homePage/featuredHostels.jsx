@@ -78,13 +78,18 @@ function FeaturedHostels() {
     }
   ];
 
+  const formatDate = () => {
+  const date = new Date();
+  return `${date.toLocaleString('default', { weekday: 'long' })} ${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
+};
+
   return (
     <section className={styles.featuredSection}>
       <div className={styles.sectionHeader}>
         <h2 className={styles.sectionTitle}>Premium Student Hostels</h2>
         <div className={styles.headerInfo}>
           <span className={styles.language}>ENG</span>
-          <span className={styles.date}>11/10/2025</span>
+          <span className={styles.date}>{formatDate()}</span>
         </div>
       </div>
 

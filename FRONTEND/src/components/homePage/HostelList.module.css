@@ -206,7 +206,6 @@
   overflow-x: auto;
   padding-bottom: 24px;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 

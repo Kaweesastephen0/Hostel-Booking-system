@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/database.js";
 import hostelRoutes from "./routes/hostels.js";
+import hostelRoute from './routes/hostelRoute.js'
 import roomRoutes from "./routes/rooms.js";
 import authRoutes from "./routes/authRoutes.js";
 
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
+app.use('/api/hostels', hostelRoute)
 app.use("/api/hostels", hostelRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/auth", authRoutes);
