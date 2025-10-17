@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Facebook, X, SlidersHorizontal, Linkedin, Mail } from 'lucide-react';
 import styles from './sidebarMenu.module.css';
 
@@ -9,12 +10,16 @@ function SidebarMenu() {
     setIsOpen(!isOpen);
   };
 
-  const trackGreeting=()=>{
-    let time = new Date().getTime()
-    let message = time < 19 ? "Hi, hope your day is moving well" : "Nights are best in secure locations"
+  // Close sidebar when a link is clicked
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
+
+  const trackGreeting = () => {
+    let time = new Date().getHours();
+    let message = time < 19 ? "Hi, hope your day is moving well" : "Nights are best in secure locations";
     return message;
-  }
-   
+  };
 
   return (
     <div className={styles.sidebarContainer}>
@@ -23,7 +28,6 @@ function SidebarMenu() {
         onClick={toggleMenu}
         className={styles.menuButton}
       >
-        
         <SlidersHorizontal size={32} />
       </button>
 
@@ -46,6 +50,7 @@ function SidebarMenu() {
         {/* Header */}
         <div className={styles.sidebarHeader}>
           <h2 className={styles.sidebarTitle}>Muk-Book Hostels</h2>
+          <p className={styles.greeting}>{trackGreeting()}</p>
         </div>
 
         {/* Menu Content - Centered */}
@@ -54,12 +59,12 @@ function SidebarMenu() {
           <div className={styles.menuColumn}>
             <h3 className={styles.columnTitle}>Menu</h3>
             <nav className={styles.menuNav}>
-              <a href="#" className={styles.menuItem}>Home</a>
-              <a href="#" className={styles.menuItem} >About us</a>
-              <a href="#" className={styles.menuItem}>Contact us</a>
-              <a href="#" className={styles.menuItem}>pattern with us</a>
-              <a href="#" className={styles.menuItem}>Donate</a>
-              <a href="#" className={styles.menuItem}>FAQ</a>
+              <Link to="/" className={styles.menuItem} onClick={handleLinkClick}>Home</Link>
+              <Link to="/about" className={styles.menuItem} onClick={handleLinkClick}>About us</Link>
+              <Link to="/contact" className={styles.menuItem} onClick={handleLinkClick}>Contact us</Link>
+              <a href="#" className={styles.menuItem} onClick={handleLinkClick}>Partner with us</a>
+              <a href="#" className={styles.menuItem} onClick={handleLinkClick}>Donate</a>
+              <a href="#" className={styles.menuItem} onClick={handleLinkClick}>FAQ</a>
             </nav>
           </div>
 
@@ -67,23 +72,22 @@ function SidebarMenu() {
           <div className={styles.menuColumn}>
             <h3 className={styles.columnTitle}>Social</h3>
             <nav className={styles.menuNav}>
-              <a href="#" className={styles.menuItem}><Facebook /></a>
-              <a href="#" className={styles.menuItem}><Linkedin /></a>
-              <a href="#" className={styles.menuItem}><X /></a>
-              <a href="#" className={styles.menuItem}><Mail /></a>
+              <a href="#" className={styles.menuItem} onClick={handleLinkClick}><Facebook /></a>
+              <a href="#" className={styles.menuItem} onClick={handleLinkClick}><Linkedin /></a>
+              <a href="#" className={styles.menuItem} onClick={handleLinkClick}><X /></a>
+              <a href="#" className={styles.menuItem} onClick={handleLinkClick}><Mail /></a>
             </nav>
           </div>
 
-           <div className={styles.menuColumn}>
+          <div className={styles.menuColumn}>
             <h3 className={styles.columnTitle}>Where we are</h3>
             <nav className={styles.menuNav}>
-              <a href="#" className={styles.menuItem}>mukbook@gmail.com</a>
-              <a href="#" className={styles.menuItem}>Makerere University</a>
-              <a href="#" className={styles.menuItem}>Off Sir Apollo Road</a>
-              <a href="#" className={styles.menuItem}>Plot 3290</a>
+              <a href="mailto:mukbook@gmail.com" className={styles.menuItem} onClick={handleLinkClick}>mukbook@gmail.com</a>
+              <span className={styles.menuItem}>Makerere University</span>
+              <span className={styles.menuItem}>Off Sir Apollo Road</span>
+              <span className={styles.menuItem}>Plot 3290</span>
             </nav>
           </div>
-        
         </div>
         <div className={styles.getFullYear}>&copy; mukbook {new Date().getFullYear()}</div>
       </div>
