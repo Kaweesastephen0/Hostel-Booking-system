@@ -5,14 +5,15 @@ import Login from './components/Auth/login'
 import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
 import Navbar from './components/navbar/navbar'  // Corrected path
-import SidebarMenu from './components/homePage/sidebarMenu'
+import SidebarMenu from './components/sidebar/sidebarMenu'
+import HostelHeader from "./components/header"
 
 const App=()=>{
   return(
     <Router>
       <div>
-        <Navbar />
-        <SidebarMenu />
+      <HostelHeader/>
+        
         <Routes>
           <Route path="/" element={<HostelList/>}/>
           <Route path="/login" element={<Login/>}/>
