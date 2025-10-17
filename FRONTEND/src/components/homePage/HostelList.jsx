@@ -4,7 +4,7 @@ import styles from './HostelList.module.css';
 import { useNavigate } from 'react-router-dom'; 
 import FeaturedProperties from './featuredHostels';
 import { useEffect, useState } from 'react';
-import SidebarMenu from './sidebarMenu';
+import SidebarMenu from '../sidebar/sidebarMenu';
 
 
 function HostelList() {
