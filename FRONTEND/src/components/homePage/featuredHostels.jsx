@@ -83,6 +83,8 @@ function FeaturedHostels() {
   return `${date.toLocaleString('default', { weekday: 'long' })} ${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
 };
 
+
+
   return (
     <section className={styles.featuredSection}>
       <div className={styles.sectionHeader}>

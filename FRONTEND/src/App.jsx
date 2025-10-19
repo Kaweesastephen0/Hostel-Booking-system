@@ -1,19 +1,23 @@
 import React from "react"
-import { BrowserRouter as Router, Routes, Route  } from "react-router-dom"
+import { Routes, Route, useLocation  } from "react-router-dom"
 import HostelList from "./components/homePage/HostelList"
 import Login from './components/Auth/login'
 import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
-import Navbar from './components/navbar/navbar'  // Corrected path
-import SidebarMenu from './components/sidebar/sidebarMenu'
 import HostelHeader from "./components/header"
 import MukBookFooter from "./components/footer/HostelFooter"
 
 const App=()=>{
+  const Location = useLocation();
+
+
+  const NoHeaderNoFooter = Location.pathname.includes("/login");
+  
   return(
-    <Router>
+    
       <div>
-      <HostelHeader/>
+        {!NoHeaderNoFooter && <HostelHeader/> }
+      
         
         <Routes>
           <Route path="/" element={<HostelList/>}/>
@@ -23,10 +27,10 @@ const App=()=>{
           <Route path="/hostels" element={<HostelList/>}/>
         </Routes>
 
-        <MukBookFooter/>
+       {!NoHeaderNoFooter && <MukBookFooter/>} 
       </div>
 
-    </Router>
+    
   )
 }
 export default App
