@@ -12,11 +12,11 @@
     "deploy": "gh-pages -d build"
   },
   "dependencies": {
-    "@react-spring/parallax": "^10.0.3",
     "axios": "^1.11.0",
     "lucide-react": "^0.545.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-parallax": "^3.5.2",
     "react-router-dom": "^7.9.4",
     "webfontloader": "^1.6.28"
   },

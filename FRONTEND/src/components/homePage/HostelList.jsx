@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import FeaturedProperties from './featuredHostels';
 import { useEffect, useState } from 'react';
 import SidebarMenu from '../sidebar/sidebarMenu';
+import HouseImg from './parallaxImages/houseImageOne'
+
+
 
 
 function HostelList() {
@@ -270,6 +273,9 @@ function HostelList() {
           </div>
         </section>
       </main>
+      <HouseImg/>
+      
+      
     </div>
   );
 }
