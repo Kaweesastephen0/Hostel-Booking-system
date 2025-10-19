@@ -35,7 +35,7 @@ import SidebarMenu from '../components/sidebar/sidebarMenu';
               <Home className={styles.brandIcon} size={24} />
               <h6 className={styles.brandName}>MUK-Book</h6>
             </div>
-            <h5 className={styles.brandPhone}>Tel: +256709167919</h5>
+            <h5 className={styles.brandPhone}><a href="tel:+256709167919">Tel: +256709167919</a></h5>
           </div>
 
           <button className={styles.userBtn} onClick={goToLogin}>

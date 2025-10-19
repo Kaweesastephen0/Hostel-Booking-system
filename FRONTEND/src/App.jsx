@@ -7,6 +7,7 @@ import ContactUs from './pages/ContactUs'
 import Navbar from './components/navbar/navbar'  // Corrected path
 import SidebarMenu from './components/sidebar/sidebarMenu'
 import HostelHeader from "./components/header"
+import MukBookFooter from "./components/footer/HostelFooter"
 
 const App=()=>{
   return(
@@ -21,7 +22,10 @@ const App=()=>{
           <Route path="/contact" element={<ContactUs/>}/>
           <Route path="/hostels" element={<HostelList/>}/>
         </Routes>
+
+        <MukBookFooter/>
       </div>
+
     </Router>
   )
 }
