@@ -1,0 +1,187 @@
+.featuredSection {
+  padding: 80px 64px;
+  background: #f8fafc;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 48px;
+}
+
+.sectionTitle {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f2937;
+  text-transform: uppercase;
+}
+
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.language {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+}
+
+.date {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.propertiesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.propertyCard {
+  background: whitesmoke;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.propertyCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.cardImage {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.cardImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  clip-path: polygon(0 0, 10% 0, 90% 0, 100% 10%, 100% 90%, 100% 100%, 40% 100%, 0 80%);
+}
+
+.propertyCard:hover .cardImage img {
+  transform: scale(1.05);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.3)); */
+}
+
+.cardContent {
+  padding: 7px;
+ 
+}
+
+.price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.perMonth {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.address {
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #8eb7f5;
+}
+
+.propertyFeatures {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+   margin-bottom: 14px; 
+  padding-bottom: 10px;
+  border-bottom: 1px solid #8eb7f5;
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 1px solid #8eb7f5;
+}
+
+.featureLabel {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.featureValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.buttons{
+  display: flex;
+  justify-content: space-around;
+  
+
+}
+.buttons button{
+  background: rgb(208, 208, 253);
+  color: #0052cc;
+}
+
+.buttons button:hover {
+  background: blue;
+  color: #ffff;
+}
+
+@media (max-width: 768px) {
+  .featuredSection {
+    padding: 60px 16px;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .headerInfo {
+    align-items: flex-start;
+  }
+
+  .sectionTitle {
+    font-size: 24px;
+  }
+
+  .propertiesGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .propertyFeatures {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+}

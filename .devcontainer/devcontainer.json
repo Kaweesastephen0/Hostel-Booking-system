@@ -1,0 +1,27 @@
+{
+  "name": "MERN Stack Container",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "forwardPorts": [5173, 5001, 27017], // Ports for React, Express, and MongoDB
+  "portsAttributes": {
+    "3000": {
+      "label": "React Client",
+      "onAutoForward": "notify"
+    },
+    "5000": {
+      "label": "Express Server",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "npm install && cd server && npm install && cd ../client && npm install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}

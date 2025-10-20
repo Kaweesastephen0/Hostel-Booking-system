@@ -1,0 +1,28 @@
+{
+  "name": "hostel",
+  "version": "0.0.1",
+  "private": "true",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha --exit tests/*",
+    "dev": "node server.js",
+    "seed": "node scripts/hostelSeed.js",
+    "seed:dev": "nodemon scripts/hostelSeed.js"
+  },
+  "type": "module",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "supertest": "^7.1.4"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "nodemailer": "^7.0.6"
+  }
+}

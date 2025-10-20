@@ -1,9 +1,10 @@
+import { Menu, Home, UserPlus } from 'lucide-react';
 import SearchBar from './SearchBar';
-import styles from './HostelList.module.css'; 
+import styles from './HostelList.module.css';
+import { useNavigate } from 'react-router-dom'; 
 import FeaturedProperties from './featuredHostels';
 import { useEffect, useState } from 'react';
-import SidebarMenu from './sidebarMenu';
-import HostelHeader from './header'
+import HouseImg from './parallaxImages/houseImageOne'
 
 
 function HostelList() {
@@ -13,7 +14,7 @@ function HostelList() {
   const [error, setError]=useState(null);
   
 
-  
+  const navigate= useNavigate();
 
   useEffect(()=>{
     const fetchHostels= async()=>{
@@ -48,7 +49,9 @@ function HostelList() {
     fetchHostels()
   }, [])
 
-  
+  const goToLogin=()=>{
+    navigate('/login')
+  }
 
   
   const formatePrice=(price)=>{
@@ -79,7 +82,7 @@ function HostelList() {
   
   return (
     <div className={styles.container}>
-      <main className={styles.main}>
+     <main className={styles.main}>
         <section className={styles.heroSection}>
           <div className={styles.heroContent}>
             <div className={styles.quickBookingSidebar}>
@@ -197,11 +200,14 @@ function HostelList() {
                     </div>
                   ))
                 )}
-              
             </div>
           </div>
         </section>
       </main>
+      <HouseImg/>
+      
+      
+      
     </div>
   );
 }
