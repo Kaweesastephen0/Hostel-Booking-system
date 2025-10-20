@@ -1,5 +1,5 @@
 import React from "react"
-import { BrowserRouter as Router, Routes, Route  } from "react-router-dom"
+
 import { Routes, Route, useLocation  } from "react-router-dom"
 import HostelList from "./components/homePage/HostelList"
 import Login from './components/Auth/login'

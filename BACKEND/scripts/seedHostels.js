@@ -133,7 +133,7 @@ async function seed() {
 
     // Clear existing data
     const result = await Hostel.deleteMany({});
-    console.log(`🧹 Cleared existing hostels: ${result.deletedCount} removed`);
+    console.log(`🧹 Cleared existing hostelllls: ${result.deletedCount} removed`);
 
     // Insert sample data
     const created = await Hostel.insertMany(sampleHostels);

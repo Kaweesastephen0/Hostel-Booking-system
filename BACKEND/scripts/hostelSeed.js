@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Hostel from '../../models/Hostel.js';
+import Hostel from '../models/HostelModel.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -16,8 +16,9 @@ const sampleHostels = [
       "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
     ],
     amenities: ["wifi", "security", "water", "electricity", "parking"],
+    HotelGender: "male",  // ← Added
     distance: "0.5 km",
-    contact: "0709167919", // Uganda format without +256
+    contact: "0709167919",
     email: "info@sunwayshostel.com",
     location: "Wandegeya",
     roomTypes: {
@@ -36,15 +37,16 @@ const sampleHostels = [
     name: "Modern Living Apartments",
     description: "Modern apartments with all amenities included, located near the main gate.",
     address: "Kikoni Street, Near Main Gate",
-    price: 500000, // Divisible by 1000 ✓
+    price: 500000,
     image: "https://images.pexels.com/photos/18153132/pexels-photo-18153132.jpeg",
     images: [
       "https://images.pexels.com/photos/18153132/pexels-photo-18153132.jpeg",
       "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg"
     ],
     amenities: ["wifi", "security", "water", "electricity", "parking", "laundry"],
+    HotelGender: "female",  // ← Added
     distance: "0.3 km",
-    contact: "0701234567", // Fixed phone format
+    contact: "0701234567",
     email: "modernliving@apartments.com",
     location: "Kikoni",
     roomTypes: {
@@ -63,14 +65,15 @@ const sampleHostels = [
     name: "Student Paradise",
     description: "Affordable and comfortable accommodation for students on a budget.",
     address: "Makerere University Road",
-    price: 350000, // Divisible by 1000 ✓
+    price: 350000,
     image: "https://images.pexels.com/photos/1838639/pexels-photo-1838639.jpeg",
     images: [
       "https://images.pexels.com/photos/1838639/pexels-photo-1838639.jpeg"
     ],
     amenities: ["wifi", "security", "water", "electricity"],
+    HotelGender: "male",  // ← Added
     distance: "0.7 km",
-    contact: "0712345678", // Fixed phone format
+    contact: "0712345678",
     email: "paradise@studenthostel.com",
     location: "Wandegeya",
     roomTypes: {
@@ -89,15 +92,16 @@ const sampleHostels = [
     name: "Campus Heights",
     description: "Luxury student accommodation with premium amenities and great views.",
     address: "Wandegeya Main Street",
-    price: 450000, // Divisible by 1000 ✓
+    price: 450000,
     image: "https://images.pexels.com/photos/2119714/pexels-photo-2119714.jpeg",
     images: [
       "https://images.pexels.com/photos/2119714/pexels-photo-2119714.jpeg",
       "https://images.pexels.com/photos/2581922/pexels-photo-2581922.jpeg"
     ],
     amenities: ["wifi", "security", "water", "electricity", "parking", "gym", "study room"],
+    HotelGender: "female",  // ← Added
     distance: "0.4 km",
-    contact: "0723456789", // Fixed phone format
+    contact: "0723456789",
     email: "campusheights@luxury.com",
     location: "Wandegeya",
     roomTypes: {
@@ -116,14 +120,15 @@ const sampleHostels = [
     name: "University Residence",
     description: "Comfortable residence with a homely atmosphere for students.",
     address: "Kikoni Zone 3",
-    price: 380000, // Divisible by 1000 ✓
+    price: 380000,
     image: "https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg",
     images: [
       "https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg"
     ],
     amenities: ["wifi", "security", "water", "electricity", "common room"],
+    HotelGender: "male",  // ← Added
     distance: "0.6 km",
-    contact: "0734567890", // Fixed phone format
+    contact: "0734567890",
     email: "universityresidence@hostel.com",
     location: "Kikoni",
     roomTypes: {
@@ -142,16 +147,17 @@ const sampleHostels = [
     name: "Scholar's Place",
     description: "Quiet and conducive environment for serious students.",
     address: "Makerere Hill View",
-    price: 420000, // Divisible by 1000 ✓
+    price: 420000,
     image: "https://images.pexels.com/photos/2581922/pexels-photo-2581922.jpeg",
     images: [
       "https://images.pexels.com/photos/2581922/pexels-photo-2581922.jpeg"
     ],
     amenities: ["wifi", "security", "water", "electricity", "study room", "library"],
+    HotelGender: "female",  // ← Added
     distance: "0.8 km",
-    contact: "0745678901", // Fixed phone format
+    contact: "0745678901",
     email: "scholarsplace@academic.com",
-    location: "Nankulabye", // Fixed to match schema enum
+    location: "Nankulabye",
     roomTypes: {
       single: 6,
       double: 8,
@@ -168,15 +174,16 @@ const sampleHostels = [
     name: "Elite Student Residence",
     description: "Premium accommodation with all modern facilities for discerning students.",
     address: "Makerere Main Campus",
-    price: 550000, // Divisible by 1000 ✓
+    price: 550000,
     image: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
     images: [
       "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
       "https://images.pexels.com/photos/2119714/pexels-photo-2119714.jpeg"
     ],
     amenities: ["wifi", "security", "water", "electricity", "parking", "gym", "cafeteria", "hot shower"],
+    HotelGender: "male",  // ← Added
     distance: "0.2 km",
-    contact: "0756789012", // Fixed phone format
+    contact: "0756789012",
     email: "elite@studentresidence.com",
     location: "Wandegeya",
     roomTypes: {
@@ -195,14 +202,15 @@ const sampleHostels = [
     name: "Comfort Suites",
     description: "Affordable comfort with all basic amenities for student living.",
     address: "Near Makerere Hospital",
-    price: 390000, // Divisible by 1000 ✓
+    price: 390000,
     image: "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg",
     images: [
       "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg"
     ],
     amenities: ["wifi", "security", "water", "electricity", "laundry"],
+    HotelGender: "female",  // ← Added
     distance: "0.9 km",
-    contact: "0767890123", // Fixed phone format
+    contact: "0767890123",
     email: "comfortsuites@hostel.com",
     location: "Ntinda",
     roomTypes: {
@@ -222,11 +230,11 @@ const sampleHostels = [
 const seedHostels = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Connected to MongoDB and ready to seed');
+    console.log('Connected to MongoDB and ready to seed Sir');
 
     // Clear existing hostels
     await Hostel.deleteMany({});
-    console.log('Cleared existing hostels');
+    console.log('Cleared existing hostelooooos');
 
     // Insert sample hostels
     const insertedHostels = await Hostel.insertMany(sampleHostels);
