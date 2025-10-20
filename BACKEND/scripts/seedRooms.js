@@ -10,11 +10,17 @@ const sampleRooms =[
         roomGender: 'male',
         roomPrice: 40000,
         hostelId: "68eb86ce6a7d34b69e9e7411",
-        bookingPrice: 2500000,
+        bookingPrice: 250000,
         roomDescription: 'This is a nice room',
         maxOccupancy: 3,
 
     
+    },
+    {
+        roomNumber : "Luck-456",
+        roomType : "Double",
+        roomGender : "Both",
+        
     }
 ]
 
