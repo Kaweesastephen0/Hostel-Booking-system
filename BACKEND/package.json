@@ -8,6 +8,8 @@
     "dev": "node server.js",
     "seed": "node scripts/hostelSeed.js",
     "seed:dev": "nodemon scripts/hostelSeed.js"
+    "seed": "node scripts/seedRoom.js",
+    "seed:dev": "nodemon scripts/seedRoom.js"
   },
   "type": "module",
   "license": "MIT",
