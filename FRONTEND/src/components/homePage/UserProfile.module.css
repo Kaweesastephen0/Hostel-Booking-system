@@ -1,63 +1,61 @@
-
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: white;
   z-index: 1000;
-  padding: 20px;
+  overflow-y: auto;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .modal {
   background: white;
-  border-radius: 16px;
-  max-width: 500px;
   width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
+  min-height: 100vh;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .closeBtn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: #f3f4f6;
   border: none;
-  color: #6b7280;
+  color: #374151;
   cursor: pointer;
-  padding: 8px;
+  padding: 12px;
   border-radius: 50%;
   transition: all 0.2s;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .closeBtn:hover {
-  background: #f3f4f6;
+  background: #e5e7eb;
   color: #111827;
+  transform: scale(1.05);
 }
 
 .profileContainer {
-  padding: 40px 32px;
+  padding: 80px 32px 40px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .avatarSection {
@@ -167,23 +165,8 @@
 }
 
 @media (max-width: 768px) {
-  .overlay {
-    padding: 0;
-    align-items: flex-start;
-  }
-
-  .modal {
-    max-width: 100%;
-    width: 100%;
-    height: 100vh;
-    max-height: 100vh;
-    border-radius: 0;
-    overflow-y: auto;
-  }
-
   .profileContainer {
-    padding: 60px 24px 24px;
-    min-height: 100vh;
+    padding: 80px 24px 24px;
   }
 
   .avatar {
@@ -193,11 +176,5 @@
 
   .userName {
     font-size: 20px;
-  }
-
-  .closeBtn {
-    top: 20px;
-    right: 20px;
-    background: #f3f4f6;
   }
 }

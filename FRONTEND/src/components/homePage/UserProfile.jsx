@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { X, User, Mail, Calendar, Clock, LogOut } from 'lucide-react';
+import { ArrowLeft, User, Mail, Calendar, Clock, LogOut } from 'lucide-react';
 import styles from './UserProfile.module.css';
 
 function UserProfile({ isOpen, onClose, userData, onLogout }) {
@@ -25,7 +24,7 @@ function UserProfile({ isOpen, onClose, userData, onLogout }) {
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <button className={styles.closeBtn} onClick={onClose}>
-          <X size={24} />
+          <ArrowLeft size={24} />
         </button>
 
         <div className={styles.profileContainer}>
