@@ -43,12 +43,77 @@ export const register = async (req, res) => {
     });
 
     if (user) {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'your-email@gmail.com',
+          pass: 'your-app-password'
+        },
+        tls: {
+          rejectUnauthorized: false
+        }
+      });
+
+      const welcomeMessage = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background-color: #2563eb; color: white; padding: 30px; text-align: center; }
+            .content { background-color: #f9fafb; padding: 30px; border: 1px solid #ddd; }
+            .button { background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 20px; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Welcome to MUK-Book!</h1>
+            </div>
+            <div class="content">
+              <p>Hello ${user.firstName} ${user.surname},</p>
+              <p>Thank you for registering with MUK-Book Hostel Booking System!</p>
+              <p>Your account has been successfully created. You can now login and start booking your ideal accommodation.</p>
+              <p><strong>Account Details:</strong></p>
+              <ul>
+                <li>Name: ${user.firstName} ${user.surname}</li>
+                <li>Email: ${user.email}</li>
+                <li>Account Type: ${user.userType === 'student' ? 'Student' : 'Non-Student'}</li>
+                ${user.userType === 'student' ? `<li>Student Number: ${user.studentNumber}</li>` : ''}
+              </ul>
+              <p>If you have any questions, please don't hesitate to contact us at +256709167919.</p>
+            </div>
+            <div class="footer">
+              <p>MUK-Book Hostel Booking System</p>
+              <p>This is an automated message, please do not reply.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      try {
+        await transporter.sendMail({
+          from: '"MUK-Book" <your-email@gmail.com>',
+          to: user.email,
+          subject: 'Welcome to MUK-Book - Registration Successful',
+          html: welcomeMessage,
+          text: `Welcome to MUK-Book!\n\nHello ${user.firstName} ${user.surname},\n\nThank you for registering with MUK-Book Hostel Booking System!\n\nYour account has been successfully created.`
+        });
+        console.log('Welcome email sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send welcome email:', emailError);
+      }
+
       res.status(201).json({
         _id: user._id,
         firstName: user.firstName,
         surname: user.surname,
         email: user.email,
         userType: user.userType,
+        createdAt: user.createdAt,
         token: generateToken(user._id)
       });
     }
@@ -64,12 +129,18 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
+      user.lastLogin = Date.now();
+      await user.save();
+
       res.json({
         _id: user._id,
         firstName: user.firstName,
         surname: user.surname,
         email: user.email,
         userType: user.userType,
+        studentNumber: user.studentNumber,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLogin,
         token: generateToken(user._id)
       });
     } else {
