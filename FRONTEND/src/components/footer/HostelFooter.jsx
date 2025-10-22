@@ -1,8 +1,11 @@
 import React from 'react';
 import { Bed, Phone, MapPin, Mail, ArrowRight } from 'lucide-react';
 import styles from './footer.module.css';
+import { Link } from 'react-router-dom';
 
 export default function MukBookFooter() {
+
+
   return (
     <div className={styles.container}>
       <div className={styles.hero}>
@@ -19,10 +22,13 @@ export default function MukBookFooter() {
           traveler, or professional, book your perfect stay with Muk-Book!
         </p>
         
-        <button className={styles.ctaButton}>
+        <Link to='/booking' className={styles.ctaButton}
+        
+        >
           Book Your Hostel
+
           <ArrowRight className={styles.buttonIcon} />
-        </button>
+        </Link>
       </div>
 
       <footer className={styles.footer}>

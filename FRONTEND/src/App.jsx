@@ -1,11 +1,11 @@
-import React from "react"
+
 import { Routes, Route, useLocation  } from "react-router-dom"
 import HostelList from "./components/homePage/HostelList"
 import Login from './components/Auth/login'
 import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
 import HostelHeader from "./components/header"
-import MukBookFooter from "./components/footer/HostelFooter"
+import Booking from "./components/booking/Booking"
 
 const App=()=>{
   const Location = useLocation();
@@ -16,7 +16,7 @@ const App=()=>{
   return(
     
       <div>
-        {!NoHeaderNoFooter && <HostelHeader/> }
+        {/* {!NoHeaderNoFooter && <HostelHeader/> } */}
       
         
         <Routes>
@@ -25,9 +25,10 @@ const App=()=>{
           <Route path="/about" element={<AboutUs/>}/>
           <Route path="/contact" element={<ContactUs/>}/>
           <Route path="/hostels" element={<HostelList/>}/>
+          <Route path="/booking" element={<Booking/>}/>
         </Routes>
 
-       {!NoHeaderNoFooter && <MukBookFooter/>} 
+    
       </div>
 
     
