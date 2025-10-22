@@ -16,7 +16,7 @@ const App=()=>{
   return(
     
       <div>
-        {/* {!NoHeaderNoFooter && <HostelHeader/> } */}
+        {!NoHeaderNoFooter && <HostelHeader/> }
       
         
         <Routes>
