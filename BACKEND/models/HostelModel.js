@@ -57,21 +57,7 @@ const hostelSchema= new mongoose.Schema({
     required: [true, 'location area is required'],
     trim: true
   },
-  roomTypes:{
-    single:{
-        type: Number,
-        default: 0
-    },
-    double:{
-        type : Number,
-        default : 0
-    },
-    shared:{
-        type: Number,
-        default: 0
-    }
-
-  },
+  
   availability:{
     type: Boolean,
     default: true
@@ -93,6 +79,10 @@ const hostelSchema= new mongoose.Schema({
     type:Boolean,
     default: false
   },
+  rooms: [{ 
+    type: mongoose.Schema.Types.ObjectId,
+     ref: 'Room'
+  }]
   
 
 },{

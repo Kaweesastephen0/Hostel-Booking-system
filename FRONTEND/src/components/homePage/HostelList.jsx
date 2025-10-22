@@ -4,7 +4,7 @@ import styles from './HostelList.module.css';
 import { useNavigate } from 'react-router-dom'; 
 import FeaturedProperties from './featuredHostels';
 import { useEffect, useState } from 'react';
-import SidebarMenu from './sidebarMenu';
+import HouseImg from './parallaxImages/houseImageOne'
 
 
 function HostelList() {
@@ -82,40 +82,7 @@ function HostelList() {
   
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-                
-            <SidebarMenu/>
-          <div className={styles.sortOptions}>
-            <div className={styles.sortOption}>
-              <div className={styles.sortLabel}>sort by</div>
-              <div className={styles.sortValue}>price</div>
-            </div>
-            <div className={styles.sortOption}>
-              <div className={styles.sortLabel}>sort by</div>
-              <div className={styles.sortValue}>distance</div>
-            </div>
-            <div className={styles.sortOption}>
-              <div className={styles.sortLabel}>sort by</div>
-              <div className={styles.sortValue}>Amenity</div>
-            </div>
-          </div>
-
-          <div className={styles.branding}>
-            <div className={styles.brandingTop}>
-              <Home className={styles.brandIcon} size={24} />
-              <h6 className={styles.brandName}>MUK-Book</h6>
-            </div>
-            <h5 className={styles.brandPhone}>Tel: +256709167919</h5>
-          </div>
-
-          <button className={styles.userBtn} onClick={goToLogin}>
-            <UserPlus size={32} />
-          </button>
-        </div>
-      </header>
-
-      <main className={styles.main}>
+     <main className={styles.main}>
         <section className={styles.heroSection}>
           <div className={styles.heroContent}>
             <div className={styles.quickBookingSidebar}>
@@ -233,43 +200,14 @@ function HostelList() {
                     </div>
                   ))
                 )}
-              {/* {hostels.map((hostel) => (
-                <div key={hostel.id} className={styles.hostelCard}>
-                  <div className={styles.cardInner}>
-                    <div className={styles.cardImageWrapper}>
-                      <img
-                        src={hostel.image}
-                        alt={hostel.name}
-                        className={styles.cardImage}
-                      />
-                      <div className={styles.rentBadge}>Rent</div>
-                    </div>
-
-                    <div className={styles.cardContent}>
-                      <div className={styles.cardInfoRow}>
-                        <div className={styles.cardInfoLabel}>Apartment</div>
-                        <div className={styles.cardInfoValue}>{hostel.name}</div>
-                      </div>
-
-                      <div className={styles.cardInfoRow}>
-                        <div className={styles.cardInfoLabel}>Address</div>
-                        <div className={styles.cardInfoValue}>{hostel.address}</div>
-                      </div>
-
-                      <div className={styles.cardPriceRow}>
-                        <div>
-                          <div className={styles.cardPriceLabel}>Price/Month</div>
-                          <div className={styles.cardPrice}>Shs. {hostel.price}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))} */}
             </div>
           </div>
         </section>
       </main>
+      <HouseImg/>
+      
+      
+      
     </div>
   );
 }
