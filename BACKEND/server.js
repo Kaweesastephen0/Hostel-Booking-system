@@ -6,6 +6,7 @@ import hostelRoutes from "./routes/hostels.js";
 import hostelRoute from './routes/hostelRoute.js'
 import roomRoutes from "./routes/rooms.js";
 import authRoutes from "./routes/authRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -25,6 +26,7 @@ app.use('/api/hostels', hostelRoute)
 app.use("/api/hostels", hostelRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
