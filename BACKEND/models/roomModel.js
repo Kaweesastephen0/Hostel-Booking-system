@@ -1,3 +1,4 @@
+// room Model
 import mongoose from "mongoose";
 
 const roomSchema = new mongoose.Schema({
@@ -7,6 +8,11 @@ const roomSchema = new mongoose.Schema({
         trim: true,
         maxLength:[100, 'Room cannot exceed 100 characters']
         
+    },
+    roomImage:{
+        type: String,
+        required:[true, 'Room picture is required']
+
     },
     roomType:{
         type: String,
@@ -25,9 +31,10 @@ const roomSchema = new mongoose.Schema({
 
 
     },
-    hostelId:{
-        type: String,
-        required:[true, 'Hostel Id is required']
+    hostelId: {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Hostel', 
+        required: [true, 'Hostel Id is required']
     },
 
     bookingPrice:{

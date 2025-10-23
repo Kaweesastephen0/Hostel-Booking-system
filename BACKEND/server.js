@@ -2,9 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/database.js";
-import hostelRoutes from "./routes/hostels.js";
 import hostelRoute from './routes/hostelRoute.js'
-import roomRoutes from "./routes/rooms.js";
+import roomRoute from "./routes/roomRoute.js";
 import authRoutes from "./routes/authRoutes.js";
 
 // Load environment variables
@@ -22,9 +21,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/hostels', hostelRoute)
-app.use("/api/hostels", hostelRoutes);
-app.use("/api/rooms", roomRoutes);
+
+app.use("/api/rooms", roomRoute);
 app.use("/api/auth", authRoutes);
+app.use("/api/premium", hostelRoute), 
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

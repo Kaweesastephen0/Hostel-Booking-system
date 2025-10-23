@@ -6,6 +6,8 @@ import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
 import HostelHeader from "./components/header"
 import MukBookFooter from "./components/footer/HostelFooter"
+import RoomListingPage from "./components/roomList/RoomList"
+import ExactRoom from "./components/roomList/ExactRoom"
 
 const App=()=>{
   const Location = useLocation();
@@ -25,9 +27,11 @@ const App=()=>{
           <Route path="/about" element={<AboutUs/>}/>
           <Route path="/contact" element={<ContactUs/>}/>
           <Route path="/hostels" element={<HostelList/>}/>
+          <Route path="/RoomListingPage" element={<RoomListingPage/>}/>
+          <Route path="/ExactRoom" element={<ExactRoom/>}/>
         </Routes>
 
-       {!NoHeaderNoFooter && <MukBookFooter/>} 
+        {!NoHeaderNoFooter && <MukBookFooter/>}
       </div>
 
     
