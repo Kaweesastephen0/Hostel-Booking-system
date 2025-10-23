@@ -1,3 +1,4 @@
+
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
@@ -47,11 +48,21 @@ const userSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+  lastLogin: {
+    type: Date,
+    default: Date.now
+  },
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
+
+userSchema.index({ email: 1 });
+userSchema.index({ studentNumber: 1 }, { sparse: true });
+userSchema.index({ nin: 1 }, { sparse: true });
+userSchema.index({ createdAt: -1 });
+userSchema.index({ lastLogin: -1 });
 
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {

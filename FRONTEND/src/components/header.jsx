@@ -7,7 +7,7 @@ import SidebarMenu from '../components/sidebar/sidebarMenu';
     const navigate= useNavigate();
 
     const goToLogin=()=>{
-    navigate('/login')
+    navigate('../homePage/AuthModal')
   }
 
     return(

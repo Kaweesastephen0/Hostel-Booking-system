@@ -6,6 +6,9 @@ import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
 import HostelHeader from "./components/header"
 import Booking from "./components/booking/Booking"
+import MukBookFooter from "./components/footer/HostelFooter"
+import RoomListingPage from "./components/roomList/RoomList"
+import ExactRoom from "./components/roomList/ExactRoom"
 
 const App=()=>{
   const Location = useLocation();
@@ -29,6 +32,11 @@ const App=()=>{
         </Routes>
 
     
+          <Route path="/RoomListingPage" element={<RoomListingPage/>}/>
+          <Route path="/ExactRoom" element={<ExactRoom/>}/>
+        </Routes>
+
+        {!NoHeaderNoFooter && <MukBookFooter/>}
       </div>
 
     
