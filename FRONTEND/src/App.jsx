@@ -2,8 +2,8 @@ import React from "react"
 import { Routes, Route, useLocation  } from "react-router-dom"
 import HostelList from "./components/homePage/HostelList"
 import Login from './components/Auth/login'
-import AboutUs from './pages/AboutUs'
-import ContactUs from './pages/ContactUs'
+import AboutUs from './pages/aboutus'
+import ContactUs from './pages/contactus'
 import HostelHeader from "./components/header"
 import MukBookFooter from "./components/footer/HostelFooter"
 
