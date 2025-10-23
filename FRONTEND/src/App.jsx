@@ -29,14 +29,11 @@ const App=()=>{
           <Route path="/contact" element={<ContactUs/>}/>
           <Route path="/hostels" element={<HostelList/>}/>
           <Route path="/booking" element={<Booking/>}/>
-        </Routes>
 
-    
           <Route path="/RoomListingPage" element={<RoomListingPage/>}/>
           <Route path="/ExactRoom" element={<ExactRoom/>}/>
         </Routes>
 
-        {!NoHeaderNoFooter && <MukBookFooter/>}
       </div>
 
     

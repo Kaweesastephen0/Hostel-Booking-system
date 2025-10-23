@@ -4,8 +4,8 @@ import styles from './HostelList.module.css';
 import { useNavigate } from 'react-router-dom';
 import FeaturedProperties from './featuredHostels';
 import { useEffect, useState } from 'react';
-import HouseImg from './parallaxImages/houseImageOne'
-import MukBookFooter from "../../components/footer/HostelFooter"
+// import HouseImg from './parallaxImages/houseImageOne'
+// import MukBookFooter from "../../components/footer/HostelFooter"
 
 import HotelCard from '../hotelCard';
 
@@ -115,7 +115,7 @@ function HostelList() {
             <SearchBar />
           </div>
         </section>
-        
+
 
         <FeaturedProperties hostels={hostels.filter(h => h.featured)} />
 
@@ -128,26 +128,26 @@ function HostelList() {
           <div className={styles.listingsScroll}>
             <div className={styles.listingsContainer}>
               {hostels.length === 0 ? (
-                  <div className={styles.noHostels}>
-                    No hostels found. Please check back later.
-                  </div>
-                ) : (
-                  hostels.map((hostel, index) => (
-                    <HotelCard
+                <div className={styles.noHostels}>
+                  No hostels found. Please check back later.
+                </div>
+              ) : (
+                hostels.map((hostel, index) => (
+                  <HotelCard
                     key={hostel._id}
                     hostel={hostel}
                     index={index}
-                    />
-                  ))
-                )}
+                  />
+                ))
+              )}
             </div>
           </div>
         </section>
       </main>
-      
-      
-      
-      
+
+
+
+
     </div>
 
   );
