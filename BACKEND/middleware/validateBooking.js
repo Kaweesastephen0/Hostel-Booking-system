@@ -1,16 +1,7 @@
 export default function validateBooking(req, res, next) {
   const {
-    fullName,
-    gender,
-    age,
-    phone,
-    email,
-    hostelName,
-    roomNumber,
-    roomType,
-    duration,
-    checkIn,
-    paymentMethod,
+    fullName, gender,  age, phone, email, hostelName,
+    roomNumber, roomType, duration, checkIn, paymentMethod,
     bookingFee,
   } = req.body || {};
 
@@ -32,7 +23,7 @@ export default function validateBooking(req, res, next) {
     return res.status(400).json({ success: false, message: 'Missing required fields', missing });
   }
 
-  // normalize types
+  // normalizing types
   if (typeof bookingFee === 'string') req.body.bookingFee = Number(bookingFee);
   if (typeof age === 'string') req.body.age = Number(age);
 
