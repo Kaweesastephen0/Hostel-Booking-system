@@ -1,20 +1,8 @@
-import express from 'express'
-import Rooms from '../models/roomModel.js'
-import router from './hostelRoute'
+import express from 'express';
+import { getAllRooms } from '../controllers/roomController.js'; 
 
-const router =router();
+const router = express.Router();
 
-router.get('/', async(req, res)=>{
-    try{
-        const rooms = await Rooms.find({});
-        if(rooms.length > 0){
-            console.log(`found ${rooms.length} rooms`)
+router.get('/Rooms', getAllRooms); 
 
-        }
-       res.status(200).json({message: "fetched successfully"})
-    }catch(error){
-        console.error('failed to fetch rooms: ', error)
-        res.status(500).json({message: "Server Error"})
-
-    }
-})
+export default router;

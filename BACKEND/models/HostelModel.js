@@ -1,3 +1,4 @@
+//hostel model
 import mongoose from 'mongoose';
 const hostelSchema= new mongoose.Schema({
   name:{
@@ -13,13 +14,6 @@ const hostelSchema= new mongoose.Schema({
     trim: true
   },
 
-  address:{
-    type: String,
-    required: [true, "Address is required"],
-    trim: true,
-    maxLength:[100, 'Address cannot exceed 200 characters']
-
-  },
  
    image: { 
     type: String,
@@ -40,7 +34,7 @@ const hostelSchema= new mongoose.Schema({
   },
 
   
-    HotelGender:{
+    HostelGender:{
     type: String,
     enum: ['male', 'female'],
     required:[true, 'Hotel gender is required']
@@ -79,10 +73,12 @@ const hostelSchema= new mongoose.Schema({
     type:Boolean,
     default: false
   },
-  rooms: [{ 
+  // ADD THIS FIELD - This is what was missing!
+  rooms: [{
     type: mongoose.Schema.Types.ObjectId,
-     ref: 'Room'
+    ref: 'Room'
   }]
+  
   
 
 },{
@@ -100,4 +96,4 @@ hostelSchema.virtual('formattedPrice').get(function() {
   return `UGX ${this.price.toLocaleString()}`;
 });
 
-export default mongoose.model("hostel", hostelSchema)
+export default mongoose.model("Hostel", hostelSchema)

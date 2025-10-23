@@ -6,8 +6,8 @@
   "scripts": {
     "test": "mocha --exit tests/*",
     "dev": "node server.js",
-    "seed": "node scripts/seedRoom.js",
-    "seed:dev": "nodemon scripts/seedRoom.js"
+    "seed": "node scripts/SeedHostels-SeedRooms.js",
+    "seed:dev": "nodemon scripts/SeedHostels-SeedRooms.js"
   },
   "type": "module",
   "license": "MIT",
