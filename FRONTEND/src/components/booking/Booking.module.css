@@ -91,6 +91,25 @@ input:focus {
     transform: translateY(-2px);
 }
 
+select{
+     height: 50px;
+    width: 100%;
+    margin-left: 0;
+    padding: 0 20px 0 50px;
+    border: 2px solid #e1e8ed;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: rgb(255, 255, 255);
+    outline: none;
+     color: #bc662d;
+    font-style: italic;
+}
+select .op1 {
+    color: #090705;
+    font-style: italic;
+}
+
 input:disabled {
     background-color: #f8f9fa;
     color: #bc662d;

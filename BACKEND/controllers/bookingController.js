@@ -1,21 +1,40 @@
-import Booking from '../models/Booking.js';
+import Booking from "../models/Booking.js";
+import pkg from "express-validator";
+const { validateResults } = pkg;
+
 
 export const createBooking = async (req, res) => {
-  try {
-    const booking = await Booking.create(req.body);
-    return res.status(201).json({ success: true, data: booking });
-  } catch (error) {
-    console.error('Error creating booking:', error);
-    return res.status(500).json({ success: false, message: 'Error creating booking', error: error.message });
+ try{
+  // Error validation
+  const errors = validateResults(req);
+  if(!errors.isEmpty()){
+    return res.status(400).json({
+      errors: errors.array().map((err) => err.msg)
+    });
   }
+
+  const { fullName, gender, age, occupation, idNumber, phone, email, location, 
+    hostelName, roomType, duration, checkIn, paymentMethod, bookingFee, paymentNumber
+  } = req.body;
+  const form = new Booking({fullName, gender, age, occupation, idNumber, phone, email, location, 
+    hostelName, roomType, duration, checkIn, paymentMethod, bookingFee, paymentNumber});
+    await form.save();
+
+    res.status(201).json({ message: "Booking successfully"});
+ } catch(err) {
+  console.error(err);
+
+  res.status(500).json({ error: "Server error"})
+ }
+
 };
 
 export const listBookings = async (req, res) => {
   try {
     const bookings = await Booking.find().sort({ createdAt: -1 });
-    return res.json({ success: true, data: bookings });
-  } catch (error) {
-    console.error('Error listing bookings:', error);
-    return res.status(500).json({ success: false, message: 'Error fetching bookings', error: error.message });
+    res.status(200).json(bookings);
+  } catch (err) {
+    res.status(500).json({ error: " Server error"})
+
   }
 };
