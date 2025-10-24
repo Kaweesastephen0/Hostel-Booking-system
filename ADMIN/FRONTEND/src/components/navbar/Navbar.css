@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 70px; 
+  height: 73px; 
   padding: 0 24px;
   background-color: var(--navbar-bg);
   border-bottom: 1px solid var(--navbar-border);
