@@ -33,19 +33,39 @@
     border-radius: 15px;
     border-left: 5px solid #3498db;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    width: 100%;
 }
 
 .details {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 40px;
+    width: 100%;
     margin-top: 20px;
 }
 
 .p2 {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+/* Make form controls take full width of their container */
+.p2 > div {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* Make labels block level */
+.p2 label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+/* Style the input wrapper */
+.inputWrapper {
+    position: relative;
+    width: 100%;
 }
 
 .rDetails {
@@ -61,10 +81,11 @@
 }
 
 .form {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
     width: 100%;
+    box-sizing: border-box;
     margin: 0;
     background: white;
     padding: 40px;
@@ -89,6 +110,54 @@ input:focus {
     border-color: #3498db;
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
     transform: translateY(-2px);
+}
+
+/* Error states */
+.inputWrapper.error input,
+.inputWrapper.error select {
+    border-color: #ef4444 !important;
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='12' y1='8' x2='12' y2='12'%3E%3C/line%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'%3E%3C/line%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem 1rem;
+}
+
+.inputWrapper.error input:focus,
+.inputWrapper.error select:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.errorMessage {
+    display: flex;
+    align-items: center;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: #ef4444;
+    gap: 0.25rem;
+}
+
+.errorMessage svg {
+    flex-shrink: 0;
+}
+
+/* Form error message */
+.formError {
+    padding: 1rem;
+    margin: -1rem 0 1.5rem;
+    border-radius: 0.5rem;
+    background-color: #fef2f2;
+    color: #b91c1c;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    border: 1px solid #fecaca;
+}
+
+.formError svg {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
 }
 
 select{

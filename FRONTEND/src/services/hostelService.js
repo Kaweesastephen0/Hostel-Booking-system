@@ -19,7 +19,19 @@ const hostelService = {
       const response = await axios.post(`${API_BASE_URL}/bookings/book`, data);
       return response.data;
     } catch (error) {
-      console.error('Error While booking:', error);
+      // If there's a validation error with field-specific messages
+      if (error.response?.data?.errors) {
+        throw {
+          response: {
+            data: {
+              success: false,
+              message: error.response.data.message || 'Validation failed',
+              errors: error.response.data.errors
+            }
+          }
+        };
+      }
+      // For other errors
       throw error;
     }
   },

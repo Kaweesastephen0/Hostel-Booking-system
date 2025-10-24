@@ -22,7 +22,7 @@ function HostelList() {
   useEffect(() => {
     const fetchHostels = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/hostels/hostel');
+        const response = await fetch('http://localhost:5002/api/hostels/hostel');
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
