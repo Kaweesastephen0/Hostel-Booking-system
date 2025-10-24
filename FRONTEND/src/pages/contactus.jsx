@@ -117,7 +117,7 @@ const ContactUs = () => {
 
   const contactMethods = [
     {
-      icon: '📞',
+      icon: '',
       title: 'Call Us',
       details: ['+256 709 167919', '+256 707 366082'],
       description: 'Available 24/7 for urgent inquiries',
@@ -125,7 +125,7 @@ const ContactUs = () => {
       link: 'tel:+256709167919'
     },
     {
-      icon: '📧',
+      icon: '',
       title: 'Email Us',
       details: ['kampala@hostelbook.com', 'support@hostelbook.ug'],
       description: 'Typically respond within 2 hours',
@@ -133,7 +133,7 @@ const ContactUs = () => {
       link: 'mailto:kampala@hostelbook.com'
     },
     {
-      icon: '📍',
+      icon: '',
       title: 'Visit Us',
       details: ['Plot 123, Kampala Road', 'Kampala, Uganda'],
       description: 'Walk-ins welcome 8AM-8PM',
@@ -141,7 +141,7 @@ const ContactUs = () => {
       link: 'https://maps.google.com/?q=Kampala,+Uganda'
     },
     {
-      icon: '💬',
+      icon: '',
       title: 'WhatsApp',
       details: ['+256 759 546308', 'Instant messaging'],
       description: 'Quick responses via WhatsApp',
@@ -403,7 +403,7 @@ const ContactUs = () => {
                   <div className="space-y-6">
                     <div className="flex items-start group">
                       <div className="w-12 h-12 bg-yellow-500/20 rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-xl">🏢</span>
+                        <span className="text-xl"></span>
                       </div>
                       <div>
                         <h4 className="text-lg font-bold text-white mb-2">Main Office</h4>
@@ -415,7 +415,7 @@ const ContactUs = () => {
 
                     <div className="flex items-start group">
                       <div className="w-12 h-12 bg-red-500/20 rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-xl">⏰</span>
+                        <span className="text-xl"></span>
                       </div>
                       <div>
                         <h4 className="text-lg font-bold text-white mb-2">Business Hours</h4>
@@ -427,7 +427,7 @@ const ContactUs = () => {
 
                     <div className="flex items-start group">
                       <div className="w-12 h-12 bg-green-500/20 rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-xl">🌍</span>
+                        <span className="text-xl"></span>
                       </div>
                       <div>
                         <h4 className="text-lg font-bold text-white mb-2">Local Expertise</h4>
@@ -504,7 +504,7 @@ const ContactUs = () => {
                 <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-3xl p-6 border border-yellow-200">
                   <div className="flex items-center mb-4">
                     <div className="w-10 h-10 bg-yellow-500 rounded-2xl flex items-center justify-center mr-4">
-                      <span className="text-white text-lg">⚡</span>
+                      <span className="text-white text-lg"></span>
                     </div>
                     <h4 className="text-lg font-bold text-gray-800">East African Response Time</h4>
                   </div>
@@ -527,7 +527,7 @@ const ContactUs = () => {
                 {/* Local Landmarks */}
                 <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-3xl p-6 border border-blue-200">
                   <h4 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                    <span className="text-blue-500 mr-2">📍</span>
+                    <span className="text-blue-500 mr-2"></span>
                     Nearby Landmarks
                   </h4>
                   <div className="space-y-3 text-sm text-gray-600">

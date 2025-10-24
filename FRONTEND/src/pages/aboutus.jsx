@@ -155,7 +155,7 @@ const AboutUs = () => {
                 <div className="space-y-6">
                   <div className="flex items-start space-x-4">
                     <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-                      <span className="text-white text-lg">✨</span>
+                      <span className="text-white text-lg"></span>
                     </div>
                     <p className="text-gray-700 text-lg leading-relaxed">
                       Born from a passion for travel and authentic experiences. We understand what travelers need.
@@ -164,7 +164,7 @@ const AboutUs = () => {
 
                   <div className="flex items-start space-x-4">
                     <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
-                      <span className="text-white text-lg">🚀</span>
+                      <span className="text-white text-lg"></span>
                     </div>
                     <p className="text-gray-700 text-lg leading-relaxed">
                       Revolutionizing hostel bookings with technology that puts travelers first.
@@ -173,7 +173,7 @@ const AboutUs = () => {
 
                   <div className="flex items-start space-x-4">
                     <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg">
-                      <span className="text-white text-lg">🌱</span>
+                      <span className="text-white text-lg"></span>
                     </div>
                     <p className="text-gray-700 text-lg leading-relaxed">
                       Building bridges between cultures and supporting local communities worldwide.
@@ -189,10 +189,10 @@ const AboutUs = () => {
                 </h3>
                 <div className="space-y-6">
                   {[
-                    { year: '2025', event: 'Founded', icon: '🏁' },
-                    { year: '2025', event: 'Global Launch', icon: '🌍' },
-                    { year: '2025', event: 'App Release', icon: '📱' },
-                    { year: '2025', event: 'AI Powered', icon: '🤖' }
+                    { year: '2025', event: 'Founded', icon: '' },
+                    { year: '2025', event: 'Global Launch', icon: '' },
+                    { year: '2025', event: 'App Release', icon: '' },
+                    { year: '2025', event: 'AI Powered', icon: '' }
                   ].map((item, index) => (
                     <div key={index} className="flex items-center group">
                       <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-2xl flex items-center justify-center font-bold text-white mr-6 group-hover:scale-110 transition-transform duration-300 shadow-lg text-2xl">
@@ -222,7 +222,7 @@ const AboutUs = () => {
                 <div className="relative bg-white rounded-3xl p-12 shadow-2xl border border-gray-100 transform group-hover:scale-105 transition-all duration-500">
                   <div className="text-center mb-8">
                     <div className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:rotate-12 transition-transform duration-500 shadow-lg">
-                      <span className="text-3xl text-white">🎯</span>
+                      <span className="text-3xl text-white"></span>
                     </div>
                     <h3 className="text-4xl font-black text-gray-900 mb-4">
                       MISSION
@@ -240,7 +240,7 @@ const AboutUs = () => {
                 <div className="relative bg-white rounded-3xl p-12 shadow-2xl border border-gray-100 transform group-hover:scale-105 transition-all duration-500">
                   <div className="text-center mb-8">
                     <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:rotate-12 transition-transform duration-500 shadow-lg">
-                      <span className="text-3xl text-white">🌍</span>
+                      <span className="text-3xl text-white"></span>
                     </div>
                     <h3 className="text-4xl font-black text-gray-900 mb-4">
                       VISION
