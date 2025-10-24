@@ -21,10 +21,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/hostels', hostelRoute)
-
 app.use("/api/rooms", roomRoute);
 app.use("/api/auth", authRoutes);
-app.use("/api/premium", hostelRoute), 
+ 
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

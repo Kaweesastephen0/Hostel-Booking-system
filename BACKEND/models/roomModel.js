@@ -21,7 +21,7 @@ const roomSchema = new mongoose.Schema({
     },
     roomGender:{
         type: String,
-        enum: ['male', 'female', 'Both'],
+        enum: ['male', 'female', 'mixed'],
         required: [true, 'Room type is required']
     },
     roomPrice:{

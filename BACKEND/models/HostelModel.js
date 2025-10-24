@@ -36,7 +36,7 @@ const hostelSchema= new mongoose.Schema({
   
     HostelGender:{
     type: String,
-    enum: ['male', 'female'],
+    enum: ['male', 'female', 'mixed'],
     required:[true, 'Hotel gender is required']
     },
    
