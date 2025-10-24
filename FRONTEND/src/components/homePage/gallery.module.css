@@ -1,7 +1,35 @@
+.galleryContainer{
+    text-align: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    font-style: italic;
+    letter-spacing: 3px;
+
+
+}
 .container{
-    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 40px;
 }
 img{
     height: 200px;
     width: 200px;
+    border-radius: 15px;
+}
+.thirdBox{
+    padding: 2px;
+    height: 410px;
+    overflow: hidden;
+
+}
+.thirdBox img{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+.Box{
+    padding: 2px;
 }
