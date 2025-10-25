@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import styles from './featuredHostels.module.css';
-import {Phone} from 'lucide-react'
+import { Phone } from 'lucide-react';
 import { useState } from 'react';
 
 function FeaturedHostels() {
@@ -16,7 +16,6 @@ function FeaturedHostels() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
-        console.log(result);
         
         if (result.success && Array.isArray(result.data)) {
           setPremiumHostels(result.data);
@@ -32,7 +31,20 @@ function FeaturedHostels() {
     };
     fetchPremiumHostels();
   }, []);
- 
+
+  const calculateTotalBeds = (hostel) => {
+    if (!hostel.rooms || !Array.isArray(hostel.rooms)) return 0;
+    return hostel.rooms.reduce((total, room) => total + (room.maxOccupancy || 1), 0);
+  };
+
+  const getAvailableRooms = (hostel) => {
+    return hostel.rooms?.length || 0;
+  };
+
+  const getHostelType = (hostel) => {
+    return hostel.HostelGender === 'mixed' ? 'Mixed' : 
+           hostel.HostelGender === 'female' ? 'Female' : 'Male';
+  };
 
   const formatDate = () => {
     const date = new Date();
@@ -49,7 +61,6 @@ function FeaturedHostels() {
             <span className={styles.date}>{formatDate()}</span>
           </div>
         </div>
-        
         <div className={styles.loadingMessage}>Loading premium hostels...</div>
       </section>
     );
@@ -65,7 +76,6 @@ function FeaturedHostels() {
             <span className={styles.date}>{formatDate()}</span>
           </div>
         </div>
-        
         <div className={styles.errorMessage}>{error}</div>
       </section>
     );
@@ -81,53 +91,27 @@ function FeaturedHostels() {
         </div>
       </div>
 
-      <div className={styles.propertiesGrid}>
-        {premiumHostels.map((hostel) => (
-          <div key={hostel._id} className={styles.propertyCard}>
-            <div className={styles.cardImage}>
-              <img src={hostel.image} alt={hostel.address} />
-              <div className={styles.overlay}></div>
-            </div>
-            
-            <div className={styles.cardContent}>
-              <div className={styles.price}>
-                UGX {hostel.roomPrice ? hostel.roomPrice.toLocaleString() : '0'}
-                <span className={styles.perMonth}>/semester</span>
-              </div>
-              <div className={styles.address}>{hostel.address}</div>
-              
-              <div className={styles.propertyFeatures}>
-                <div className={styles.feature}>
-                  <span className={styles.featureLabel}>Beds</span>
-                  <span className={styles.featureValue}>
-                    {hostel.rooms ? `${hostel.rooms.length * 2} Beds` : '4 Beds'}
-                  </span>
-                </div>
-                <div className={styles.feature}>
-                  <span className={styles.featureLabel}>Baths</span>
-                  <span className={styles.featureValue}>
-                    {hostel.rooms ? `${Math.ceil(hostel.rooms.length / 2)}+ Baths` : '2.5+ Baths'}
-                  </span>
-                </div>
-                <div className={styles.feature}>
-                  <span className={styles.featureLabel}>Size</span>
-                  <span className={styles.featureValue}>
-                    {hostel.rooms ? `${hostel.rooms.length * 320} sq.ft` : '1280 sq.ft'}
-                  </span>
-                </div>
+      <div className={styles.horizontalScrollContainer}>
+        <div className={styles.propertiesGridHorizontal}>
+          {premiumHostels.map((hostel) => (
+            <div key={hostel._id} className={styles.propertyCard}>
+              <div className={styles.cardImage}>
+                <img src={hostel.image} alt={hostel.name} />
+                <div className={styles.overlay}></div>
               </div>
               
-              <div className={styles.buttons}>
-                <button>
-                  <Phone />
-                </button>
-                <button>
-                  More Details
-                </button>
+              <div className={styles.cardContent}>
+                <div className={styles.price}>
+                  UGX {hostel.roomPrice ? hostel.roomPrice.toLocaleString() : '0'}
+                  <span className={styles.perMonth}>/semester</span>
+                </div>
+                <div className={styles.hostelName}>{hostel.name}</div>
+                <div className={styles.address}>{getHostelType(hostel)}</div>
+               
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );

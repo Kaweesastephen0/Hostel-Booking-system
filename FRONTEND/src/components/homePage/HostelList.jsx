@@ -3,9 +3,9 @@ import SearchBar from './SearchBar';
 import styles from './HostelList.module.css';
 import { useNavigate } from 'react-router-dom';
 import FeaturedProperties from './featuredHostels';
+import AffordableHostels from './AffordableHostel'
 import { useEffect, useState } from 'react';
-// import HouseImg from './parallaxImages/houseImageOne'
-// import MukBookFooter from "../../components/footer/HostelFooter"
+import Gallery from './gallery';
 
 import HotelCard from '../hotelCard';
 
@@ -115,9 +115,8 @@ function HostelList() {
             <SearchBar />
           </div>
         </section>
-
-
-        <FeaturedProperties hostels={hostels.filter(h => h.featured)} />
+        <FeaturedProperties hostels={hostels.filter(h=>h.featured)}/>
+        <AffordableHostels/>
 
         <section className={styles.listingsSection}>
           <div>
@@ -143,11 +142,9 @@ function HostelList() {
             </div>
           </div>
         </section>
+
+        <Gallery/>
       </main>
-
-
-
-
     </div>
 
   );

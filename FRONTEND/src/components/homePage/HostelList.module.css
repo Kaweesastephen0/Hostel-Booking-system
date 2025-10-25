@@ -1,6 +1,7 @@
 .container {
   min-height: 100vh;
   background: white;
+  
 }
 
 .header {
@@ -11,8 +12,7 @@
   background: rgb(247, 246, 246);
   border-bottom: 1px solid #e5e7eb;
   z-index: 50;
-  height: 100px;
-   align-items: start;
+  font-family: 'Roboto', sans-serif;
 }
 
 .headerContent {
@@ -193,7 +193,7 @@
 }
 
 .listingsSection {
-  padding: 80px 64px 48px;
+  padding: 40px 64px 48px;
 }
 
 /* .listingsSection {

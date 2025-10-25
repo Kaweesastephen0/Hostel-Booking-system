@@ -1,7 +1,8 @@
 
-import { Routes, Route, useLocation  } from "react-router-dom"
+import React from "react"
+import { Routes, Route, useLocation } from "react-router-dom"
 import HostelList from "./components/homePage/HostelList"
-import Login from './components/Auth/login'
+import Auth from "./components/Auth/AuthModal"
 import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
 import HostelHeader from "./components/header"
@@ -10,33 +11,29 @@ import MukBookFooter from "./components/footer/HostelFooter"
 import RoomListingPage from "./components/roomList/RoomList"
 import ExactRoom from "./components/roomList/ExactRoom"
 
-const App=()=>{
-  const Location = useLocation();
+const App = () => {
+  const location = useLocation();
 
-
-  const NoHeaderNoFooter = Location.pathname.includes("/login");
+  const noHeaderNoFooter = location.pathname.includes("/login") || location.pathname.includes("/auth");
   
-  return(
-    
-      <div>
-        {!NoHeaderNoFooter && <HostelHeader/> }
+  return (
+    <div>
+      {!noHeaderNoFooter && <HostelHeader />}
       
-        
-        <Routes>
-          <Route path="/" element={<HostelList/>}/>
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/about" element={<AboutUs/>}/>
-          <Route path="/contact" element={<ContactUs/>}/>
-          <Route path="/hostels" element={<HostelList/>}/>
-          <Route path="/booking" element={<Booking/>}/>
+      <Routes>
+        <Route path="/" element={<HostelList />} />
+        <Route path="/login" element={<Auth />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/hostels" element={<HostelList />} />
+        <Route path="/RoomListingPage" element={<RoomListingPage />} />
+        <Route path="/ExactRoom" element={<ExactRoom />} />
+      </Routes>
 
-          <Route path="/RoomListingPage" element={<RoomListingPage/>}/>
-          <Route path="/ExactRoom" element={<ExactRoom/>}/>
-        </Routes>
-
-      </div>
-
-    
+      {!noHeaderNoFooter && <MukBookFooter />}
+    </div>
   )
 }
+
 export default App
