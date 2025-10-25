@@ -62,7 +62,7 @@
 .sortValue {
   font-size: 20px;
   font-weight: 700;
-  color: #111827;
+  color: #12295a;
 }
 
 .branding {
@@ -87,13 +87,12 @@
 .brandName {
   font-weight: 700;
   font-size: 18px;
- 
+  color: #12295a;
 }
 
 .brandPhone {
   font-size: 12px;
   letter-spacing: 2px;
-  color: #4b5563;
   
 }
 

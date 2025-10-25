@@ -258,7 +258,7 @@
 
 .badgeText {
   font-weight: 700;
-  color: #111827;
+  color: #12295a;
   font-size: 14px;
   line-height: 1.4;
 }
@@ -275,6 +275,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  
 }
 
 .statCard {
@@ -288,13 +289,13 @@
 .statNumber {
   font-size: 48px;
   font-weight: 700;
-  color: #111827;
+  color: #12295a;
   margin-bottom: 8px;
 }
 
 .statLabel {
   font-size: 13px;
-  color: #9ca3af;
+  color: #6b7280;
   line-height: 1.5;
 }
 
