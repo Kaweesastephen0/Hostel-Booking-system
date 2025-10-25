@@ -40,12 +40,12 @@ const ContactUs = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setSubmitStatus('success');
-      setSubmitMessage('🎉 Thank you for your message! We will get back to you within 24 hours.');
+      setSubmitMessage('Thank you for your message! We will get back to you within 24 hours.');
       
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
       setSubmitStatus('error');
-      setSubmitMessage('❌ Sorry, there was an error sending your message. Please try again or contact us directly.');
+      setSubmitMessage('Sorry, there was an error sending your message. Please try again or contact us directly.');
     } finally {
       setIsSubmitting(false);
     }
@@ -81,32 +81,32 @@ const ContactUs = () => {
       icon: '📞',
       title: 'Call Us',
       details: ['+256 709 167919', '+256 707 366082'],
-      description: 'Available 24/7 for urgent inquiries 🕒',
-      color: 'linear-gradient(45deg, #667eea, #764ba2)',
+      description: 'Available 24/7 for urgent inquiries',
+      color: 'linear-gradient(45deg, #2563eb, #1d4ed8)',
       link: 'tel:+256709167919'
     },
     {
       icon: '✉️',
       title: 'Email Us',
       details: ['kampala@mukbook.com', 'support@mukbook.ug'],
-      description: 'Typically respond within 2 hours ⚡',
-      color: 'linear-gradient(45deg, #ff6b6b, #ffa726)',
+      description: 'Typically respond within 2 hours',
+      color: 'linear-gradient(45deg, #2563eb, #1d4ed8)',
       link: 'mailto:kampala@mukbook.com'
     },
     {
       icon: '📍',
       title: 'Visit Us',
       details: ['Makerere University', 'Kampala, Uganda'],
-      description: 'Walk-ins welcome 8AM-8PM 🏢',
-      color: 'linear-gradient(45deg, #4ecdc4, #44a08d)',
+      description: 'Walk-ins welcome 8AM-8PM',
+      color: 'linear-gradient(45deg, #2563eb, #1d4ed8)',
       link: 'https://maps.google.com/?q=Makerere+University,+Kampala'
     },
     {
       icon: '💬',
       title: 'WhatsApp',
       details: ['+256 759 546308', 'Instant messaging'],
-      description: 'Quick responses via WhatsApp 🚀',
-      color: 'linear-gradient(45deg, #25d366, #128c7e)',
+      description: 'Quick responses via WhatsApp',
+      color: 'linear-gradient(45deg, #2563eb, #1d4ed8)',
       link: 'https://wa.me/256759546308'
     }
   ];
@@ -134,22 +134,16 @@ const ContactUs = () => {
 
   return (
     <div className={styles.contactUsContainer}>
-      {/* Floating Background Stickers */}
-      <div className={`${styles.floatingSticker} ${styles.sticker1}`}>💬</div>
-      <div className={`${styles.floatingSticker} ${styles.sticker2}`}>📞</div>
-      <div className={`${styles.floatingSticker} ${styles.sticker3}`}>✉️</div>
-      <div className={`${styles.floatingSticker} ${styles.sticker4}`}>📍</div>
-
       {/* Hero Section */}
       <section className={styles.contactHeroSection}>
         <div className={styles.contactHeroContent}>
           <div className={styles.textCenter}>
             <h1 className={styles.contactHeroTitle}>
-              CONTACT US 📞
+              CONTACT US
             </h1>
             <p className={styles.contactHeroDescription}>
               Get in touch with our team for any hostel booking inquiries, support, or partnership opportunities. 
-              We're here to help you find your perfect student accommodation! 🎓🏠
+              We're here to help you find your perfect student accommodation!
             </p>
           </div>
         </div>
@@ -159,10 +153,10 @@ const ContactUs = () => {
       <section className={styles.contactMethodsSection}>
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Get in Touch 🗣️</h2>
+            <h2 className={styles.sectionTitle}>Get in Touch</h2>
             <p className={styles.sectionSubtitle}>
               Multiple ways to reach our Kampala-based team dedicated to helping students find perfect accommodations. 
-              Choose your preferred method! ✅
+              Choose your preferred method!
             </p>
           </div>
 
@@ -201,14 +195,14 @@ const ContactUs = () => {
             {/* Contact Form */}
             <div className={styles.formSection} ref={formRef}>
               <div className={styles.contactFormBadge}>
-                📧 Send us a Message
+                Send us a Message
               </div>
               <h2 className={styles.contactFormTitle}>
-                Need Help Finding a Hostel? 🏠
+                Need Help Finding a Hostel?
               </h2>
               <p className={styles.contactFormDescription}>
                 Our team specializes in helping students find safe, affordable, and comfortable hostel accommodations. 
-                Tell us your preferences and we'll help you find the perfect match! 🎯
+                Tell us your preferences and we'll help you find the perfect match!
               </p>
 
               <StatusMessage />
@@ -217,7 +211,7 @@ const ContactUs = () => {
                 <div className={styles.formGrid}>
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>
-                      👤 Full Name *
+                      Full Name *
                     </label>
                     <input
                       type="text"
@@ -233,7 +227,7 @@ const ContactUs = () => {
 
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>
-                      📧 Email Address *
+                      Email Address *
                     </label>
                     <input
                       type="email"
@@ -250,7 +244,7 @@ const ContactUs = () => {
 
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>
-                    📝 Subject *
+                    Subject *
                   </label>
                   <input
                     type="text"
@@ -266,7 +260,7 @@ const ContactUs = () => {
 
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>
-                    💬 Message *
+                    Message *
                   </label>
                   <textarea
                     name="message"
@@ -276,7 +270,7 @@ const ContactUs = () => {
                     disabled={isSubmitting}
                     rows="6"
                     className={`${styles.formInput} ${styles.formTextarea}`}
-                    placeholder="Tell us about your accommodation needs: preferred location, budget, room type, duration of stay, etc. 🎓"
+                    placeholder="Tell us about your accommodation needs: preferred location, budget, room type, duration of stay, etc."
                   ></textarea>
                 </div>
 
@@ -291,17 +285,17 @@ const ContactUs = () => {
                         <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity="0.25"/>
                         <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                       </svg>
-                      📤 Sending Message...
+                      Sending Message...
                     </>
                   ) : (
-                    '🚀 Send Message'
+                    'Send Message'
                   )}
                 </button>
               </form>
 
               {/* Team Contact Cards */}
               <div className={styles.teamSection}>
-                <h3 className={styles.teamTitle}>👥 Meet Our Kampala Team</h3>
+                <h3 className={styles.teamTitle}>Meet Our Kampala Team</h3>
                 <div className={styles.teamGrid}>
                   {teamMembers.map((member, index) => (
                     <div key={index} className={styles.teamCard}>
@@ -320,12 +314,12 @@ const ContactUs = () => {
               {/* Office Information */}
               <div className={styles.officeCard}>
                 <h3 className={styles.officeTitle}>
-                  🏢 Our Kampala Office
+                  Our Kampala Office
                 </h3>
                 
                 <div className={styles.officeInfo}>
                   <div className={styles.officeItem}>
-                    <div className={styles.officeIcon} style={{ background: 'linear-gradient(45deg, #667eea, #764ba2)' }}>
+                    <div className={styles.officeIcon}>
                       🏢
                     </div>
                     <div>
@@ -337,7 +331,7 @@ const ContactUs = () => {
                   </div>
 
                   <div className={styles.officeItem}>
-                    <div className={styles.officeIcon} style={{ background: 'linear-gradient(45deg, #ff6b6b, #ffa726)' }}>
+                    <div className={styles.officeIcon}>
                       🕒
                     </div>
                     <div>
@@ -349,7 +343,7 @@ const ContactUs = () => {
                   </div>
 
                   <div className={styles.officeItem}>
-                    <div className={styles.officeIcon} style={{ background: 'linear-gradient(45deg, #4caf50, #2e7d32)' }}>
+                    <div className={styles.officeIcon}>
                       🌍
                     </div>
                     <div>
@@ -378,8 +372,8 @@ const ContactUs = () => {
                 <div className={styles.mapFooter}>
                   <div className={styles.mapFooterContent}>
                     <div className={styles.mapFooterText}>
-                      <h4>🗺️ Visit Our Kampala Office</h4>
-                      <p>Located near Makerere University for student convenience! 🎓</p>
+                      <h4>Visit Our Kampala Office</h4>
+                      <p>Located near Makerere University for student convenience!</p>
                     </div>
                     <a 
                       href="https://maps.google.com/?q=Makerere+University,+Kampala"
@@ -387,7 +381,7 @@ const ContactUs = () => {
                       rel="noopener noreferrer"
                       className={styles.directionsButton}
                     >
-                      🗺️ Get Directions
+                      Get Directions
                     </a>
                   </div>
                 </div>
@@ -404,15 +398,15 @@ const ContactUs = () => {
                 <div className={styles.infoList}>
                   <div className={styles.infoItem}>
                     <div className={styles.statusDot}></div>
-                    <span>📧 Email: Response within 1 hour</span>
+                    <span>Email: Response within 1 hour</span>
                   </div>
                   <div className={styles.infoItem}>
                     <div className={styles.statusDot}></div>
-                    <span>📞 Phone: Immediate assistance</span>
+                    <span>Phone: Immediate assistance</span>
                   </div>
                   <div className={styles.infoItem}>
                     <div className={styles.statusDot}></div>
-                    <span>💬 WhatsApp: Instant messaging</span>
+                    <span>WhatsApp: Instant messaging</span>
                   </div>
                 </div>
               </div>
@@ -453,34 +447,34 @@ const ContactUs = () => {
       <section className={styles.faqSection}>
         <div className={styles.container}>
           <div className={styles.textCenter}>
-            <h2 className={styles.faqTitle}>Student Accommodation FAQs ❓</h2>
+            <h2 className={styles.faqTitle}>Student Accommodation FAQs</h2>
             <div className={styles.faqDivider}></div>
             
             <div className={styles.faqGrid}>
               {[
                 {
                   question: "How do I book a hostel through Muk-Book?",
-                  answer: "Simply browse our listed hostels, check availability, and book directly through our platform. You'll receive instant confirmation and hostel details. 🏠✅"
+                  answer: "Simply browse our listed hostels, check availability, and book directly through our platform. You'll receive instant confirmation and hostel details."
                 },
                 {
                   question: "Are the hostels safe for students?",
-                  answer: "Yes! We personally verify every hostel for safety, security measures, cleanliness, and student-friendly environment before listing. Your safety is our priority! 🛡️✅"
+                  answer: "Yes! We personally verify every hostel for safety, security measures, cleanliness, and student-friendly environment before listing. Your safety is our priority!"
                 },
                 {
                   question: "Can I visit the hostel before booking?",
-                  answer: "Absolutely! We encourage students to visit hostels beforehand. Contact us to arrange a viewing with the hostel management. 👀✅"
+                  answer: "Absolutely! We encourage students to visit hostels beforehand. Contact us to arrange a viewing with the hostel management."
                 },
                 {
                   question: "What payment methods do you accept?",
-                  answer: "We accept mobile money (MTN, Airtel), bank transfers, and cash payments for your convenience and security. 💳✅"
+                  answer: "We accept mobile money (MTN, Airtel), bank transfers, and cash payments for your convenience and security."
                 },
                 {
                   question: "Do you help with roommate matching?",
-                  answer: "Yes! We can help match you with compatible roommates based on your preferences, study habits, and lifestyle. 👥✅"
+                  answer: "Yes! We can help match you with compatible roommates based on your preferences, study habits, and lifestyle."
                 },
                 {
                   question: "What if I have issues with my accommodation?",
-                  answer: "Our 24/7 support team is always available to help resolve any issues with your accommodation quickly and efficiently. 🛠️✅"
+                  answer: "Our 24/7 support team is always available to help resolve any issues with your accommodation quickly and efficiently."
                 }
               ].map((faq, index) => (
                 <div key={index} className={styles.faqCard}>
