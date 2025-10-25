@@ -72,7 +72,7 @@ const HostelHeader = () => {
           <div className={styles.branding}>
             <div className={styles.brandingTop}>
               <Home className={styles.brandIcon} size={24} />
-              <h6 className={styles.brandName}>MUK-Book</h6>
+              <h6 className={styles.brandName} >MUK-Book</h6>
             </div>
             <h5 className={styles.brandPhone}>
               <a href="tel:+256709167919">Tel: +256709167919</a>

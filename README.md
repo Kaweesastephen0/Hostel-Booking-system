@@ -5,11 +5,11 @@
   
 ## Stephen
 
-# 🏨 Complete Setup Guide
+#  Complete Setup Guide
 
 A fully responsive MERN stack application for booking hostels across Uganda, featuring Kampala, Mukono, Jinja, and Gulu cities with UGX pricing.
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - **Node.js** (v14 or higher)
@@ -61,10 +61,26 @@ cd BACKEND
 npm run seed
 ```
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 Hostel-Booking-system/
+|
+|___ ADMIN
+|      |              |----controllers
+|      |              |____models
+|      |___BACKEND ---|____middlewares
+|      |              |____routes
+|      |
+|      └──FRONTEND
+|           |
+|           |__src
+|                |___
+|                |
+|                |___
+|
+|
+|
 ├── BACKEND/
 │   ├── config/
 │   │   └── database.js          # MongoDB connection
@@ -114,42 +130,42 @@ Hostel-Booking-system/
 - `page` - Page number for pagination
 - `limit` - Number of results per page
 
-## 🎨 Features
+##  Features
 
 ### Frontend Features
-- ✅ **Fully Responsive Design** - Works perfectly on all devices (320px to 4K)
-- ✅ **Filtering** - Filter by city, region, price, room type, amenities, rating
-- ✅ **Search Functionality** - Full-text search across hostel names and descriptions
-- ✅ **Pagination Support** - Efficient data loading with page navigation
-- ✅ **Real-time API Status** - Connection monitoring with retry functionality
-- ✅ **Beautiful UI** - Modern design with smooth animations and hover effects
-- ✅ **UGX Currency** - Localized pricing in Ugandan Shillings
-- ✅ **Loading States** - Comprehensive loading and error handling
+-  **Fully Responsive Design** - Works perfectly on all devices (320px to 4K)
+-  **Filtering** - Filter by city, region, price, room type, amenities, rating
+-  **Search Functionality** - Full-text search across hostel names and descriptions
+-  **Pagination Support** - Efficient data loading with page navigation
+-  **Real-time API Status** - Connection monitoring with retry functionality
+-  **Beautiful UI** - Modern design with smooth animations and hover effects
+-  **UGX Currency** - Localized pricing in Ugandan Shillings
+-  **Loading States** - Comprehensive loading and error handling
 
 ### Backend Features
-- ✅ **RESTful API Design** - Clean, well-structured API endpoints
-- ✅ **MongoDB Integration** - Robust database with Mongoose ODM
-- ✅ **Filtering** - Complex query building with multiple filters
-- ✅ **Search Capabilities** - Full-text search with regex patterns
-- ✅ **Pagination Support** - Efficient data retrieval with pagination
-- ✅ **Error Handling** - Comprehensive error handling middleware
-- ✅ **CORS Enabled** - Cross-origin resource sharing for frontend integration
+-  **RESTful API Design** - Clean, well-structured API endpoints
+-  **MongoDB Integration** - Robust database with Mongoose ODM
+-  **Filtering** - Complex query building with multiple filters
+-  **Search Capabilities** - Full-text search with regex patterns
+-  **Pagination Support** - Efficient data retrieval with pagination
+-  **Error Handling** - Comprehensive error handling middleware
+-  **CORS Enabled** - Cross-origin resource sharing for frontend integration
 
 ### Database Features
-- ✅ **Comprehensive Schema** - Detailed hostel information structure
-- ✅ **Multiple Room Types** - Support for single, double, dormitory, suite
-- ✅ **Amenities & Location** - Rich metadata for each hostel
-- ✅ **Rating System** - Built-in rating and review structure
-- ✅ **Image Support** - Multiple images per hostel
-- ✅ **Contact Information** - Complete contact and policy details
+-  **Comprehensive Schema** - Detailed hostel information structure
+-  **Multiple Room Types** - Support for single, double, dormitory, suite
+-  **Amenities & Location** - Rich metadata for each hostel
+-  **Rating System** - Built-in rating and review structure
+-  **Image Support** - Multiple images per hostel
+-  **Contact Information** - Complete contact and policy details
 
 ## 🇺🇬 Uganda-Specific Features
 
 ### Cities Covered
-- **🏙️ Kampala**
-- **🌊 Mukono**
-- **🚣 Jinja**
-- **🎭 Gulu** 
+- ** Kampala**
+- ** Mukono**
+- ** Jinja**
+- ** Gulu** 
 
 ### Localization
 - **UGX Currency** - All prices displayed in Ugandan Shillings
@@ -157,7 +173,7 @@ Hostel-Booking-system/
 - **Regional Information** 
 - **Cultural Context** 
 
-## 🛠️ Development
+##  Development
 
 ### Adding New Hostels
 You can add new hostels by:
@@ -168,7 +184,7 @@ You can add new hostels by:
 ### Customizing the Schema
 Modify `BACKEND/models/Hostel.js` to add new fields or change existing ones.
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### Backend Issues
 - Ensure MongoDB is running
@@ -188,7 +204,7 @@ Modify `BACKEND/models/Hostel.js` to add new fields or change existing ones.
 - Verify the database name in your connection string
 - Check MongoDB logs for connection issues
 
-## 🔮 Features Being worked On
+##  Features Being worked On
 
 - **User Authentication** - User registration and login
 - **Booking System** - Complete booking and payment integration
