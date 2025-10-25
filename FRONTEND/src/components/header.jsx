@@ -11,15 +11,9 @@ const HostelHeader = () => {
   const [userData, setUserData] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-<<<<<<< HEAD
-    const goToLogin=()=>{
-    navigate('../homePage/')
-  }
-=======
   useEffect(() => {
     const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
     const storedUserData = localStorage.getItem('userData') || sessionStorage.getItem('userData');
->>>>>>> main
 
     if (token && storedUserData) {
       try {
