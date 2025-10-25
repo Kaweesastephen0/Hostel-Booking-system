@@ -3,6 +3,29 @@ import ErrorResponse from "../utils/errorResponse.js";
 import asyncHandler from "../middleware/async.js";
 import jwt from "jsonwebtoken";
 
+
+export const register = asyncHandler(async (req, res, next) => {
+  const { email, password, fullName, role } = req.body;
+
+  // Check if user already exists
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return next(new ErrorResponse('User already exists with this email', 400));
+  }
+
+  // Create user
+  const user = await User.create({
+    email,
+    password,
+    fullName,
+    role: role || 'manager', 
+    isActive: true
+  });
+
+  // Send token response
+  sendTokenResponse(user, 201, res);
+});
+
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 

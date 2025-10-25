@@ -1,17 +1,19 @@
-import './App.css'
-import Login from './components/Auth/Login'
+import './App.css';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Login from './components/Auth/Login';
+import Register from './components/Auth/Register';
 
-import { Routes, Route } from "react-router-dom"
 function App() {
-
-
   return (
-    <>
-     <Routes>
-      <Route path="/" element={<Login/>}/>
-     </Routes>
-    </>
-  )
+    <div className="min-h-screen bg-gray-50">
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        {/* Add other routes here */}
+      </Routes>
+    </div>
+  );
 }
 
-export default App
+export default App;

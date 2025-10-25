@@ -43,7 +43,7 @@ app.use(xss());
 // Rate limiting
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 mins
-    max: 5 // limiting each IP to 5 requests per windowMs
+    max: 50 // limiting each IP to 5 requests per windowMs
 });
 app.use(limiter);
 
@@ -78,7 +78,7 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI, {
+        await mongoose.connect(process.env.MONGO_URL, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });

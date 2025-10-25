@@ -15,6 +15,14 @@ const protect = async (req, res, next) => {
     }
 
     try {
+        // Debug log to check JWT secret
+        console.log('JWT Secret:', process.env.JWT_SECRET ? 'Secret is set' : 'Secret is NOT set');
+        
+        if (!process.env.JWT_SECRET) {
+            console.error('Error: JWT_SECRET is not defined in environment variables');
+            return next(new ErrorResponse('Server configuration error', 500));
+        }
+        
         // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         

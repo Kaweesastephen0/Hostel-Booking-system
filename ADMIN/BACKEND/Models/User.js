@@ -54,10 +54,18 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 
 // Generate JWT token
 userSchema.methods.getSignedJwtToken = function() {
+    // Debug log to check JWT secret in User model
+    console.log('JWT Secret in User model:', process.env.JWT_SECRET ? 'Secret is set' : 'Secret is NOT set');
+    
+    if (!process.env.JWT_SECRET) {
+        console.error('Error: JWT_SECRET is not defined in User model');
+        throw new Error('Server configuration error');
+    }
+    
     return jwt.sign(
         { id: this._id, role: this.role },
         process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRE }
+        { expiresIn: process.env.JWT_EXPIRE || '30d' }
     );
 };
 
