@@ -12,6 +12,7 @@
   text-decoration: none;
   color: inherit;
   display: block;
+  font-family: 'Roboto', sans-serif;
 }
 
 .hotelCard:hover {
