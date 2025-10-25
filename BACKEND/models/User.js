@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
   },
+  gender: {
+    type: String,
+    enum: ['Male', 'Female'],
+    required: [true, 'Gender is required']
+  },
   userType: {
     type: String,
     enum: ['student', 'non-student'],
@@ -47,11 +52,21 @@ const userSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+  lastLogin: {
+    type: Date,
+    default: Date.now
+  },
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
+
+userSchema.index({ email: 1 });
+userSchema.index({ studentNumber: 1 }, { sparse: true });
+userSchema.index({ nin: 1 }, { sparse: true });
+userSchema.index({ createdAt: -1 });
+userSchema.index({ lastLogin: -1 });
 
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
