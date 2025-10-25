@@ -1,0 +1,197 @@
+.container{
+    /* padding-top: 100px; */
+    padding: 100px 80px;
+}
+.topBar{
+    display: flex;
+    justify-content: space-between;
+}
+.backBox{
+    border: 1px solid #d1d5db;
+    align-items: center;
+    padding: 10px 20px;
+}
+.backBox:hover{
+    border: 1px solid rgb(69, 69, 194);
+    cursor: pointer;
+    color: rgb(69, 69, 194);
+}
+.backBox span{
+    padding-right: 10px;
+}
+.Icons .shareIcon{
+   margin-right: 20px;
+}
+/* image container */
+.imageContainer{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    height: 500px;
+    
+}
+.imageContainer .leftImageBox{
+    height: 500px;
+    width: 100%;
+    object-fit: cover;
+}
+.imageContainer .leftImageBox img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.imageContainer .rightTopImage{
+   margin-bottom: 5px;
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 5px;
+    /* margin-bottom: 5px; */
+}
+.imageContainer .rightTopImage .images{
+    width: 100%;
+    height: 250px;
+}
+.imageContainer .rightTopImage img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.imageContainer .rightBottomImage{
+    
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    
+}
+.imageContainer .rightBottomImage .images{
+    width: 100%;
+    height: 250px;
+}
+.imageContainer .rightBottomImage img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.imageContainer .rightBottomImage .image1{
+    position: relative;
+}
+.imageContainer .rightBottomImage .images .moreImage{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: black;
+}
+.subHeadingBox{
+    display: flex;
+    justify-content: space-between;
+    font-size: 30px;
+    font-weight: 800;
+    padding: 30px;
+}
+.locationBox{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #d1d5db;
+    padding-bottom: 20px;
+
+
+}
+.locationBox .threeLocations{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    font-size: 15px;
+    color: gray;
+    border-right: 1px solid #d1d5db;
+}
+.locationBox .threeLocations span{
+    margin-right: 5px;
+    
+}
+.locationBox .threeLocations .inner3{
+    border-right: 1px solid #d1d5db;
+    padding-right: 10px;
+}
+.postedTime{
+    font-style: italic;
+    display: inline-block;
+}
+.locationBox button{
+    padding: 10px 45px;
+    background-color: #fbfcfd;
+    border: 1px solid #d1d5db;
+    color: black;
+}
+button:hover{
+     background-color: rgb(69, 69, 194);
+     color: white;
+
+
+}
+.AmenityLocation {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    background-color: #fbfcfd;
+    
+    
+}
+.AmenityLocation .Title{
+    background-color: rgb(69, 69, 194);
+    color: white;
+    padding-left: 20px;
+    letter-spacing: 3px;
+
+}
+.AmenitiesBox{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+.AmenitiesBox ul li{
+    list-style: none;
+    padding: 10px;
+}
+.mapSpace{
+    border-radius: 10px;
+    overflow: hidden;
+}
+.descriptionBox{
+    margin-top: 30px;
+    
+}
+.otherRoomsBox{
+    margin-top: 30px;
+}
+.otherRoomGrid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    height: 500px;
+    margin-top: 15px;
+   
+}
+.otherRoomImage{
+    width: 100%;
+    height: 350px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+.otherRoomImage img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    
+}
+.OtherRoomsAmenities ul{
+    display: flex;
+}
+.OtherRoomsAmenities ul li{
+    list-style: none;
+    padding-right: 10px;
+}
+

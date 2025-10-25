@@ -3,8 +3,11 @@ import SearchBar from './SearchBar';
 import styles from './HostelList.module.css';
 import { useNavigate } from 'react-router-dom'; 
 import FeaturedProperties from './featuredHostels';
+import AffordableHostels from './AffordableHostel'
 import { useEffect, useState } from 'react';
-import HouseImg from './parallaxImages/houseImageOne'
+import Gallery from './gallery';
+
+import HotelCard from '../hotelCard';
 
 
 function HostelList() {
@@ -112,8 +115,8 @@ function HostelList() {
             <SearchBar />
           </div>
         </section>
-
         <FeaturedProperties hostels={hostels.filter(h=>h.featured)}/>
+        <AffordableHostels/>
 
         <section className={styles.listingsSection}>
           <div>
@@ -128,86 +131,20 @@ function HostelList() {
                     No hostels found. Please check back later.
                   </div>
                 ) : (
-                  hostels.map((hostel) => (
-                    <div key={hostel._id || hostel.id} className={styles.hostelCard}>
-                      <div className={styles.cardInner}>
-                        <div className={styles.cardImageWrapper}>
-                          <img
-                            src={hostel.image || (hostel.images && hostel.images[0]) || 'https://images.pexels.com/photos/20237982/pexels-photo-20237982.jpeg'}
-                            alt={hostel.name}
-                            className={styles.cardImage}
-                          />
-                          <div className={styles.rentBadge}>Rent</div>
-                          {hostel.featured && (
-                            <div className={styles.featuredBadge}>Featured</div>
-                          )}
-                        </div>
-
-                        <div className={styles.cardContent}>
-                          <div className={styles.cardInfoRow}>
-                            <div className={styles.cardInfoLabel}>Apartment</div>
-                            <div className={styles.cardInfoValue}>{hostel.name}</div>
-                          </div>
-
-                          <div className={styles.cardInfoRow}>
-                            <div className={styles.cardInfoLabel}>Address</div>
-                            <div className={styles.cardInfoValue}>{hostel.address}</div>
-                          </div>
-
-                          <div className={styles.cardPriceRow}>
-                            <div>
-                              <div className={styles.cardPriceLabel}>Price/Month</div>
-                              <div className={styles.cardPrice}>
-                                Shs. {hostel.price?.toLocaleString() || '0'}
-                              </div>
-                            </div>
-                            
-                            <div className={styles.cardRightSection}>
-                              {hostel.rating && hostel.rating.average > 0 && (
-                                <div className={styles.rating}>
-                                  <span className={styles.ratingStar}>⭐</span>
-                                  <span className={styles.ratingValue}>
-                                    {hostel.rating.average} ({hostel.rating.count})
-                                  </span>
-                                </div>
-                              )}
-                              
-                              <div className={styles.roomTypes}>
-                                {hostel.roomTypes && (
-                                  <div className={styles.roomAvailability}>
-                                    {hostel.roomTypes.single > 0 && (
-                                      <span className={styles.roomType}>Single: {hostel.roomTypes.single}</span>
-                                    )}
-                                    {hostel.roomTypes.double > 0 && (
-                                      <span className={styles.roomType}>Double: {hostel.roomTypes.double}</span>
-                                    )}
-                                    {hostel.roomTypes.shared > 0 && (
-                                      <span className={styles.roomType}>Shared: {hostel.roomTypes.shared}</span>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          {!hostel.availability && (
-                            <div className={styles.unavailableBadge}>
-                              Currently Unavailable
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                  hostels.map((hostel, index) => (
+                    <HotelCard
+                    key={hostel._id}
+                    hostel={hostel}
+                    index={index}
+                    />
                   ))
                 )}
             </div>
           </div>
         </section>
+
+        <Gallery/>
       </main>
-      <HouseImg/>
-      
-      
-      
     </div>
   );
 }

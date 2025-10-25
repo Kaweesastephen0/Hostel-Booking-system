@@ -1,89 +1,85 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './featuredHostels.module.css';
-import {Phone} from 'lucide-react'
+import { Phone } from 'lucide-react';
+import { useState } from 'react';
 
 function FeaturedHostels() {
-  const featuredHostels = [
-    {
-      id: 1,
-      price: "147,000",
-      address: "1162 Virginia Park St, Detroit, MI 48202",
-      beds: "4 Beds",
-      baths: "2.5+ Baths",
-      size: "1280 sq.ft",
-      image: "https://images.pexels.com/photos/20237982/pexels-photo-20237982.jpeg"
-    },
-    {
-      id: 2,
-      price: "390,000",
-      address: "3623 Clairmount St, Detroit, MI 48206",
-      beds: "4 Beds",
-      baths: "2.5+ Baths",
-      size: "1280 sq.ft",
-      image: "https://images.pexels.com/photos/18153132/pexels-photo-18153132.jpeg"
-    },
-    {
-      id: 3,
-      price: "237,000",
-      address: "1638 La Salle Ave E, Detroit, MI 48221",
-      beds: "4 Beds",
-      baths: "2.5+ Baths",
-      size: "1280 sq.ft",
-      image: "https://images.pexels.com/photos/34056727/pexels-photo-34056727.jpeg"
-    },
-    {
-      id: 4,
-      price: "237,000",
-      address: "1638 La Salle Ave E, Detroit, MI 48221",
-      beds: "4 Beds",
-      baths: "2.5+ Baths",
-      size: "1280 sq.ft",
-      image: "https://images.pexels.com/photos/1838639/pexels-photo-1838639.jpeg"
-    },
-    {
-      id: 5,
-      price: "237,000",
-      address: "1638 La Salle Ave E, Detroit, MI 48221",
-      beds: "4 Beds",
-      baths: "2.5+ Baths",
-      size: "1280 sq.ft",
-      image: "https://images.pexels.com/photos/1838639/pexels-photo-1838639.jpeg"
-    },
-    {
-      id: 6,
-      price: "237,000",
-      address: "1638 La Salle Ave E, Detroit, MI 48221",
-      beds: "4 Beds",
-      baths: "2.5+ Baths",
-      size: "1280 sq.ft",
-      image: "https://images.pexels.com/photos/16973548/pexels-photo-16973548.jpeg"
-    },
-    {
-      id: 7,
-      price: "237,000",
-      address: "1638 La Salle Ave E, Detroit, MI 48221",
-      beds: "4 Beds",
-      baths: "2.5+ Baths",
-      size: "1280 sq.ft",
-      image: "https://images.pexels.com/photos/23893997/pexels-photo-23893997.jpeg"
-    },
-    {
-      id: 8,
-      price: "237,000",
-      address: "1638 La Salle Ave E, Detroit, MI 48221",
-      beds: "4 Beds",
-      baths: "2.5+ Baths",
-      size: "1280 sq.ft",
-      image: "https://images.pexels.com/photos/23669334/pexels-photo-23669334.jpeg"
-    }
-  ];
+  const [premiumHostels, setPremiumHostels] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPremiumHostels = async () => {
+      try {
+        const response = await fetch('http://localhost:5001/api/hostels/premiumHostel');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        
+        if (result.success && Array.isArray(result.data)) {
+          setPremiumHostels(result.data);
+        } else {
+          setPremiumHostels([]);
+        }
+      } catch (error) {
+        console.log(`Error fetching Premium hostels ${error}`);
+        setError(`Failed to load premium hostels, please try again later`);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPremiumHostels();
+  }, []);
+
+  const calculateTotalBeds = (hostel) => {
+    if (!hostel.rooms || !Array.isArray(hostel.rooms)) return 0;
+    return hostel.rooms.reduce((total, room) => total + (room.maxOccupancy || 1), 0);
+  };
+
+  const getAvailableRooms = (hostel) => {
+    return hostel.rooms?.length || 0;
+  };
+
+  const getHostelType = (hostel) => {
+    return hostel.HostelGender === 'mixed' ? 'Mixed' : 
+           hostel.HostelGender === 'female' ? 'Female' : 'Male';
+  };
 
   const formatDate = () => {
-  const date = new Date();
-  return `${date.toLocaleString('default', { weekday: 'long' })} ${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
-};
+    const date = new Date();
+    return `${date.toLocaleString('default', { weekday: 'long' })} ${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
+  };
 
+  if (loading) {
+    return (
+      <section className={styles.featuredSection}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>Premium Student Hostels</h2>
+          <div className={styles.headerInfo}>
+            <span className={styles.language}>ENG</span>
+            <span className={styles.date}>{formatDate()}</span>
+          </div>
+        </div>
+        <div className={styles.loadingMessage}>Loading premium hostels...</div>
+      </section>
+    );
+  }
 
+  if (error) {
+    return (
+      <section className={styles.featuredSection}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>Premium Student Hostels</h2>
+          <div className={styles.headerInfo}>
+            <span className={styles.language}>ENG</span>
+            <span className={styles.date}>{formatDate()}</span>
+          </div>
+        </div>
+        <div className={styles.errorMessage}>{error}</div>
+      </section>
+    );
+  }
 
   return (
     <section className={styles.featuredSection}>
@@ -95,45 +91,27 @@ function FeaturedHostels() {
         </div>
       </div>
 
-      <div className={styles.propertiesGrid}>
-        {featuredHostels.map((hostel) => (
-          <div key={hostel.id} className={styles.propertyCard}>
-            <div className={styles.cardImage}>
-              <img src={hostel.image} alt={hostel.address} />
-              <div className={styles.overlay}></div>
-            </div>
-            
-            <div className={styles.cardContent}>
-              <div className={styles.price}>${hostel.price}<span className={styles.perMonth}>/month</span></div>
-              <div className={styles.address}>{hostel.address}</div>
-              
-              <div className={styles.propertyFeatures}>
-                <div className={styles.feature}>
-                  <span className={styles.featureLabel}>Beds</span>
-                  <span className={styles.featureValue}>{hostel.beds}</span>
-                </div>
-                <div className={styles.feature}>
-                  <span className={styles.featureLabel}>Baths</span>
-                  <span className={styles.featureValue}>{hostel.baths}</span>
-                </div>
-                <div className={styles.feature}>
-                  <span className={styles.featureLabel}>Size</span>
-                  <span className={styles.featureValue}>{hostel.size}</span>
-                </div>
+      <div className={styles.horizontalScrollContainer}>
+        <div className={styles.propertiesGridHorizontal}>
+          {premiumHostels.map((hostel) => (
+            <div key={hostel._id} className={styles.propertyCard}>
+              <div className={styles.cardImage}>
+                <img src={hostel.image} alt={hostel.name} />
+                <div className={styles.overlay}></div>
               </div>
               
-              <div className={styles.buttons}>
-                   <button>
-                  <Phone />
-                  </button>
-                  <button>
-                    More Details
-                  </button>
+              <div className={styles.cardContent}>
+                <div className={styles.price}>
+                  UGX {hostel.roomPrice ? hostel.roomPrice.toLocaleString() : '0'}
+                  <span className={styles.perMonth}>/semester</span>
+                </div>
+                <div className={styles.hostelName}>{hostel.name}</div>
+                <div className={styles.address}>{getHostelType(hostel)}</div>
+               
               </div>
-             
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );
