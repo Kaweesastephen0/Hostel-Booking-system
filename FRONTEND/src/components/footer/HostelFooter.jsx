@@ -1,10 +1,36 @@
 import React from 'react';
 import { Bed, Phone, MapPin, Mail, ArrowRight } from 'lucide-react';
 import styles from './footer.module.css';
+import { Link } from 'react-router-dom';
 
 export default function MukBookFooter() {
+
+
   return (
     <div className={styles.container}>
+      <div className={styles.hero}>
+        <div className={styles.iconWrapper}>
+          <Bed className={styles.icon} strokeWidth={2} />
+        </div>
+        
+       <h1 className={styles.heading}>
+          Book Your Stay Today
+        </h1>
+        
+       <p className={styles.subheading}>
+          Find comfortable and affordable hostels in Kampala. Whether you're a student,
+          traveler, or professional, book your perfect stay with Muk-Book!
+        </p>
+        
+        <Link to='/booking' className={styles.ctaButton}
+        
+        >
+          Book Your Hostel
+
+          <ArrowRight className={styles.buttonIcon} />
+        </Link>
+      </div>
+
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
           <div className={styles.footerGrid}>
