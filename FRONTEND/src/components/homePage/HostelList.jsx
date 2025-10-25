@@ -6,8 +6,8 @@ import FeaturedProperties from './featuredHostels';
 import AffordableHostels from './AffordableHostel'
 import { useEffect, useState } from 'react';
 import Gallery from './gallery';
-
 import HotelCard from '../hotelCard';
+import Hero from './Hero';
 
 
 function HostelList() {
@@ -87,30 +87,9 @@ function HostelList() {
     <div className={styles.container}>
      <main className={styles.main}>
         <section className={styles.heroSection}>
-          <div className={styles.heroContent}>
-            <div className={styles.quickBookingSidebar}>
-              <p className={styles.quickBookingText}>Quick Booking</p>
-            </div>
 
-            <div className={styles.heroImageWrapper}>
-              <img
-                src="https://images.pexels.com/photos/2119714/pexels-photo-2119714.jpeg"
-                alt="Makerere University"
-                className={styles.heroImage}
-              />
-              <div className={styles.heroTextOverlay}>
-                <h1 className={styles.heroTitle}>
-                  <span className={styles.heroTitleMain}>
-                    AS YOU BUILD 4 THE FUTURE
-                  </span>
-                  <span className={styles.heroTitleSub}>
-                    Accommodation matters
-                  </span>
-                </h1>
-              </div>
-            </div>
-          </div>
-
+        {/* la hero */}
+          <Hero/>
           <div className={styles.searchBarWrapper}>
             <SearchBar />
           </div>
