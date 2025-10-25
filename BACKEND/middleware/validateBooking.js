@@ -1,4 +1,4 @@
-export default function validateBooking(req, res, next) {
+export const validateBooking = (req, res, next) => {
   const {
     fullName, gender,  age, phone, email, hostelName,
     roomNumber, roomType, duration, checkIn, paymentMethod,
