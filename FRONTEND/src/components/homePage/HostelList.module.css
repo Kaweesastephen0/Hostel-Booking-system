@@ -9,7 +9,7 @@
   top: 0;
   left: 0;
   right: 0;
-  background: white;
+  background: rgb(247, 246, 246);
   border-bottom: 1px solid #e5e7eb;
   z-index: 50;
   font-family: 'Roboto', sans-serif;
@@ -17,9 +17,10 @@
 
 .headerContent {
   display: flex;
-  align-items: center;
+  /* align-items: start; */
   justify-content: space-between;
-  padding: 16px 32px;
+  padding: 16px 20px;
+   height: 100px;
 }
 
 .menuBtn {
@@ -67,28 +68,33 @@
 .branding {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
+
+ 
 }
 
 .brandingTop {
   display: flex;
-  align-items: center;
+  align-items: start;
   gap: 8px;
 }
 
 .brandIcon {
   color: #2563eb;
+  align-items: start;
 }
 
 .brandName {
   font-weight: 700;
   font-size: 18px;
+ 
 }
 
 .brandPhone {
   font-size: 12px;
   letter-spacing: 2px;
   color: #4b5563;
+  
 }
 
 .userBtn {
