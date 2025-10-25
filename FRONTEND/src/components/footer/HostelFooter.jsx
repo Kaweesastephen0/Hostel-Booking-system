@@ -5,26 +5,6 @@ import styles from './footer.module.css';
 export default function MukBookFooter() {
   return (
     <div className={styles.container}>
-      <div className={styles.hero}>
-        <div className={styles.iconWrapper}>
-          <Bed className={styles.icon} strokeWidth={2} />
-        </div>
-        
-       <h1 className={styles.heading}>
-          Book Your Stay Today
-        </h1>
-        
-       <p className={styles.subheading}>
-          Find comfortable and affordable hostels in Kampala. Whether you're a student,
-          traveler, or professional, book your perfect stay with Muk-Book!
-        </p>
-        
-        <button className={styles.ctaButton}>
-          Book Your Hostel
-          <ArrowRight className={styles.buttonIcon} />
-        </button>
-      </div>
-
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
           <div className={styles.footerGrid}>

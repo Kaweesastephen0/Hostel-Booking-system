@@ -4,11 +4,7 @@ import { MapPin } from 'lucide-react';
 import styles from './hostelCard.module.css';
 
 const HotelCard = ({ hostel, index }) => {
-    // DEBUG: Log the entire hostel object to see what we're receiving
-    console.log('Hostel data:', hostel);
-    console.log('Room Price:', hostel.roomPrice);
-    console.log('Rooms array:', hostel.rooms);
-    
+     
     // Safe data access with fallbacks
     const getImage = () => {
         return hostel.image || (hostel.images && hostel.images[0]) || 'https://images.pexels.com/photos/1838639/pexels-photo-1838639.jpeg';
@@ -59,24 +55,17 @@ const HotelCard = ({ hostel, index }) => {
             onClick={() => scrollTo(0, 0)}
             className={styles.hotelCard}
         >
-            {/* Image Section */}
+           
             <div className={styles.imageWrapper}>
                 <img
                     src={getImage()}
                     alt={`${getName()} hostel`}
                     className={styles.cardImage}
                 />
-                {/* Best Seller Badge */}
-                {index % 2 === 0 && (
-                    <span className={styles.bestSellerBadge}>
-                        Best Seller
-                    </span>
-                )}
-            </div>
-
-            {/* Content Section */}
-            <div className={styles.cardContent}>
-                {/* Title and Rating Row */}
+                
+                
+                 <div className={styles.cardContent}>
+                
                 <div className={styles.headerRow}>
                     <h3 className={styles.hotelName}>
                         {getName()}
@@ -89,28 +78,25 @@ const HotelCard = ({ hostel, index }) => {
                     </div>
                 </div>
 
-                {/* Location */}
+                
                 <div className={styles.locationRow}>
                     <MapPin className={styles.locationIcon} />
                     <span className={styles.locationText}>{getLocation()}</span>
                 </div>
 
-                {/* Price and Button Row */}
+                
                 <div className={styles.footerRow}>
                     <div className={styles.priceSection}>
                         <span className={styles.price}>Ugx.{getPrice()}</span>
                         <span className={styles.priceLabel}>/semester</span>
                     </div>
-                    <button
-                        className={styles.bookButton}
-                        onClick={(e) => {
-                            e.preventDefault();
-                        }}
-                    >
-                        Book Now
-                    </button>
+                    
                 </div>
             </div>
+            </div>
+
+            
+           
         </Link>
     );
 };
