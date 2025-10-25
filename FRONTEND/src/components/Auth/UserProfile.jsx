@@ -49,6 +49,14 @@ function UserProfile({ isOpen, onClose, userData, onLogout }) {
               </div>
             </div>
 
+            <div className={styles.infoItem}>
+              <User className={styles.infoIcon} size={20} />
+              <div className={styles.infoContent}>
+                <div className={styles.infoLabel}>Gender</div>
+                <div className={styles.infoValue}>{userData.gender}</div>
+              </div>
+            </div>
+
             {userData.userType === 'student' && userData.studentNumber && (
               <div className={styles.infoItem}>
                 <User className={styles.infoIcon} size={20} />
