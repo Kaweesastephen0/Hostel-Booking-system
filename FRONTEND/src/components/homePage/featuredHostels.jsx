@@ -2,8 +2,10 @@ import React, { useEffect } from 'react';
 import styles from './featuredHostels.module.css';
 import { Phone } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Changed from Link
 
 function FeaturedHostels() {
+  const navigate = useNavigate(); // Add this
   const [premiumHostels, setPremiumHostels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -51,6 +53,11 @@ function FeaturedHostels() {
     return `${date.toLocaleString('default', { weekday: 'long' })} ${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
   };
 
+  // Add click handler
+  const handleHostelClick = (hostelId) => {
+    navigate(`/rooms/${hostelId}`);
+  };
+
   if (loading) {
     return (
       <section className={styles.featuredSection}>
@@ -94,7 +101,12 @@ function FeaturedHostels() {
       <div className={styles.horizontalScrollContainer}>
         <div className={styles.propertiesGridHorizontal}>
           {premiumHostels.map((hostel) => (
-            <div key={hostel._id} className={styles.propertyCard}>
+            <div 
+              key={hostel._id} 
+              className={styles.propertyCard}
+              onClick={() => handleHostelClick(hostel._id)} // Changed
+              style={{ cursor: 'pointer' }} // Added
+            >
               <div className={styles.cardImage}>
                 <img src={hostel.image} alt={hostel.name} />
                 <div className={styles.overlay}></div>
@@ -107,7 +119,6 @@ function FeaturedHostels() {
                 </div>
                 <div className={styles.hostelName}>{hostel.name}</div>
                 <div className={styles.address}>{getHostelType(hostel)}</div>
-               
               </div>
             </div>
           ))}
@@ -118,3 +129,5 @@ function FeaturedHostels() {
 }
 
 export default FeaturedHostels;
+
+
