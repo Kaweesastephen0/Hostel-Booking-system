@@ -1,12 +1,69 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './hero.module.css';
 import {MapPin} from 'lucide-react'
 import { FaHeart } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 
 
 
 export default function Hero() {
+  const [ featuredHostels, setFeaturedHostels]=useState([])
+  const [loading, setLoading]=useState(true);
+  const [error, setError]=useState(null)
+
+  const navigate = useNavigate()
+
+  useEffect(()=>{
+    const fetchFeaturedHostels= async()=>{
+      try{
+        const response = await fetch(`http://localhost:5001/api/hostels/featured`);
+        if(!response.ok){
+          throw new Error(`HTTP error ! status: ${response.status}`)
+
+        }
+        const result= await response.json();
+        console.log(result);
+        if(result.success && Array.isArray(result.data)){
+          //get the latest 3 featured hostels
+          const latestThreeHostels = result.data
+          .sort((a,b)=> new Date(b.createdAt)- new Date(a.createdAt))
+          .slice(0,3);
+
+          setFeaturedHostels(latestThreeHostels)
+        } else{
+          setFeaturedHostels([])
+        }
+
+      } catch(error){
+        console.error("failed to fetch featured hostels", error)
+        setError('Failed to load featured hostels')
+      } finally{
+        setLoading(false)
+      }
+    }
+    fetchFeaturedHostels()
+  },[])
+
+  if(loading){
+    return(
+      <div>Loading featured hostels</div>
+    )
+
+  }
+   if(error){
+    return(
+      <div>
+        {error}
+      </div>
+    )
+
+   }
+
+   const handleHostelClick=(hostelId)=>{
+     navigate(`/rooms/${hostelId}`)
+   }
+
   return (
     <div className={styles.heroContainer}>
       {/* Hero Section */}
@@ -28,24 +85,16 @@ export default function Hero() {
                 <span className={styles.trendingText}>Trending Hostels</span>
               </div>
               <div className={styles.trendingImages}>
-                <div className={styles.trendingImg}>
+                {featuredHostels.map((hostel,index)=>(
+                  <div  key={hostel._id || index} className={styles.trendingImg} onClick={()=>handleHostelClick(hostel._id)}>
                   <img 
-                    src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=200&h=300&fit=crop" 
+                    src= {hostel.image} 
                     alt="Building 1" 
                   />
                 </div>
-                <div className={styles.trendingImg}>
-                  <img 
-                    src="https://a0.muscache.com/im/pictures/miso/Hosting-697651137050290792/original/c0149d11-0401-4808-8040-93b8803ad4c7.jpeg?im_w=960" 
-                    alt="Building 2" 
-                  />
-                </div>
-                <div className={styles.trendingImg}>
-                  <img 
-                    src="https://a0.muscache.com/im/pictures/miso/Hosting-986706997785474467/original/76eec72c-87d9-4956-9a23-798d29e8e24f.jpeg?im_w=720" 
-                    alt="Building 3" 
-                  />
-                </div>
+                ))}
+                
+                
               </div>
             </div>
           </div>

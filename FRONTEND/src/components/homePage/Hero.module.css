@@ -99,7 +99,7 @@
   line-height: 1.1;
   font-family: 'Roboto', sans-serif;
   color: #12295a;
-  font-weight: 700;
+  font-weight: 900;
 
 }
 
@@ -146,6 +146,7 @@
   border-radius: 12px;
   overflow: hidden;
   background-color: #e5e7eb;
+  cursor: pointer;
 }
 
 .trendingImg img {

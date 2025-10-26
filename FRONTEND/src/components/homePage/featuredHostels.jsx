@@ -2,8 +2,10 @@ import React, { useEffect } from 'react';
 import styles from './featuredHostels.module.css';
 import { Phone } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 
 function FeaturedHostels() {
+  const navigate = useNavigate(); 
   const [premiumHostels, setPremiumHostels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,14 +34,14 @@ function FeaturedHostels() {
     fetchPremiumHostels();
   }, []);
 
-  const calculateTotalBeds = (hostel) => {
-    if (!hostel.rooms || !Array.isArray(hostel.rooms)) return 0;
-    return hostel.rooms.reduce((total, room) => total + (room.maxOccupancy || 1), 0);
-  };
+  // const calculateTotalBeds = (hostel) => {
+  //   if (!hostel.rooms || !Array.isArray(hostel.rooms)) return 0;
+  //   return hostel.rooms.reduce((total, room) => total + (room.maxOccupancy || 1), 0);
+  // };
 
-  const getAvailableRooms = (hostel) => {
-    return hostel.rooms?.length || 0;
-  };
+  // const getAvailableRooms = (hostel) => {
+  //   return hostel.rooms?.length || 0;
+  // };
 
   const getHostelType = (hostel) => {
     return hostel.HostelGender === 'mixed' ? 'Mixed' : 
@@ -49,6 +51,10 @@ function FeaturedHostels() {
   const formatDate = () => {
     const date = new Date();
     return `${date.toLocaleString('default', { weekday: 'long' })} ${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
+  };
+
+  const handleHostelClick = (hostelId) => {
+    navigate(`/rooms/${hostelId}`);
   };
 
   if (loading) {
@@ -94,7 +100,12 @@ function FeaturedHostels() {
       <div className={styles.horizontalScrollContainer}>
         <div className={styles.propertiesGridHorizontal}>
           {premiumHostels.map((hostel) => (
-            <div key={hostel._id} className={styles.propertyCard}>
+            <div 
+              key={hostel._id} 
+              className={styles.propertyCard}
+              onClick={() => handleHostelClick(hostel._id)} 
+              style={{ cursor: 'pointer' }}
+            >
               <div className={styles.cardImage}>
                 <img src={hostel.image} alt={hostel.name} />
                 <div className={styles.overlay}></div>
@@ -107,7 +118,6 @@ function FeaturedHostels() {
                 </div>
                 <div className={styles.hostelName}>{hostel.name}</div>
                 <div className={styles.address}>{getHostelType(hostel)}</div>
-               
               </div>
             </div>
           ))}
@@ -118,3 +128,5 @@ function FeaturedHostels() {
 }
 
 export default FeaturedHostels;
+
+

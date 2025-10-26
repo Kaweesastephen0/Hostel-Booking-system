@@ -66,14 +66,14 @@
   outline: none;
   font-size: 16px;
   font-weight: 600;
-  color: #222;
+  color: #12295a ;
   background: transparent;
   width: 100%;
   cursor: pointer;
 }
 
 .input::placeholder {
-  color: #222;
+  color: #12295a ;
   font-weight: 600;
 }
 
@@ -87,14 +87,14 @@
 .dateRange {
   font-size: 16px;
   font-weight: 600;
-  color: #222;
+  color: #12295a ;
   cursor: pointer;
 }
 
 .guestInfo {
   font-size: 16px;
   font-weight: 600;
-  color: #222;
+  color: #12295a ;
   cursor: pointer;
 }
 
