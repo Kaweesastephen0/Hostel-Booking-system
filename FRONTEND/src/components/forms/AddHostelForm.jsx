@@ -18,7 +18,7 @@ function AddHostelForm({ onClose, onSuccess }) {
       if (onClose) onClose();
     } catch (err) {
       setError('Failed to add hostel. Please try again.');
-      // eslint-disable-next-line no-console
+
       console.error(err);
     } finally {
       setSubmitting(false);

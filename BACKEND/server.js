@@ -5,6 +5,7 @@ import connectDB from "./config/database.js";
 import hostelRoute from './routes/hostelRoute.js'
 import roomRoute from "./routes/roomRoute.js";
 import authRoutes from "./routes/authRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -23,6 +24,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/hostels', hostelRoute)
 app.use("/api/rooms", roomRoute);
 app.use("/api/auth", authRoutes);
+app.use("/api/bookings", bookingRoutes);
+app.use("/api/premium", hostelRoute), 
  
 
 // Health check endpoint
@@ -60,10 +63,10 @@ app.use((req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
-    console.log(`🚀 Hostel Booking API started on port ${PORT}!!`);
-    console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-    console.log(`🏨 Hostels API: http://localhost:${PORT}/api/hostels`);
+    console.log(` Hostel Booking API started on port ${PORT}!!`);
+    console.log(` Health check: http://localhost:${PORT}/api/health`);
+    console.log(` Hostels API: http://localhost:${PORT}/api/hostels`);
 });
