@@ -146,6 +146,7 @@
   border-radius: 12px;
   overflow: hidden;
   background-color: #e5e7eb;
+  cursor: pointer;
 }
 
 .trendingImg img {

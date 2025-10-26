@@ -2,10 +2,10 @@ import React, { useEffect } from 'react';
 import styles from './featuredHostels.module.css';
 import { Phone } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Changed from Link
+import { useNavigate } from 'react-router-dom'; 
 
 function FeaturedHostels() {
-  const navigate = useNavigate(); // Add this
+  const navigate = useNavigate(); 
   const [premiumHostels, setPremiumHostels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,14 +34,14 @@ function FeaturedHostels() {
     fetchPremiumHostels();
   }, []);
 
-  const calculateTotalBeds = (hostel) => {
-    if (!hostel.rooms || !Array.isArray(hostel.rooms)) return 0;
-    return hostel.rooms.reduce((total, room) => total + (room.maxOccupancy || 1), 0);
-  };
+  // const calculateTotalBeds = (hostel) => {
+  //   if (!hostel.rooms || !Array.isArray(hostel.rooms)) return 0;
+  //   return hostel.rooms.reduce((total, room) => total + (room.maxOccupancy || 1), 0);
+  // };
 
-  const getAvailableRooms = (hostel) => {
-    return hostel.rooms?.length || 0;
-  };
+  // const getAvailableRooms = (hostel) => {
+  //   return hostel.rooms?.length || 0;
+  // };
 
   const getHostelType = (hostel) => {
     return hostel.HostelGender === 'mixed' ? 'Mixed' : 
@@ -53,7 +53,6 @@ function FeaturedHostels() {
     return `${date.toLocaleString('default', { weekday: 'long' })} ${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
   };
 
-  // Add click handler
   const handleHostelClick = (hostelId) => {
     navigate(`/rooms/${hostelId}`);
   };

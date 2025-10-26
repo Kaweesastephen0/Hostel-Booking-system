@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import styles from '../components/homePage/HostelList.module.css';
 import { Home, UserPlus, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import SidebarMenu from '../components/sidebar/sidebarMenu';
 import UserProfile from '../components/Auth/UserProfile';
+
 //umaru
 const HostelHeader = () => {
   const navigate = useNavigate();
@@ -72,7 +73,9 @@ const HostelHeader = () => {
           <div className={styles.branding}>
             <div className={styles.brandingTop}>
               <Home className={styles.brandIcon} size={24} />
-              <h6 className={styles.brandName}>MUK-Book</h6>
+              <h6 className={styles.brandName}>
+                 <Link style={{color: '#12295a'}} to="/">MUK-Book</Link>
+                </h6>
             </div>
             <h5 className={styles.brandPhone}>
               <a href="tel:+256709167919">Tel: +256709167919</a>
