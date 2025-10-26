@@ -1,23 +1,23 @@
-<<<<<<< HEAD
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
+import UserProfile from './pages/Users/UserProfile'
 import Sidebar from './components/sidebar/Sidebar';
-import Navbar from './components/navbar/Navbar';
-
-import LoginPage from './pages/Login';
+// import Navbar from './components/navbar/Navbar';
+import Users from './pages/Users/Users'
+import Bookings from './pages/Bookings/Bookings'
+import BookingDetails from './pages/Bookings/BookingDetails'
+import Payments from './pages/Payments/Payments'
 import Dashboard from './pages/Dashboard/Dashboard';
-
+import './App.css';
+import Login from './components/Auth/Login';
+import Register from './components/Auth/Register';
 
 import './App.css';
 //THESE ARE JUST PLACEHOLDERS FOR PAGES THAT ARE YET TO BE DEVELOPED
 const PlaceholderPage = ({ title }) => <div style={{ padding: '2rem' }}><h1>{title}</h1><p>This page has not been Developed yet</p></div>;
 const HostelsPage = () => <PlaceholderPage title="Manage Hostels" />;
 const RoomsPage = () => <PlaceholderPage title="Manage Rooms" />;
-const BookingsPage = () => <PlaceholderPage title="Manage Bookings" />;
-const UsersPage = () => <PlaceholderPage title="Manage Users" />;
-const PaymentsPage = () => <PlaceholderPage title="Manage Payments" />;
 const SettingsPage = () => <PlaceholderPage title="Settings" />;
 const ProfilePage = () => <PlaceholderPage title="User Profile" />;
 
@@ -30,9 +30,9 @@ const MainLayout = () => {
     <div className="app-layout">
       <Sidebar />
       <main className="main-content">
-        <Navbar />
+        {/* <Navbar /> */}
         <div className="page-content">
-          <Outlet /> 
+          <Outlet />
         </div>
       </main>
     </div>
@@ -41,46 +41,34 @@ const MainLayout = () => {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        
-        <Route path="/login" element={<LoginPage />} />
+    <Routes>
+  {/* Public routes */}
+  <Route path="/login" element={<Login />} />
+  <Route path="/register" element={<Register />} />
+  
+  {/* Protected routes with layout */}
+  <Route element={<MainLayout />}>
+    <Route index element={<Navigate to="/dashboard" replace />} />
+    <Route path="/dashboard" element={<Dashboard />} />
+    <Route path="/hostels" element={<HostelsPage />} />
+    <Route path="/rooms" element={<RoomsPage />} />
+    <Route path="/bookings" element={<Bookings />} />
+    <Route path="/bookings/:id" element={<BookingDetails />} />
+    <Route path="/users" element={<Users />} />
+    <Route path="/users/:id" element={<UserProfile />} />
+    <Route path="/payments" element={<Payments />} />
+    <Route path="/settings" element={<SettingsPage />} />
+    <Route path="/profile" element={<ProfilePage />} />
+  </Route>
+  
+  {/* Catch all route */}
+  <Route path="*" element={<Navigate to="/login" replace />} />
+</Routes>
+  )
+};
 
-        
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="hostels" element={<HostelsPage />} />
-          <Route path="rooms" element={<RoomsPage />} />
-          <Route path="bookings" element={<BookingsPage />} />
-          <Route path="users" element={<UsersPage />} />
-          <Route path="payments" element={<PaymentsPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="profile" element={<ProfilePage />} />
-        </Route>
 
-        
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </Router>
-=======
-import './App.css';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from './components/Auth/Login';
-import Register from './components/Auth/Register';
 
-function App() {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        {/* Add other routes here */}
-      </Routes>
-    </div>
->>>>>>> d657f66b0269ccb23efdd06627695c915d0fb79e
-  );
-}
+
 
 export default App;

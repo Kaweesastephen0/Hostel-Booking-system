@@ -14,6 +14,9 @@ import { fileURLToPath } from 'url';
 
 // Import routes
 import authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
+import bookingRoutes from './routes/bookings.js';
+import paymentRoutes from './routes/payments.js';
 
 // Load env vars
 dotenv.config();
@@ -52,7 +55,7 @@ app.use(hpp());
 
 // Enable CORS
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true
 }));
 
@@ -63,6 +66,9 @@ if (process.env.NODE_ENV === 'development') {
 
 // Mount routers
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
