@@ -10,45 +10,8 @@ const styles = {
     padding: '0',
     color: '#1a1a1a'
   },
-  topBar: {
-    background: '#1e3a8a',
-    padding: '16px 40px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-    position: 'sticky',
-    top: 0,
-    zIndex: 100
-  },
-  logo: {
-    fontSize: '24px',
-    fontWeight: '700',
-    color: '#ffffff',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    cursor: 'pointer'
-  },
-  heroSection: {
-    padding: '60px 20px 40px',
-    background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
-    color: '#ffffff',
-    textAlign: 'center'
-  },
-  heroTitle: {
-    fontSize: '32px',
-    fontWeight: '700',
-    marginBottom: '12px'
-  },
-  heroSubtitle: {
-    fontSize: '16px',
-    color: '#e0e7ff',
-    marginBottom: '0',
-    fontWeight: '400'
-  },
   mainContent: {
-    padding: '30px 20px',
+    padding: '80px 20px',
     display: 'grid',
     gridTemplateColumns: '280px 1fr',
     gap: '20px',
@@ -390,7 +353,7 @@ export default function RoomsList() {
     const fetchRooms = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:5001/api/rooms?hostelId=${hostelId}`);
+        const response = await fetch(`http://localhost:5001/api/rooms/hostel/${hostelId}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -399,21 +362,17 @@ export default function RoomsList() {
         const result = await response.json();
         
         if (result.success && Array.isArray(result.data)) {
-          // Filter rooms for this specific hostel
-          const hostelRooms = result.data.filter(room => 
-            room.hostelId?._id === hostelId || room.hostelId === hostelId
-          );
-          setRooms(hostelRooms);
-          
+          setRooms(result.data);
+     
           // Set hostel info from first room
-          if (hostelRooms.length > 0 && hostelRooms[0].hostelId) {
-            setHostelInfo(hostelRooms[0].hostelId);
+          if (result.data.length > 0 && result.data[0].hostelId) {
+            setHostelInfo(result.data[0].hostelId);
           }
         } else {
           setRooms([]);
         }
       } catch (error) {
-        console.error('Error fetching rooms:', error);
+        console.error('Error fetch rooms by ID', error);
         setError('Failed to load rooms. Please try again later.');
       } finally {
         setLoading(false);
@@ -438,32 +397,37 @@ export default function RoomsList() {
     });
   };
 
+    const getBookingFeeDisplay = (room) => {
+    if (room.bookingPrice && room.bookingPrice > 0) {
+      return (
+        <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+          + UGX {room.bookingPrice.toLocaleString()} booking fee
+        </div>
+      );
+    }
+    return null;
+  };
+
+
   if (loading) {
     return (
-      <div></div>
+      <div>
+        loadingMessage
+      </div>
     );
   }
 
   if (error) {
     return (
-      <div></div>
+      <div>
+        {error}
+      </div>
     );
   }
 
   return (
     <div style={styles.container}>
-     
-
-      <div style={styles.heroSection}>
-        <h1 style={styles.heroTitle}>
-          {hostelInfo ? `${hostelInfo.name} - Available Rooms` : 'Available Rooms'}
-        </h1>
-        <p style={styles.heroSubtitle}>
-          {rooms.length} room{rooms.length !== 1 ? 's' : ''} available
-        </p>
-      </div>
-
-      <div style={styles.mainContent}>
+       <div style={styles.mainContent}>
         <aside style={styles.sidebar}>
           <div style={styles.filterHeader}>
             Filters
@@ -471,22 +435,7 @@ export default function RoomsList() {
           </div>
 
           <div style={styles.filterSection}>
-            <div style={styles.filterTitle}>Price Range</div>
-            <div style={styles.priceRange}>
-              <div style={styles.priceChart}>
-                {[25, 50, 70, 90, 100, 85, 70, 55, 40, 30, 20, 15, 10, 8, 5].map((height, i) => (
-                  <div 
-                    key={i} 
-                    style={{...styles.chartBar, height: `${height}%`}}
-                  />
-                ))}
-              </div>
-              <div style={styles.priceLabels}>
-                <span>UGX 200K</span>
-                <span>UGX 1M+</span>
-              </div>
-            </div>
-            
+            <div style={styles.filterTitle}>Availability</div>
             {[
               { label: 'Available Now', count: rooms.filter(r => r.availability).length },
               { label: 'Single Rooms', count: rooms.filter(r => r.maxOccupancy === 1).length },
@@ -634,9 +583,14 @@ export default function RoomsList() {
                       
                       <div style={styles.priceSection}>
                         <div style={styles.price}>
-                          UGX {room.price ? room.price.toLocaleString() : '0'}
+                          UGX {room.roomPrice ? room.roomPrice.toLocaleString() : '0'}
+                          
+                          
+
                         </div>
-                        <div style={styles.priceLabel}>/semester</div>
+                        <div style={styles.priceLabel}>/semester
+                          {getBookingFeeDisplay(room)}
+                        </div>
                         <button 
                           style={styles.viewButton}
                           onMouseEnter={(e) => {
