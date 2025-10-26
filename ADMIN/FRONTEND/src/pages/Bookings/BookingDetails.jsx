@@ -11,7 +11,7 @@ import {
   CircularProgress,
   Divider,
   Stack,
-  Grid,
+  unstable_Grid2 as Grid,
   TextField,
   MenuItem,
   Select,
@@ -21,13 +21,22 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
-import { ArrowBack, Edit, Delete, CheckCircle, Cancel, Info } from '@mui/icons-material';
+import { ArrowBack, Edit, Delete, CheckCircle, Cancel, Info, Add } from '@mui/icons-material';
 import { format } from 'date-fns';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'cancelled', 'completed'];
+
+const PAYMENT_STATUS_OPTIONS = ['pending', 'completed', 'failed', 'refunded'];
+const PAYMENT_METHOD_OPTIONS = ['cash', 'card', 'mobile', 'bank_transfer'];
 
 const statusColorMap = {
   pending: 'warning',
@@ -35,6 +44,39 @@ const statusColorMap = {
   cancelled: 'error',
   completed: 'primary',
 };
+
+const paymentStatusColorMap = {
+  pending: 'warning',
+  completed: 'success',
+  failed: 'error',
+  refunded: 'info',
+};
+
+const methodLabelMap = {
+  cash: 'Cash',
+  card: 'Card',
+  mobile: 'Mobile Money',
+  bank_transfer: 'Bank Transfer',
+};
+
+const paymentStatusActions = {
+  pending: [
+    { label: 'Mark Completed', target: 'completed', color: 'success', icon: <CheckCircle fontSize="small" /> },
+    { label: 'Mark Failed', target: 'failed', color: 'error', icon: <Cancel fontSize="small" /> },
+  ],
+  completed: [
+    { label: 'Mark Refunded', target: 'refunded', color: 'info', icon: <Info fontSize="small" /> },
+  ],
+  failed: [
+    { label: 'Reopen (Pending)', target: 'pending', color: 'primary', icon: <Info fontSize="small" /> },
+  ],
+  refunded: [
+    { label: 'Reopen (Pending)', target: 'pending', color: 'primary', icon: <Info fontSize="small" /> },
+  ],
+};
+
+const INITIAL_PAYMENT_TOTALS = { total: 0, completed: 0, pending: 0, failed: 0, refunded: 0 };
+const defaultPaymentForm = { amount: '', method: 'cash', status: 'pending', notes: '' };
 
 const formatDate = (value) => {
   if (!value) return '—';
@@ -46,6 +88,45 @@ const formatDate = (value) => {
 const formatCurrency = (value) => {
   if (typeof value !== 'number') return value ?? '—';
   return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(value);
+};
+
+const calculatePaymentTotals = (items) =>
+  items.reduce(
+    (acc, item) => {
+      const amount = typeof item.amount === 'number' ? item.amount : Number(item.amount);
+      if (!Number.isFinite(amount)) {
+        return acc;
+      }
+
+      acc.total += amount;
+
+      switch (item.status) {
+        case 'completed':
+          acc.completed += amount;
+          break;
+        case 'pending':
+          acc.pending += amount;
+          break;
+        case 'failed':
+          acc.failed += amount;
+          break;
+        case 'refunded':
+          acc.refunded += amount;
+          break;
+        default:
+          break;
+      }
+
+      return acc;
+    },
+    { total: 0, completed: 0, pending: 0, failed: 0, refunded: 0 }
+  );
+
+const blurEventTarget = (event) => {
+  const node = event?.currentTarget;
+  if (node && typeof node.blur === 'function') {
+    node.blur();
+  }
 };
 
 const toDateInputValue = (value) => {
@@ -81,6 +162,21 @@ const BookingDetails = () => {
   });
   const [editError, setEditError] = useState(null);
   const [savingEdit, setSavingEdit] = useState(false);
+
+  const [payments, setPayments] = useState([]);
+  const [paymentTotals, setPaymentTotals] = useState({ ...INITIAL_PAYMENT_TOTALS });
+  const [loadingPayments, setLoadingPayments] = useState(false);
+  const [paymentError, setPaymentError] = useState(null);
+  const [isAddPaymentDialogOpen, setIsAddPaymentDialogOpen] = useState(false);
+  const [newPayment, setNewPayment] = useState(defaultPaymentForm);
+  const [newPaymentError, setNewPaymentError] = useState(null);
+  const [creatingPayment, setCreatingPayment] = useState(false);
+  const [paymentEditTarget, setPaymentEditTarget] = useState(null);
+  const [isEditPaymentDialogOpen, setIsEditPaymentDialogOpen] = useState(false);
+  const [editPaymentForm, setEditPaymentForm] = useState(defaultPaymentForm);
+  const [editPaymentError, setEditPaymentError] = useState(null);
+  const [savingPaymentUpdate, setSavingPaymentUpdate] = useState(false);
+  const [paymentActionState, setPaymentActionState] = useState({ updatingId: null, deletingId: null });
 
   const showSnackbar = (message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
@@ -149,6 +245,52 @@ const BookingDetails = () => {
     fetchBooking();
   }, [fetchBooking]);
 
+  const fetchPayments = useCallback(async () => {
+    if (!id) return;
+
+    setLoadingPayments(true);
+    setPaymentError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/api/payments/booking/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: 'include',
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(payload.message || 'Failed to load payments.');
+      }
+
+      const paymentsData = Array.isArray(payload?.data?.payments)
+        ? payload.data.payments
+        : Array.isArray(payload?.payments)
+          ? payload.payments
+          : [];
+
+      setPayments(paymentsData);
+      setPaymentTotals(calculatePaymentTotals(paymentsData));
+      setPaymentActionState({ updatingId: null, deletingId: null });
+    } catch (error) {
+      console.error('Error loading payments:', error);
+      setPaymentError(error.message || 'Failed to load payments.');
+      setPayments([]);
+      setPaymentTotals({ ...INITIAL_PAYMENT_TOTALS });
+    } finally {
+      setLoadingPayments(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchPayments();
+  }, [fetchPayments]);
+
   const handleStatusChange = (event) => {
     setStatusDraft(event.target.value);
   };
@@ -206,6 +348,226 @@ const BookingDetails = () => {
       showSnackbar(error.message || 'Failed to update booking.', 'error');
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleOpenAddPaymentDialog = (event) => {
+    blurEventTarget(event);
+    setNewPayment(defaultPaymentForm);
+    setNewPaymentError(null);
+    setIsAddPaymentDialogOpen(true);
+  };
+
+  const handleCloseAddPaymentDialog = () => {
+    if (creatingPayment) return;
+    setIsAddPaymentDialogOpen(false);
+  };
+
+  const handleNewPaymentChange = (field) => (event) => {
+    const value = event.target.value;
+    setNewPayment((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleCreatePayment = async (event) => {
+    event.preventDefault();
+    if (!booking) return;
+
+    const amountValue = Number(newPayment.amount);
+    if (Number.isNaN(amountValue) || amountValue <= 0) {
+      setNewPaymentError('Please provide a valid payment amount.');
+      return;
+    }
+
+    setCreatingPayment(true);
+    setNewPaymentError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/api/payments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          bookingId: booking.id || booking._id,
+          amount: amountValue,
+          method: newPayment.method,
+          status: newPayment.status,
+          notes: newPayment.notes.trim() || undefined,
+        }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(payload.message || 'Failed to create payment.');
+      }
+
+      showSnackbar('Payment recorded successfully.');
+      setIsAddPaymentDialogOpen(false);
+      setNewPayment(defaultPaymentForm);
+      await fetchPayments();
+    } catch (error) {
+      console.error('Error creating payment:', error);
+      setNewPaymentError(error.message || 'Failed to create payment.');
+      showSnackbar(error.message || 'Failed to create payment.', 'error');
+    } finally {
+      setCreatingPayment(false);
+    }
+  };
+
+  const handleUpdatePaymentStatus = async (payment, targetStatus) => {
+    if (!payment || !targetStatus || targetStatus === payment.status) return;
+
+    setPaymentActionState((prev) => ({ ...prev, updatingId: payment.id }));
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: 'include',
+        body: JSON.stringify({ status: targetStatus }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(payload.message || 'Failed to update payment status.');
+      }
+
+      showSnackbar(`Payment marked as ${targetStatus}.`);
+      await fetchPayments();
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      showSnackbar(error.message || 'Failed to update payment status.', 'error');
+    } finally {
+      setPaymentActionState((prev) => ({ ...prev, updatingId: null }));
+    }
+  };
+
+  const handleOpenEditPaymentDialog = (event, payment) => {
+    blurEventTarget(event);
+    if (!payment) return;
+    setPaymentEditTarget(payment);
+    setEditPaymentForm({
+      amount: payment.amount?.toString() ?? '',
+      method: payment.method || 'cash',
+      status: payment.status || 'pending',
+      notes: payment.notes || '',
+    });
+    setEditPaymentError(null);
+    setIsEditPaymentDialogOpen(true);
+  };
+
+  const handleCloseEditPaymentDialog = () => {
+    if (savingPaymentUpdate) return;
+    setIsEditPaymentDialogOpen(false);
+    setPaymentEditTarget(null);
+  };
+
+  const handleEditPaymentChange = (field) => (event) => {
+    const value = event.target.value;
+    setEditPaymentForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmitEditPayment = async (event) => {
+    event.preventDefault();
+    if (!paymentEditTarget) return;
+
+    const amountValue = Number(editPaymentForm.amount);
+    if (Number.isNaN(amountValue) || amountValue <= 0) {
+      setEditPaymentError('Please provide a valid payment amount.');
+      return;
+    }
+
+    setSavingPaymentUpdate(true);
+    setEditPaymentError(null);
+    setPaymentActionState((prev) => ({ ...prev, updatingId: paymentEditTarget.id }));
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/api/payments/${paymentEditTarget.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          amount: amountValue,
+          method: editPaymentForm.method,
+          status: editPaymentForm.status,
+          notes: editPaymentForm.notes.trim() || undefined,
+        }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(payload.message || 'Failed to update payment.');
+      }
+
+      showSnackbar('Payment updated successfully.');
+      setIsEditPaymentDialogOpen(false);
+      setPaymentEditTarget(null);
+      await fetchPayments();
+    } catch (error) {
+      console.error('Error updating payment:', error);
+      setEditPaymentError(error.message || 'Failed to update payment.');
+      showSnackbar(error.message || 'Failed to update payment.', 'error');
+    } finally {
+      setSavingPaymentUpdate(false);
+      setPaymentActionState((prev) => ({ ...prev, updatingId: null }));
+    }
+  };
+
+  const handleDeletePayment = async (payment) => {
+    if (!payment) return;
+
+    const displayName = payment.reference || formatCurrency(payment.amount) || 'this payment';
+
+    if (!window.confirm(`Are you sure you want to delete ${displayName}? This action cannot be undone.`)) {
+      return;
+    }
+
+    setPaymentActionState((prev) => ({ ...prev, deletingId: payment.id }));
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: 'include',
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(payload.message || 'Failed to delete payment.');
+      }
+
+      showSnackbar('Payment deleted successfully.');
+      await fetchPayments();
+    } catch (error) {
+      console.error('Error deleting payment:', error);
+      showSnackbar(error.message || 'Failed to delete payment.', 'error');
+    } finally {
+      setPaymentActionState((prev) => ({ ...prev, deletingId: null }));
     }
   };
 
@@ -297,7 +659,8 @@ const BookingDetails = () => {
     handleUpdateBooking({ status: target }, `Booking marked as ${target}.`);
   };
 
-  const handleOpenEditDialog = () => {
+  const handleOpenEditDialog = (event) => {
+    blurEventTarget(event);
     setEditError(null);
     setSavingEdit(false);
     setEditForm({
@@ -497,7 +860,7 @@ const BookingDetails = () => {
       </Box>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={7}>
+        <Grid size={{ xs: 12, md: 7 }}>
           <Paper sx={{ p: 3 }}>
             <Stack direction="row" spacing={1} mb={2} flexWrap="wrap">
               <Chip
@@ -512,7 +875,7 @@ const BookingDetails = () => {
             <Divider sx={{ my: 2 }} />
 
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="subtitle2" gutterBottom>
                   Guest Name
                 </Typography>
@@ -524,20 +887,20 @@ const BookingDetails = () => {
                   {booking.guestPhone || '—'}
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="subtitle2" gutterBottom>
                   Stay Dates
                 </Typography>
                 <Typography variant="body2">Check-In: {formatDate(booking.checkIn)}</Typography>
                 <Typography variant="body2">Check-Out: {formatDate(booking.checkOut)}</Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="subtitle2" gutterBottom>
                   Amount
                 </Typography>
                 <Typography variant="body1">{formatCurrency(booking.amount)}</Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="subtitle2" gutterBottom>
                   Created / Updated
                 </Typography>
@@ -587,7 +950,7 @@ const BookingDetails = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={5}>
+        <Grid size={{ xs: 12, md: 5 }}>
           <Paper sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" gutterBottom>
               Update Status
@@ -650,8 +1013,229 @@ const BookingDetails = () => {
               Updated: {formatDate(booking.updatedAt)}
             </Typography>
           </Paper>
+
+          <Paper sx={{ p: 3, mt: 3 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Typography variant="h6">Payments</Typography>
+              <Button variant="outlined" startIcon={<Add />} onClick={handleOpenAddPaymentDialog}>
+                Record Payment
+              </Button>
+            </Box>
+
+            {paymentError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {paymentError}
+              </Alert>
+            )}
+
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mb={2}>
+              <Chip label={`Total: ${formatCurrency(paymentTotals.total)}`} color="primary" variant="outlined" />
+              <Chip label={`Completed: ${formatCurrency(paymentTotals.completed)}`} color="success" variant="outlined" />
+              <Chip label={`Pending: ${formatCurrency(paymentTotals.pending)}`} color="warning" variant="outlined" />
+              <Chip label={`Refunded: ${formatCurrency(paymentTotals.refunded)}`} color="info" variant="outlined" />
+            </Stack>
+
+            {loadingPayments ? (
+              <Box display="flex" justifyContent="center" py={4}>
+                <CircularProgress size={28} />
+              </Box>
+            ) : payments.length === 0 ? (
+              <Typography variant="body2" color="textSecondary">
+                No payments recorded for this booking yet.
+              </Typography>
+            ) : (
+              <List>
+                {payments.map((payment) => (
+                  <ListItem key={payment.id || payment._id} sx={{ alignItems: 'flex-start' }}>
+                    <ListItemText
+                      primary={
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <Typography variant="subtitle1">{formatCurrency(payment.amount)}</Typography>
+                          <Chip
+                            label={payment.status?.charAt(0).toUpperCase() + payment.status?.slice(1) || 'Pending'}
+                            color={paymentStatusColorMap[payment.status] || 'default'}
+                            size="small"
+                            variant="outlined"
+                          />
+                        </Box>
+                      }
+                      secondary={
+                        <Stack spacing={0.5} mt={1}>
+                          <Typography variant="body2" color="textSecondary">
+                            Method: {methodLabelMap[payment.method] || payment.method}
+                          </Typography>
+                          <Typography variant="caption" color="textSecondary">
+                            Created: {formatDate(payment.createdAt)}
+                          </Typography>
+                          {payment.paidAt && (
+                            <Typography variant="caption" color="textSecondary">
+                              Paid: {formatDate(payment.paidAt)}
+                            </Typography>
+                          )}
+                          {payment.notes && (
+                            <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                              Notes: {payment.notes}
+                            </Typography>
+                          )}
+                          <Stack direction="row" spacing={1} mt={1}>
+                            {(paymentStatusActions[payment.status || 'pending'] || []).map((action) => (
+                              <Button
+                                key={action.label}
+                                size="small"
+                                variant="outlined"
+                                color={action.color}
+                                startIcon={action.icon}
+                                disabled={paymentActionState.updatingId === payment.id}
+                                onClick={() => handleUpdatePaymentStatus(payment, action.target)}
+                              >
+                                {action.label}
+                              </Button>
+                            ))}
+                          </Stack>
+                        </Stack>
+                      }
+                    />
+                    <ListItemSecondaryAction>
+                      <Tooltip title="Edit Payment">
+                        <IconButton
+                          edge="end"
+                          sx={{ mr: 1 }}
+                          onClick={(event) => handleOpenEditPaymentDialog(event, payment)}
+                          disabled={paymentActionState.updatingId === payment.id}
+                        >
+                          <Edit fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete Payment">
+                        <IconButton
+                          edge="end"
+                          color="error"
+                          onClick={() => handleDeletePayment(payment)}
+                          disabled={paymentActionState.deletingId === payment.id}
+                        >
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                ))}
+              </List>
+            )}
+          </Paper>
         </Grid>
       </Grid>
+
+      <Dialog open={isAddPaymentDialogOpen} onClose={handleCloseAddPaymentDialog} fullWidth maxWidth="sm">
+        <DialogTitle>Record Payment</DialogTitle>
+        <DialogContent component="form" onSubmit={handleCreatePayment} sx={{ mt: 1 }}>
+          <Stack spacing={2}>
+            {newPaymentError && <Alert severity="error">{newPaymentError}</Alert>}
+            <TextField
+              label="Amount"
+              type="number"
+              value={newPayment.amount}
+              onChange={handleNewPaymentChange('amount')}
+              inputProps={{ min: 0, step: 0.01 }}
+              required
+              fullWidth
+              disabled={creatingPayment}
+            />
+            <FormControl fullWidth disabled={creatingPayment}>
+              <InputLabel>Method</InputLabel>
+              <Select value={newPayment.method} label="Method" onChange={handleNewPaymentChange('method')}>
+                {PAYMENT_METHOD_OPTIONS.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {methodLabelMap[option] || option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth disabled={creatingPayment}>
+              <InputLabel>Status</InputLabel>
+              <Select value={newPayment.status} label="Status" onChange={handleNewPaymentChange('status')}>
+                {PAYMENT_STATUS_OPTIONS.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option.charAt(0).toUpperCase() + option.slice(1)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              label="Notes"
+              multiline
+              minRows={3}
+              value={newPayment.notes}
+              onChange={handleNewPaymentChange('notes')}
+              fullWidth
+              disabled={creatingPayment}
+            />
+          </Stack>
+          <DialogActions sx={{ mt: 3 }}>
+            <Button onClick={handleCloseAddPaymentDialog} disabled={creatingPayment}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained" color="primary" disabled={creatingPayment}>
+              {creatingPayment ? 'Saving...' : 'Save Payment'}
+            </Button>
+          </DialogActions>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditPaymentDialogOpen} onClose={handleCloseEditPaymentDialog} fullWidth maxWidth="sm">
+        <DialogTitle>Edit Payment</DialogTitle>
+        <DialogContent component="form" onSubmit={handleSubmitEditPayment} sx={{ mt: 1 }}>
+          <Stack spacing={2}>
+            {editPaymentError && <Alert severity="error">{editPaymentError}</Alert>}
+            <TextField
+              label="Amount"
+              type="number"
+              value={editPaymentForm.amount}
+              onChange={handleEditPaymentChange('amount')}
+              inputProps={{ min: 0, step: 0.01 }}
+              required
+              fullWidth
+              disabled={savingPaymentUpdate}
+            />
+            <FormControl fullWidth disabled={savingPaymentUpdate}>
+              <InputLabel>Method</InputLabel>
+              <Select value={editPaymentForm.method} label="Method" onChange={handleEditPaymentChange('method')}>
+                {PAYMENT_METHOD_OPTIONS.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {methodLabelMap[option] || option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth disabled={savingPaymentUpdate}>
+              <InputLabel>Status</InputLabel>
+              <Select value={editPaymentForm.status} label="Status" onChange={handleEditPaymentChange('status')}>
+                {PAYMENT_STATUS_OPTIONS.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option.charAt(0).toUpperCase() + option.slice(1)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              label="Notes"
+              multiline
+              minRows={3}
+              value={editPaymentForm.notes}
+              onChange={handleEditPaymentChange('notes')}
+              fullWidth
+              disabled={savingPaymentUpdate}
+            />
+          </Stack>
+          <DialogActions sx={{ mt: 3 }}>
+            <Button onClick={handleCloseEditPaymentDialog} disabled={savingPaymentUpdate}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained" color="primary" disabled={savingPaymentUpdate}>
+              {savingPaymentUpdate ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </DialogActions>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isEditDialogOpen} onClose={handleCloseEditDialog} fullWidth maxWidth="sm">
         <DialogTitle>Edit Booking</DialogTitle>

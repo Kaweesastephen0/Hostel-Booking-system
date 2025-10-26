@@ -7,6 +7,7 @@ import Sidebar from './components/sidebar/Sidebar';
 import Users from './pages/Users/Users'
 import Bookings from './pages/Bookings/Bookings'
 import BookingDetails from './pages/Bookings/BookingDetails'
+import Payments from './pages/Payments/Payments'
 import Dashboard from './pages/Dashboard/Dashboard';
 import './App.css';
 import Login from './components/Auth/Login';
@@ -17,7 +18,6 @@ import './App.css';
 const PlaceholderPage = ({ title }) => <div style={{ padding: '2rem' }}><h1>{title}</h1><p>This page has not been Developed yet</p></div>;
 const HostelsPage = () => <PlaceholderPage title="Manage Hostels" />;
 const RoomsPage = () => <PlaceholderPage title="Manage Rooms" />;
-const PaymentsPage = () => <PlaceholderPage title="Manage Payments" />;
 const SettingsPage = () => <PlaceholderPage title="Settings" />;
 const ProfilePage = () => <PlaceholderPage title="User Profile" />;
 
@@ -56,7 +56,7 @@ function App() {
     <Route path="/bookings/:id" element={<BookingDetails />} />
     <Route path="/users" element={<Users />} />
     <Route path="/users/:id" element={<UserProfile />} />
-    <Route path="/payments" element={<PaymentsPage />} />
+    <Route path="/payments" element={<Payments />} />
     <Route path="/settings" element={<SettingsPage />} />
     <Route path="/profile" element={<ProfilePage />} />
   </Route>

@@ -1,4 +1,4 @@
-import Payment from '../models/Payment.js';
+import Payment from '../Models/Payment.js';
 import Booking from '../models/Booking.js';
 import asyncHandler from '../middleware/async.js';
 
@@ -75,6 +75,7 @@ export const getPayments = asyncHandler(async (req, res) => {
     search = '',
     status,
     method,
+    bookingId,
   } = req.query;
 
   const pageNumber = parsePositiveInt(page, 1);
@@ -84,6 +85,10 @@ export const getPayments = asyncHandler(async (req, res) => {
   const sortField = typeof sort === 'string' && sort.trim() ? sort : 'createdAt';
 
   const query = {};
+
+  if (bookingId) {
+    query.booking = bookingId;
+  }
 
   if (search && typeof search === 'string') {
     query.$or = [
@@ -117,6 +122,57 @@ export const getPayments = asyncHandler(async (req, res) => {
       total,
       page: pageNumber,
       limit: limitNumber,
+    },
+  });
+});
+
+export const getPaymentsForBooking = asyncHandler(async (req, res) => {
+  const { bookingId } = req.params;
+
+  if (!bookingId) {
+    return res.status(400).json({ success: false, message: 'Booking ID is required.' });
+  }
+
+  const payments = await Payment.find({ booking: bookingId })
+    .sort({ createdAt: -1 })
+    .populate('booking', 'reference guestName roomNumber')
+    .lean();
+
+  const formatted = payments.map(formatPaymentResponse);
+
+  const totals = formatted.reduce(
+    (acc, payment) => {
+      const amount = typeof payment.amount === 'number' ? payment.amount : 0;
+
+      acc.total += amount;
+
+      switch (payment.status) {
+        case 'completed':
+          acc.completed += amount;
+          break;
+        case 'pending':
+          acc.pending += amount;
+          break;
+        case 'failed':
+          acc.failed += amount;
+          break;
+        case 'refunded':
+          acc.refunded += amount;
+          break;
+        default:
+          break;
+      }
+
+      return acc;
+    },
+    { total: 0, completed: 0, pending: 0, failed: 0, refunded: 0 }
+  );
+
+  res.status(200).json({
+    success: true,
+    data: {
+      payments: formatted,
+      totals,
     },
   });
 });
@@ -189,4 +245,5 @@ export default {
   getPaymentById,
   updatePayment,
   deletePayment,
+  getPaymentsForBooking,
 };
