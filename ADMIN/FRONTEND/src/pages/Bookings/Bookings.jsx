@@ -152,7 +152,7 @@ const Bookings = () => {
       label: 'Guest',
       minWidth: 100,
       sortable: true,
-      format: (value, row) => (
+      format: (value) => (
         <Box display="flex" alignItems="center" gap={1}>
           <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
             {value.charAt(0).toUpperCase()}
