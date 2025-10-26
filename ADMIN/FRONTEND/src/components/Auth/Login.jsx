@@ -24,7 +24,7 @@ const Login = () => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
-        
+
         try {
             const API_URL = 'http://localhost:5000';
             const response = await fetch(`${API_URL}/api/auth/login`, {
@@ -32,7 +32,7 @@ const Login = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                credentials: 'include',
+                withCredentials: true,
                 body: JSON.stringify(formData)
             });
 
@@ -159,18 +159,9 @@ const Login = () => {
                             <a href="#" className="text-sm text-white hover:text-white">Forgot password?</a>
                         </div>
 
-                        <div className="text-center">
-                            <p className="text-sm text-white">
-                                Don't have an account?{' '}
-                                <a href="/register" className="font-medium text-white hover:text-gray-200 underline">
-                                    Sign up
-                                </a>
-                            </p>
-                        </div>
-
                         <button
                             type="submit"
-                    
+
                             className={`w-full flex items-center justify-center gap-2 bg-[#9B5DE0] hover:bg-[#D78FEE] cursor-pointer text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
                             disabled={isLoading}
                         >
