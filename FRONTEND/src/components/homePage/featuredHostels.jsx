@@ -104,8 +104,8 @@ function FeaturedHostels() {
             <div 
               key={hostel._id} 
               className={styles.propertyCard}
-              onClick={() => handleHostelClick(hostel._id)} // Changed
-              style={{ cursor: 'pointer' }} // Added
+              onClick={() => handleHostelClick(hostel._id)} 
+              style={{ cursor: 'pointer' }}
             >
               <div className={styles.cardImage}>
                 <img src={hostel.image} alt={hostel.name} />
