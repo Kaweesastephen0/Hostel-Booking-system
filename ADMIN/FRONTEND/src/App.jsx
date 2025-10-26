@@ -1,9 +1,9 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
-
+import UserProfile from './pages/Users/UserProfile'
 import Sidebar from './components/sidebar/Sidebar';
-import Navbar from './components/navbar/Navbar';
+// import Navbar from './components/navbar/Navbar';
 import Users from './pages/Users/Users'
 import Bookings from './pages/Bookings/Bookings'
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -29,7 +29,7 @@ const MainLayout = () => {
     <div className="app-layout">
       <Sidebar />
       <main className="main-content">
-        <Navbar />
+        {/* <Navbar /> */}
         <div className="page-content">
           <Outlet />
         </div>
@@ -53,6 +53,7 @@ function App() {
     <Route path="/rooms" element={<RoomsPage />} />
     <Route path="/bookings" element={<Bookings />} />
     <Route path="/users" element={<Users />} />
+    <Route path="/users/:id" element={<UserProfile />} />
     <Route path="/payments" element={<PaymentsPage />} />
     <Route path="/settings" element={<SettingsPage />} />
     <Route path="/profile" element={<ProfilePage />} />
