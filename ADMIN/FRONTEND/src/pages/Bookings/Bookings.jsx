@@ -18,7 +18,21 @@ import {
   Alert,
   Snackbar,
 } from '@mui/material';
-import { Add, Search, Edit, Delete, Cancel, CheckCircle } from '@mui/icons-material';
+import {
+  Add,
+  Search,
+  Edit,
+  Delete,
+  Cancel,
+  CheckCircle,
+  Close,
+  Info,
+} from '@mui/icons-material';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import Divider from '@mui/material/Divider';
+import CircularProgress from '@mui/material/CircularProgress';
+import Tooltip from '@mui/material/Tooltip';
 import { format } from 'date-fns';
 import DataTable from '../../components/common/DataTable';
 
@@ -31,20 +45,6 @@ const statusColorMap = {
   confirmed: 'success',
   cancelled: 'error',
   completed: 'primary',
-};
-
-const statusActionLabel = {
-  pending: 'Confirm',
-  confirmed: 'Cancel',
-  cancelled: 'Confirm',
-  completed: 'Reopen',
-};
-
-const statusActionTarget = {
-  pending: 'confirmed',
-  confirmed: 'cancelled',
-  cancelled: 'confirmed',
-  completed: 'pending',
 };
 
 const DATE_RANGE_OPTIONS = [
@@ -108,6 +108,10 @@ const Bookings = () => {
   const [creatingBooking, setCreatingBooking] = useState(false);
 
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [bookingDetails, setBookingDetails] = useState(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [detailsError, setDetailsError] = useState(null);
 
   const showSnackbar = (message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
@@ -153,7 +157,7 @@ const Bookings = () => {
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings?${params.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -317,9 +321,9 @@ const Bookings = () => {
         prev.map((item) =>
           item.id === booking.id
             ? {
-                ...item,
-                status: nextStatus,
-              }
+              ...item,
+              status: nextStatus,
+            }
             : item
         )
       );
@@ -332,6 +336,64 @@ const Bookings = () => {
       updateRowActionState(booking.id, 'updating', false);
     }
   };
+
+  const handleOpenDetails = async (booking) => {
+    setSelectedBooking(booking);
+    setBookingDetails(null);
+    setDetailsError(null);
+    setLoadingDetails(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: 'include',
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(payload.message || 'Failed to load booking details.');
+      }
+
+      const detail = payload?.data?.booking || payload?.booking || payload?.data;
+      setBookingDetails(detail);
+    } catch (error) {
+      console.error('Error loading booking details:', error);
+      setDetailsError(error.message || 'Failed to load booking details.');
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedBooking(null);
+    setBookingDetails(null);
+    setDetailsError(null);
+  };
+
+  const detailsStatusActions = useMemo(() => ({
+    pending: [
+      { label: 'Mark Confirmed', target: 'confirmed', icon: <CheckCircle fontSize="small" />, color: 'success' },
+      { label: 'Cancel Booking', target: 'cancelled', icon: <Cancel fontSize="small" />, color: 'warning' },
+    ],
+    confirmed: [
+      { label: 'Mark Completed', target: 'completed', icon: <CheckCircle fontSize="small" />, color: 'primary' },
+      { label: 'Cancel Booking', target: 'cancelled', icon: <Cancel fontSize="small" />, color: 'warning' },
+    ],
+    cancelled: [
+      { label: 'Reopen (Pending)', target: 'pending', icon: <Info fontSize="small" />, color: 'info' },
+      { label: 'Mark Confirmed', target: 'confirmed', icon: <CheckCircle fontSize="small" />, color: 'success' },
+    ],
+    completed: [
+      { label: 'Reopen (Pending)', target: 'pending', icon: <Info fontSize="small" />, color: 'info' },
+      { label: 'Mark Confirmed', target: 'confirmed', icon: <CheckCircle fontSize="small" />, color: 'success' },
+    ],
+  }), []);
 
   const openAddDialog = () => {
     setNewBooking(defaultBookingForm);
@@ -439,6 +501,13 @@ const Bookings = () => {
       ),
     },
     {
+      id: 'guestEmail',
+      label: 'Guest Email',
+      minWidth: 180,
+      sortable: true,
+      format: (value) => value || '—',
+    },
+    {
       id: 'roomNumber',
       label: 'Room',
       minWidth: 100,
@@ -491,6 +560,13 @@ const Bookings = () => {
 
   const actions = useMemo(() => [
     {
+      icon: <Info fontSize="small" />,
+      tooltip: 'View Booking Details',
+      onClick: handleOpenDetails,
+      color: 'info',
+      disabled: (row) => Boolean(rowActionState[row.id]?.deleting),
+    },
+    {
       icon: <Edit fontSize="small" />,
       tooltip: 'View / Edit Booking',
       onClick: handleEditBooking,
@@ -499,12 +575,54 @@ const Bookings = () => {
     },
     {
       getIcon: (row) => {
-        const target = statusActionTarget[row.status];
-        return target === 'cancelled' ? <Cancel fontSize="small" /> : <CheckCircle fontSize="small" />;
+        switch (row.status) {
+          case 'pending':
+            return <CheckCircle fontSize="small" />;
+          case 'confirmed':
+            return <Cancel fontSize="small" />;
+          case 'cancelled':
+            return <CheckCircle fontSize="small" />;
+          case 'completed':
+            return <Info fontSize="small" />;
+          default:
+            return <CheckCircle fontSize="small" />;
+        }
       },
-      getTooltip: (row) => `${statusActionLabel[row.status] || 'Update'} Booking`,
-      onClick: (row) => handleUpdateStatus(row, statusActionTarget[row.status] || 'pending'),
-      getColor: (row) => (statusActionTarget[row.status] === 'cancelled' ? 'warning' : 'success'),
+      getTooltip: (row) => {
+        switch (row.status) {
+          case 'pending':
+            return 'Mark Confirmed';
+          case 'confirmed':
+            return 'Cancel Booking';
+          case 'cancelled':
+            return 'Reopen Booking';
+          case 'completed':
+            return 'Reopen Booking';
+          default:
+            return 'Update Booking Status';
+        }
+      },
+      onClick: (row) => {
+        const target = row.status === 'pending'
+          ? 'confirmed'
+          : row.status === 'confirmed'
+            ? 'cancelled'
+            : 'pending';
+        handleUpdateStatus(row, target);
+      },
+      getColor: (row) => {
+        switch (row.status) {
+          case 'pending':
+            return 'success';
+          case 'confirmed':
+            return 'warning';
+          case 'cancelled':
+          case 'completed':
+            return 'info';
+          default:
+            return 'primary';
+        }
+      },
       disabled: (row) => Boolean(rowActionState[row.id]?.updating || rowActionState[row.id]?.deleting),
     },
     {
@@ -701,6 +819,138 @@ const Bookings = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      <Drawer anchor="right" open={Boolean(selectedBooking)} onClose={handleCloseDetails} PaperProps={{ sx: { width: { xs: '100%', sm: 420 } } }}>
+        <Box display="flex" alignItems="center" justifyContent="space-between" px={2} py={1.5}>
+          <Box>
+            <Typography variant="h6">Booking Details</Typography>
+            {selectedBooking && (
+              <Typography variant="caption" color="textSecondary">
+                Ref: {selectedBooking.reference || selectedBooking.id}
+              </Typography>
+            )}
+          </Box>
+          <IconButton onClick={handleCloseDetails} size="small">
+            <Close />
+          </IconButton>
+        </Box>
+        <Divider />
+        <Box sx={{ p: 2, flex: 1, overflowY: 'auto' }}>
+          {loadingDetails ? (
+            <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" py={8} gap={2}>
+              <CircularProgress size={28} />
+              <Typography variant="body2" color="textSecondary">
+                Loading booking details...
+              </Typography>
+            </Box>
+          ) : detailsError ? (
+            <Alert severity="error">{detailsError}</Alert>
+          ) : bookingDetails ? (
+            <Box display="flex" flexDirection="column" gap={2}>
+              <Box>
+                <Typography variant="subtitle2">Guest</Typography>
+                <Typography variant="body2">{bookingDetails.guestName || '—'}</Typography>
+                <Typography variant="body2" color="textSecondary">{bookingDetails.guestEmail || '—'}</Typography>
+                <Typography variant="body2" color="textSecondary">{bookingDetails.guestPhone || '—'}</Typography>
+              </Box>
+
+              <Divider />
+
+              <Box display="grid" gridTemplateColumns="repeat(2, minmax(0, 1fr))" gap={1.5}>
+                <Box>
+                  <Typography variant="subtitle2" gutterBottom>Room</Typography>
+                  <Typography variant="body2">{bookingDetails.roomNumber || '—'}</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" gutterBottom>Status</Typography>
+                  <Chip
+                    label={bookingDetails.status?.charAt(0).toUpperCase() + bookingDetails.status?.slice(1) || 'Pending'}
+                    color={statusColorMap[bookingDetails.status] || 'default'}
+                    size="small"
+                    variant="outlined"
+                  />
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" gutterBottom>Check-In</Typography>
+                  <Typography variant="body2">{formatDate(bookingDetails.checkIn)}</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" gutterBottom>Check-Out</Typography>
+                  <Typography variant="body2">{formatDate(bookingDetails.checkOut)}</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" gutterBottom>Nights</Typography>
+                  <Typography variant="body2">{bookingDetails.nights ?? '—'}</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" gutterBottom>Amount</Typography>
+                  <Typography variant="body2">{formatCurrency(bookingDetails.amount)}</Typography>
+                </Box>
+              </Box>
+
+              {bookingDetails.notes && (
+                <Box>
+                  <Typography variant="subtitle2" gutterBottom>Notes</Typography>
+                  <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>{bookingDetails.notes}</Typography>
+                </Box>
+              )}
+
+              <Divider />
+
+              <Box display="flex" flexDirection="column" gap={1}>
+                <Typography variant="subtitle2">Quick Actions</Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Update status or jump to editing this booking.
+                </Typography>
+                <Box display="flex" flexDirection="column" gap={1}
+                  sx={{ '& > button': { justifyContent: 'flex-start' } }}
+                >
+                  <Button
+                    variant="outlined"
+                    startIcon={<Edit fontSize="small" />}
+                    onClick={() => {
+                      handleEditBooking(selectedBooking);
+                      handleCloseDetails();
+                    }}
+                  >
+                    Open in full editor
+                  </Button>
+                  {detailsStatusActions[bookingDetails.status || 'pending'].map((action) => (
+                    <Button
+                      key={action.label}
+                      variant="contained"
+                      color={action.color}
+                      startIcon={action.icon}
+                      disabled={Boolean(rowActionState[selectedBooking.id]?.updating)}
+                      onClick={() => {
+                        handleUpdateStatus(selectedBooking, action.target);
+                        handleCloseDetails();
+                      }}
+                    >
+                      {action.label}
+                    </Button>
+                  ))}
+                </Box>
+              </Box>
+
+              <Divider />
+
+              <Box>
+                <Typography variant="caption" color="textSecondary">
+                  Created: {formatDate(bookingDetails.createdAt)}
+                </Typography>
+                <Typography variant="caption" color="textSecondary" display="block">
+                  Updated: {formatDate(bookingDetails.updatedAt)}
+                </Typography>
+              </Box>
+            </Box>
+          ) : (
+            <Typography variant="body2" color="textSecondary">
+              Select a booking to view more details.
+            </Typography>
+          )}
+        </Box>
+      </Drawer>
     </Box>
   );
 };

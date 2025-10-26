@@ -1,11 +1,12 @@
 
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
 import UserProfile from './pages/Users/UserProfile'
 import Sidebar from './components/sidebar/Sidebar';
 // import Navbar from './components/navbar/Navbar';
 import Users from './pages/Users/Users'
 import Bookings from './pages/Bookings/Bookings'
+import BookingDetails from './pages/Bookings/BookingDetails'
 import Dashboard from './pages/Dashboard/Dashboard';
 import './App.css';
 import Login from './components/Auth/Login';
@@ -52,6 +53,7 @@ function App() {
     <Route path="/hostels" element={<HostelsPage />} />
     <Route path="/rooms" element={<RoomsPage />} />
     <Route path="/bookings" element={<Bookings />} />
+    <Route path="/bookings/:id" element={<BookingDetails />} />
     <Route path="/users" element={<Users />} />
     <Route path="/users/:id" element={<UserProfile />} />
     <Route path="/payments" element={<PaymentsPage />} />
