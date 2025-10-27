@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, User, Mail, Lock, LogOut, Hash, CreditCard, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styles from './UserProfile.module.css';
+import API_URL from './config/api';
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -129,7 +130,7 @@ function UserProfile() {
     const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/update-profile', {
+      const response = await fetch(`${API_URL}/api/auth/update-profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -185,7 +186,7 @@ function UserProfile() {
     const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/change-password', {
+      const response = await fetch(`${API_URL}/api/auth/change-password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
