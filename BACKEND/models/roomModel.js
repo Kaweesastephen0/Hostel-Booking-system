@@ -50,6 +50,14 @@ const roomSchema = new mongoose.Schema({
     maxOccupancy:{
         type: Number,
         required: [true, 'Maximum number of people per room is highly needed'],
+    },
+    roomImages:{  
+        type: [String],
+        default: []
+    },
+    isShownFirst:{  
+        type: Boolean,
+        default: false
     }
 
 },{
@@ -62,5 +70,7 @@ roomSchema.index({ roomType: 1 }); // Index for queries by roomType
 roomSchema.index({ roomGender: 1 }); // Index for queries by roomGender
 roomSchema.index({ createdAt: -1 }); // Index for sorting by creation date (descending)
 roomSchema.index({ hostelId: 1, roomType: 1 }); // Compound index for hostelId + roomType queries
+roomSchema.index({ isShownFirst: -1 }); 
+
 
 export default mongoose.model('Room', roomSchema);

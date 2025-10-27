@@ -12,7 +12,7 @@ function AffordableHostels() {
   useEffect(() => {
     const fetchAffordableHostels = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/hostels/affordable');
+        const response = await fetch('http://localhost:5000/api/hostels/affordable');
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
