@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Booking from '../Models/Booking.js';
+import Booking from '../models/Booking.js';
 import asyncHandler from '../middleware/async.js';
 
 const parsePositiveInt = (value, fallback) => {

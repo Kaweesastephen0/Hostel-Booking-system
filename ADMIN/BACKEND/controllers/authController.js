@@ -1,4 +1,4 @@
-import User from "../Models/User.js";
+import User from "../models/User.js";
 import ErrorResponse from "../utils/errorResponse.js";
 import asyncHandler from "../middleware/async.js";
 import jwt from "jsonwebtoken";
