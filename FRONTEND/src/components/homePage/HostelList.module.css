@@ -4,24 +4,9 @@
   
 }
 
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: rgb(247, 246, 246);
-  border-bottom: 1px solid #e5e7eb;
-  z-index: 50;
-  font-family: 'Roboto', sans-serif;
-}
 
-.headerContent {
-  display: flex;
-  /* align-items: start; */
-  justify-content: space-between;
-  padding: 16px 20px;
-   height: 100px;
-}
+
+
 
 .menuBtn {
   background: none;
@@ -38,78 +23,7 @@
   color: #111827;
 }
 
-.sortOptions {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
 
-.sortOption {
-  padding-right: 32px;
-  border-right: 1px solid #d1d5db;
-}
-
-.sortOption:last-child {
-  border-right: none;
-  padding-right: 16px;
-}
-
-.sortLabel {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.sortValue {
-  font-size: 20px;
-  font-weight: 700;
-  color: #12295a;
-}
-
-.branding {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-
- 
-}
-
-.brandingTop {
-  display: flex;
-  align-items: start;
-  gap: 8px;
-}
-
-.brandIcon {
-  color: #2563eb;
-  align-items: start;
-}
-
-.brandName {
-  font-weight: 700;
-  font-size: 18px;
-  
-  }
-
-.brandPhone {
-  font-size: 12px;
-  letter-spacing: 2px;
-  
-}
-
-.userBtn {
-  background: none;
-  border: none;
-  color: #374151;
-  cursor: pointer;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  transition: color 0.2s;
-}
-
-.userBtn:hover {
-  color: #111827;
-}
 
 .main {
   padding-top: 80px;
@@ -130,10 +44,7 @@
   padding: 40px 64px 48px;
 }
 
-/* .listingsSection {
-  padding: 2rem 0;
-  background: #fff;
-} */
+
 
 .sectionTitle {
   font-size: 1.5rem;

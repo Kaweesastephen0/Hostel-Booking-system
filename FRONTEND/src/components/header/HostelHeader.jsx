@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import styles from '../components/homePage/HostelList.module.css';
+import styles from './HostelHeader.module.css';
 import { Home, UserPlus, User } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import SidebarMenu from '../components/sidebar/sidebarMenu';
-import UserProfile from '../components/Auth/UserProfile';
+import SidebarMenu from '../sidebar/sidebarMenu';
+import UserProfile from '../Auth/UserProfile';
 
 //umaru
 const HostelHeader = () => {
@@ -53,7 +53,10 @@ const HostelHeader = () => {
     <>
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <SidebarMenu />
+          <div className={styles.userIcons}>
+            <SidebarMenu />
+          </div>
+          
 
           <div className={styles.sortOptions}>
             <div className={styles.sortOption}>
@@ -74,7 +77,7 @@ const HostelHeader = () => {
             <div className={styles.brandingTop}>
               <Home className={styles.brandIcon} size={24} />
               <h6 className={styles.brandName}>
-                 <Link style={{color: '#12295a'}} to="/">MUK-Book</Link>
+                 <Link className={styles.brandNameLink} to="/">MUK-Book</Link>
                 </h6>
             </div>
             <h5 className={styles.brandPhone}>
@@ -82,9 +85,9 @@ const HostelHeader = () => {
             </h5>
           </div>
 
-          <button className={styles.userBtn} onClick={handleUserIconClick}>
+          <div className={styles.userIcons} onClick={handleUserIconClick}>
             {isLoggedIn ? <User size={32} /> : <UserPlus size={32} />}
-          </button>
+          </div>
         </div>
       </header>
       

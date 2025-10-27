@@ -5,7 +5,7 @@ import HostelList from "./components/homePage/HostelList"
 import Auth from "./components/Auth/AuthModal"
 import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
-import HostelHeader from "./components/header"
+import HostelHeader from "./components/header/HostelHeader"
 import Booking from "./components/booking/Booking"
 import MukBookFooter from "./components/footer/HostelFooter"
 import RoomListingPage from "./components/roomList/RoomList"
@@ -30,6 +30,7 @@ const App = () => {
         <Route path="/rooms/:hostelId" element={<RoomListingPage />} />
         <Route path="/room/:roomId" element={<ExactRoom />} />
         <Route path='/booking' element={<Booking/>}/>
+        <Route path='/HostelHeader' element={<HostelHeader/>}/>
       </Routes>
 
       {!noHeaderNoFooter && <MukBookFooter />}

@@ -24,12 +24,12 @@ function SidebarMenu() {
   return (
     <div className={styles.sidebarContainer}>
       {/* Menu Button */}
-      <button
+      <div
         onClick={toggleMenu}
-        className={styles.menuButton}
+        className={styles.sidebarIcon}
       >
         <SlidersHorizontal size={32} />
-      </button>
+      </div>
 
       {/* Overlay */}
       <div

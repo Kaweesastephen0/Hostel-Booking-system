@@ -1,0 +1,108 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* background: rgb(247, 246, 246); */
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 50;
+  font-family: 'Roboto', sans-serif;
+}
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 20px;
+   height: 80px;
+}
+.sortOptions {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.sortOption {
+  padding-right: 32px;
+  border-right: 1px solid #d1d5db;
+}
+
+.sortOption:last-child {
+  border-right: none;
+  padding-right: 16px;
+}
+
+.sortLabel {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.sortValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: #12295a;
+}
+
+.branding {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+
+ 
+}
+
+.brandingTop {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+}
+
+.brandIcon {
+  color: #2563eb;
+  align-items: start;
+}
+
+.brandName {
+  font-weight: 700;
+  font-size: 18px;
+  
+  }
+  .brandNameLink{
+    text-decoration: none;
+    color: #12295a;
+  }
+
+.brandPhone a{
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-decoration: none;
+  
+}
+.userBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  outline: none;
+}
+.userIcons{
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    margin-left: 20px;
+    cursor: pointer;
+}
+/* .userBtn {
+  background: none;
+  border: none;
+  color: #374151;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.userBtn:hover {
+  color: #111827;
+} */

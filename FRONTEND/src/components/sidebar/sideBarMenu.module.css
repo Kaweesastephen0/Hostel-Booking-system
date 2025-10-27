@@ -3,19 +3,17 @@
 }
 
 /* Menu Button */
-.menuButton {
-  padding: 8px;
-  color: black;
+.sidebarIcon {
+  display: flex;
+  align-items: center;
   background: none;
   border: none;
   cursor: pointer;
   transition: color 0.3s ease;
+  
 }
 
-.menuButton:hover {
-  color: blue; /* teal-50 equivalent */
-  text-shadow: 0 0 10px rgba(167, 243, 208, 0.5);
-}
+
 
 /* Overlay */
 .overlay {
