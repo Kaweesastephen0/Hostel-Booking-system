@@ -406,7 +406,7 @@ const Users = () => {
   };
 
   return (
-    <Box marginLeft="290px">
+    <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} >
         <Typography variant="h5" component="h1">
           Users Management

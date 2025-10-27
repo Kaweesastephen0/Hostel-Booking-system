@@ -4,20 +4,23 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-
 
 import Sidebar from './components/sidebar/Sidebar';
 import Navbar from './components/navbar/Navbar';
-
-import LoginPage from './pages/Login';
+import UsersPage from './pages/Users/Users'
+import BookingsPage from './pages/Bookings/Bookings'
+import PaymentsPage from './pages/Payments/Payments'
+import Login from './components/Auth/Login';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Hostels from './pages/Hostels/Hostels';
 import RoomsPage from './pages/Rooms/Rooms.jsx';
 import Profile from './pages/Profile/Profile';
 
 
+
 import './App.css';
 //THESE ARE JUST PLACEHOLDERS FOR PAGES THAT ARE YET TO BE DEVELOPED
 const PlaceholderPage = ({ title }) => <div style={{ padding: '2rem' }}><h1>{title}</h1><p>This page has not been Developed yet</p></div>;
-const BookingsPage = () => <PlaceholderPage title="Manage Bookings" />;
-const UsersPage = () => <PlaceholderPage title="Manage Users" />;
-const PaymentsPage = () => <PlaceholderPage title="Manage Payments" />;
+// const BookingsPage = () => <PlaceholderPage title="Manage Bookings" />;
+// const UsersPage = () => <PlaceholderPage title="Manage Users" />;
+// const PaymentsPage = () => <PlaceholderPage title="Manage Payments" />;
 
 /**
  * MainLayout component to wrap authenticated pages
@@ -42,7 +45,7 @@ function App() {
     <Router>
       <Routes>
         
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/login" element={<Login />} />
 
         
         <Route path="/" element={<MainLayout />}>
