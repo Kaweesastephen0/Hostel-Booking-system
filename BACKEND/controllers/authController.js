@@ -322,3 +322,128 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const updateProfile = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { firstName, surname, userType, studentNumber, nin } = req.body;
+
+    // Check if user type is changing
+    if (userType !== user.userType) {
+      // If changing to student, check student number uniqueness
+      if (userType === 'student' && studentNumber) {
+        const existingStudent = await User.findOne({
+          studentNumber,
+          _id: { $ne: user._id }
+        });
+        if (existingStudent) {
+          return res.status(400).json({ message: 'Student number already registered' });
+        }
+      }
+
+      // If changing to non-student, check NIN uniqueness
+      if (userType === 'non-student' && nin) {
+        const existingNin = await User.findOne({
+          nin,
+          _id: { $ne: user._id }
+        });
+        if (existingNin) {
+          return res.status(400).json({ message: 'NIN already registered' });
+        }
+      }
+    } else {
+      // If staying same user type, check for uniqueness of respective field
+      if (userType === 'student' && studentNumber && studentNumber !== user.studentNumber) {
+        const existingStudent = await User.findOne({
+          studentNumber,
+          _id: { $ne: user._id }
+        });
+        if (existingStudent) {
+          return res.status(400).json({ message: 'Student number already registered' });
+        }
+      }
+
+      if (userType === 'non-student' && nin && nin !== user.nin) {
+        const existingNin = await User.findOne({
+          nin,
+          _id: { $ne: user._id }
+        });
+        if (existingNin) {
+          return res.status(400).json({ message: 'NIN already registered' });
+        }
+      }
+    }
+
+    user.firstName = firstName;
+    user.surname = surname;
+    user.userType = userType;
+
+    if (userType === 'student') {
+      user.studentNumber = studentNumber;
+      user.nin = undefined;
+    } else {
+      user.nin = nin;
+      user.studentNumber = undefined;
+    }
+
+    await user.save();
+
+    res.json({
+      _id: user._id,
+      firstName: user.firstName,
+      surname: user.surname,
+      email: user.email,
+      gender: user.gender,
+      userType: user.userType,
+      studentNumber: user.studentNumber,
+      nin: user.nin,
+      createdAt: user.createdAt,
+      lastLogin: user.lastLogin
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { oldPassword, newPassword } = req.body;
+
+    const isMatch = await user.matchPassword(oldPassword);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
