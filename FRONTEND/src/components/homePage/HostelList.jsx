@@ -83,9 +83,7 @@ function HostelList() {
 
         {/* la hero */}
           <Hero/>
-          <div className={styles.searchBarWrapper}>
-            <SearchBar />
-          </div>
+          
         </section>
         <FeaturedProperties hostels={hostels.filter(h=>h.featured)}/>
         <AffordableHostels/>

@@ -30,7 +30,7 @@
 }
 
 
-.searchBarWrapper {
+/* .searchBarWrapper {
   position: absolute;
   bottom: -40px;
   left: 50%;
@@ -38,7 +38,7 @@
   width: 90%;
   max-width: 1400px;
   z-index: 10;
-}
+} */
 
 .listingsSection {
   padding: 40px 64px 48px;

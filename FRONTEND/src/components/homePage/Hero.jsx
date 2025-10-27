@@ -4,7 +4,7 @@ import {MapPin} from 'lucide-react'
 import { FaHeart } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
-
+import SearchBar from './SearchBar';
 
 
 export default function Hero() {
@@ -151,6 +151,9 @@ export default function Hero() {
           </div>
         </div>
       </div>
+      <div className={styles.searchBarWrapper}>
+            <SearchBar />
+          </div>
     </div>
   );
 }
