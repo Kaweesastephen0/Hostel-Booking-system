@@ -38,7 +38,10 @@ app.use(cookieParser());
 app.use(mongoSanitize());
 
 // Set security headers
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP for now to prevent conflicts
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
 
 // Prevent XSS attacks
 app.use(xss());
@@ -46,18 +49,31 @@ app.use(xss());
 // Rate limiting
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 mins
-    max: 50 // limiting each IP to 5 requests per windowMs
+    max: 100, // Increase the limit to 100 requests per windowMs
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 app.use(limiter);
 
 // Prevent http param pollution
 app.use(hpp());
 
-// Enable CORS
-app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-    credentials: true
-}));
+// Enable CORS - Place this after other middleware but before routes
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    process.env.FRONTEND_URL
+  ].filter(Boolean), // Remove any undefined values
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  optionsSuccessStatus: 200 // For legacy browser support
+};
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 // Dev logging middleware
 if (process.env.NODE_ENV === 'development') {

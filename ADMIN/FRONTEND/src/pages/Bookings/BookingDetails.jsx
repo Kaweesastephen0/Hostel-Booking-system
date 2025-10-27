@@ -1,33 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Button,
-  Chip,
-  Paper,
-  Alert,
-  Snackbar,
-  CircularProgress,
-  Divider,
-  Stack,
-  unstable_Grid2 as Grid,
-  TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
+import {  Box, Typography, Button, Chip, Paper, Alert, Snackbar, CircularProgress, Divider, Stack, TextField, MenuItem, Select, FormControl,
+  InputLabel, Dialog,  DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Tooltip } from '@mui/material';
+import { Grid } from '@mui/material';
 import { ArrowBack, Edit, Delete, CheckCircle, Cancel, Info, Add } from '@mui/icons-material';
 import { format } from 'date-fns';
 
@@ -1028,12 +1003,45 @@ const BookingDetails = () => {
               </Alert>
             )}
 
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mb={2}>
-              <Chip label={`Total: ${formatCurrency(paymentTotals.total)}`} color="primary" variant="outlined" />
-              <Chip label={`Completed: ${formatCurrency(paymentTotals.completed)}`} color="success" variant="outlined" />
-              <Chip label={`Pending: ${formatCurrency(paymentTotals.pending)}`} color="warning" variant="outlined" />
-              <Chip label={`Refunded: ${formatCurrency(paymentTotals.refunded)}`} color="info" variant="outlined" />
-            </Stack>
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' }, 
+              gap: 1, 
+              mb: 2,
+              '& .MuiChip-root': { 
+                maxWidth: '100%',
+                '& .MuiChip-label': {
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }
+              }
+            }}>
+              <Chip 
+                label={`Total: ${formatCurrency(paymentTotals.total)}`} 
+                color="primary" 
+                variant="outlined" 
+                size="small"
+              />
+              <Chip 
+                label={`Paid: ${formatCurrency(paymentTotals.completed)}`} 
+                color="success" 
+                variant="outlined"
+                size="small"
+              />
+              <Chip 
+                label={`Pending: ${formatCurrency(paymentTotals.pending)}`} 
+                color="warning" 
+                variant="outlined"
+                size="small"
+              />
+              <Chip 
+                label={`Refunded: ${formatCurrency(paymentTotals.refunded)}`} 
+                color="info" 
+                variant="outlined"
+                size="small"
+              />
+            </Box>
 
             {loadingPayments ? (
               <Box display="flex" justifyContent="center" py={4}>
@@ -1044,81 +1052,131 @@ const BookingDetails = () => {
                 No payments recorded for this booking yet.
               </Typography>
             ) : (
-              <List>
-                {payments.map((payment) => (
-                  <ListItem key={payment.id || payment._id} sx={{ alignItems: 'flex-start' }}>
-                    <ListItemText
-                      primary={
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <Typography variant="subtitle1">{formatCurrency(payment.amount)}</Typography>
+              <List sx={{ maxHeight: 400, overflow: 'auto', pr: 1 }}>
+                {payments.map((payment) => {
+                  const statusLabel = payment.status ? 
+                    payment.status.charAt(0).toUpperCase() + payment.status.slice(1) : 'Pending';
+                  
+                  return (
+                    <ListItem 
+                      key={payment.id || payment._id} 
+                      sx={{ 
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        alignItems: 'flex-start',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 1,
+                        mb: 1,
+                        p: 1.5,
+                        position: 'relative',
+                        '&:hover': {
+                          bgcolor: 'action.hover',
+                        },
+                      }}
+                    >
+                      <Box sx={{ flex: 1, minWidth: 0, mb: { xs: 1, sm: 0 } }}>
+                        <Box display="flex" alignItems="center" gap={1} mb={1}>
+                          <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>
+                            {formatCurrency(payment.amount)}
+                          </Typography>
                           <Chip
-                            label={payment.status?.charAt(0).toUpperCase() + payment.status?.slice(1) || 'Pending'}
+                            label={statusLabel}
                             color={paymentStatusColorMap[payment.status] || 'default'}
                             size="small"
                             variant="outlined"
                           />
                         </Box>
-                      }
-                      secondary={
-                        <Stack spacing={0.5} mt={1}>
-                          <Typography variant="body2" color="textSecondary">
-                            Method: {methodLabelMap[payment.method] || payment.method}
+                        
+                        <Box sx={{ 
+                          display: 'grid',
+                          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+                          gap: 1,
+                          '& .MuiTypography-root': { fontSize: '0.8rem' }
+                        }}>
+                          <Typography variant="body2" color="text.secondary">
+                            <Box component="span" sx={{ color: 'text.primary', fontWeight: 'medium' }}>Method: </Box>
+                            {methodLabelMap[payment.method] || payment.method}
                           </Typography>
-                          <Typography variant="caption" color="textSecondary">
-                            Created: {formatDate(payment.createdAt)}
+                          <Typography variant="body2" color="text.secondary">
+                            <Box component="span" sx={{ color: 'text.primary', fontWeight: 'medium' }}>Created: </Box>
+                            {formatDate(payment.createdAt)}
                           </Typography>
                           {payment.paidAt && (
-                            <Typography variant="caption" color="textSecondary">
-                              Paid: {formatDate(payment.paidAt)}
+                            <Typography variant="body2" color="text.secondary">
+                              <Box component="span" sx={{ color: 'text.primary', fontWeight: 'medium' }}>Paid: </Box>
+                              {formatDate(payment.paidAt)}
                             </Typography>
                           )}
-                          {payment.notes && (
-                            <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-                              Notes: {payment.notes}
-                            </Typography>
-                          )}
-                          <Stack direction="row" spacing={1} mt={1}>
-                            {(paymentStatusActions[payment.status || 'pending'] || []).map((action) => (
-                              <Button
-                                key={action.label}
-                                size="small"
-                                variant="outlined"
-                                color={action.color}
-                                startIcon={action.icon}
-                                disabled={paymentActionState.updatingId === payment.id}
-                                onClick={() => handleUpdatePaymentStatus(payment, action.target)}
-                              >
-                                {action.label}
-                              </Button>
-                            ))}
-                          </Stack>
-                        </Stack>
-                      }
-                    />
-                    <ListItemSecondaryAction>
-                      <Tooltip title="Edit Payment">
-                        <IconButton
-                          edge="end"
-                          sx={{ mr: 1 }}
-                          onClick={(event) => handleOpenEditPaymentDialog(event, payment)}
-                          disabled={paymentActionState.updatingId === payment.id}
-                        >
-                          <Edit fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete Payment">
-                        <IconButton
-                          edge="end"
-                          color="error"
-                          onClick={() => handleDeletePayment(payment)}
-                          disabled={paymentActionState.deletingId === payment.id}
-                        >
-                          <Delete fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
+                        </Box>
+                        
+                        {payment.notes && (
+                          <Typography variant="body2" sx={{ 
+                            mt: 1,
+                            p: 1,
+                            bgcolor: 'background.paper',
+                            borderRadius: 1,
+                            borderLeft: '3px solid',
+                            borderColor: 'primary.main'
+                          }}>
+                            {payment.notes}
+                          </Typography>
+                        )}
+                        
+                        <Box sx={{ mt: 1.5, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {(paymentStatusActions[payment.status || 'pending'] || []).map((action) => (
+                            <Button
+                              key={action.label}
+                              size="small"
+                              variant="outlined"
+                              color={action.color}
+                              startIcon={action.icon}
+                              disabled={paymentActionState.updatingId === payment.id}
+                              onClick={() => handleUpdatePaymentStatus(payment, action.target)}
+                              sx={{ 
+                                fontSize: '0.7rem',
+                                py: 0.5,
+                                '& .MuiButton-startIcon': { mr: 0.5 }
+                              }}
+                            >
+                              {action.label}
+                            </Button>
+                          ))}
+                        </Box>
+                      </Box>
+                      
+                      <Box sx={{ 
+                        position: { xs: 'absolute', sm: 'static' },
+                        top: 8,
+                        right: 8,
+                        display: 'flex',
+                        flexDirection: { xs: 'row', sm: 'column' },
+                        gap: 0.5
+                      }}>
+                        <Tooltip title="Edit Payment">
+                          <IconButton
+                            size="small"
+                            onClick={(event) => handleOpenEditPaymentDialog(event, payment)}
+                            disabled={paymentActionState.updatingId === payment.id}
+                            sx={{ p: 0.5 }}
+                          >
+                            <Edit fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete Payment">
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => handleDeletePayment(payment)}
+                            disabled={paymentActionState.deletingId === payment.id}
+                            sx={{ p: 0.5 }}
+                          >
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </ListItem>
+                  );
+                })}
               </List>
             )}
           </Paper>

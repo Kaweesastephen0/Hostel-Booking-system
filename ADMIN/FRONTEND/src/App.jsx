@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
 import UserProfile from './pages/Users/UserProfile'
 import Sidebar from './components/sidebar/Sidebar';
-// import Navbar from './components/navbar/Navbar';
+import Navbar from './components/navbar/Navbar';
 import Users from './pages/Users/Users'
 import Bookings from './pages/Bookings/Bookings'
 import BookingDetails from './pages/Bookings/BookingDetails'
@@ -30,7 +30,7 @@ const MainLayout = () => {
     <div className="app-layout">
       <Sidebar />
       <main className="main-content">
-        {/* <Navbar /> */}
+        <Navbar />
         <div className="page-content">
           <Outlet />
         </div>
