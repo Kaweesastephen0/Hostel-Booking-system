@@ -2,7 +2,6 @@
   display: flex;
   align-items: center;
   gap: 0;
-  background: white;
   border-radius: 8px;
   overflow: visible;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
@@ -16,7 +15,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 20px 24px;
+  padding: 0 24px;
   flex: 1;
   border-right: 2px solid #f0f0f0;
   position: relative;

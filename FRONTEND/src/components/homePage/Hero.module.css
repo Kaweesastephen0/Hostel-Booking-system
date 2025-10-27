@@ -351,7 +351,7 @@
 }
 .searchBarWrapper {
   position: absolute;
-   bottom: -90px; 
+   bottom: -65px; 
  
   left: 50%;
   transform: translateX(-50%);
