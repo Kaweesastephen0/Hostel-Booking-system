@@ -5,7 +5,7 @@ function Header({ onLogin, onRegister, renderApiStatus }) {
   return (
     <header className="app-header">
       <div className="header-content">
-        <Navbar />
+        {/* <Navbar /> */}
         <div className="header-top">
           <div className="auth-buttons">
             <button className="auth-btn login-btn" onClick={onLogin}>🔑 Login</button>

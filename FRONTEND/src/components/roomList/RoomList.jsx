@@ -1,149 +1,37 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Heart, MapPin, Star, ChevronRight, Search, X, Wifi, Coffee, Waves, Dumbbell, Wind, Users, Bed, DoorOpen } from 'lucide-react';
 
-  import React, { useState } from 'react';
-import { Heart, MapPin, Star, ChevronRight, Search, Calendar, Users, Menu, Bell, User, Wifi, Coffee, Waves, Dumbbell, Wind, X } from 'lucide-react';
-import SearchBar from '../homePage/SearchBar';
 const styles = {
   container: {
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f8f9fa',
     minHeight: '100vh',
     padding: '0',
     color: '#1a1a1a'
   },
-  topBar: {
-    background: '#ffffff',
-    padding: '16px 40px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-    position: 'sticky',
-    top: 0,
-    zIndex: 100
-  },
-  logo: {
-    fontSize: '24px',
-    fontWeight: '700',
-    color: '#1a1a1a',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px'
-  },
-  topBarRight: {
-    display: 'flex',
-    gap: '20px',
-    alignItems: 'center'
-  },
-  iconBtn: {
-    width: '40px',
-    height: '40px',
-    borderRadius: '50%',
-    background: '#f0f2f5',
-    border: 'none',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    transition: 'all 0.3s ease',
-    boxShadow: '0 2px 6px rgba(0,0,0,0.05)'
-  },
-  heroSection: {
-    padding: '140px 20px',
-    textAlign: 'center',
-    color: '#1a1a1a'
-  },
-  heroTitle: {
-    fontSize: '36px',
-    fontWeight: '700',
-    marginBottom: '16px'
-  },
-  heroSubtitle: {
-    fontSize: '16px',
-    color: '#666',
-    marginBottom: '30px',
-    fontWeight: '400'
-  },
-  searchCard: {
-    background: '#ffffff',
-    borderRadius: '12px',
-    padding: '20px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-    maxWidth: '1000px',
-    margin: '0 auto',
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr auto',
-    gap: '15px',
-    alignItems: 'end'
-  },
-  searchField: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '6px'
-  },
-  searchLabel: {
-    fontSize: '12px',
-    fontWeight: '600',
-    color: '#2c3e50',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px'
-  },
-  searchInputWrapper: {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  searchIcon: {
-    position: 'absolute',
-    left: '12px',
-    color: '#2c3e50',
-    opacity: 0.6
-  },
-  searchInput: {
-    width: '100%',
-    padding: '12px 12px 12px 40px',
-    border: '1px solid #e0e0e0',
-    borderRadius: '8px',
-    fontSize: '14px',
-    fontWeight: '500',
-    transition: 'all 0.3s ease',
-    outline: 'none'
-  },
-  searchButton: {
-    background: '#2c3e50',
-    color: '#ffffff',
-    padding: '14px 30px',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontWeight: '600',
-    fontSize: '14px',
-    boxShadow: '0 4px 12px rgba(44, 62, 80, 0.2)',
-    transition: 'all 0.3s ease',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px'
-  },
   mainContent: {
-    padding: '30px 20px',
+    padding: '80px 20px',
     display: 'grid',
-    gridTemplateColumns: '300px 1fr',
+    gridTemplateColumns: '280px 1fr',
     gap: '20px',
     maxWidth: '1400px',
     margin: '0 auto'
   },
   sidebar: {
     background: '#ffffff',
-    borderRadius: '10px',
+    borderRadius: '12px',
     padding: '20px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
     position: 'sticky',
-    top: '80px'
+    top: '100px',
+    height: 'fit-content'
   },
   filterHeader: {
     fontSize: '18px',
     fontWeight: '700',
     marginBottom: '20px',
-    color: '#2c3e50',
+    color: '#1e3a8a',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between'
@@ -151,19 +39,19 @@ const styles = {
   filterSection: {
     marginBottom: '20px',
     paddingBottom: '20px',
-    borderBottom: '1px solid #e0e0e0'
+    borderBottom: '1px solid #e5e7eb'
   },
   filterTitle: {
     fontSize: '13px',
     fontWeight: '700',
     marginBottom: '12px',
-    color: '#34495e',
+    color: '#1e3a8a',
     textTransform: 'uppercase',
     letterSpacing: '0.5px'
   },
   priceRange: {
     padding: '15px',
-    background: '#f8f9fa',
+    background: '#eff6ff',
     borderRadius: '8px',
     marginBottom: '15px'
   },
@@ -176,7 +64,7 @@ const styles = {
   },
   chartBar: {
     flex: 1,
-    background: '#2c3e50',
+    background: '#3b82f6',
     borderRadius: '2px 2px 0 0',
     minHeight: '4px',
     transition: 'all 0.3s ease'
@@ -186,7 +74,7 @@ const styles = {
     justifyContent: 'space-between',
     fontSize: '12px',
     fontWeight: '600',
-    color: '#2c3e50'
+    color: '#1e3a8a'
   },
   checkbox: {
     display: 'flex',
@@ -202,30 +90,21 @@ const styles = {
     width: '18px',
     height: '18px',
     cursor: 'pointer',
-    accentColor: '#2c3e50'
+    accentColor: '#3b82f6'
   },
   checkboxLabel: {
     flex: 1,
     fontSize: '13px',
     fontWeight: '500',
-    color: '#34495e'
+    color: '#374151'
   },
   count: {
-    color: '#7f8c8d',
+    color: '#6b7280',
     fontSize: '12px',
     fontWeight: '600',
-    background: '#ecf0f1',
+    background: '#f3f4f6',
     padding: '2px 6px',
     borderRadius: '4px'
-  },
-  showMore: {
-    color: '#2c3e50',
-    fontSize: '13px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    marginTop: '8px',
-    display: 'inline-block',
-    transition: 'all 0.2s ease'
   },
   results: {
     display: 'flex',
@@ -235,54 +114,57 @@ const styles = {
   resultsHeader: {
     background: '#ffffff',
     padding: '15px 20px',
-    borderRadius: '10px',
+    borderRadius: '12px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+    boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
   },
   sortBy: {
     display: 'flex',
     gap: '10px',
     alignItems: 'center',
     fontSize: '13px',
-    fontWeight: '600'
+    fontWeight: '600',
+    color: '#1e3a8a'
   },
   select: {
     padding: '8px 12px',
-    border: '1px solid #e0e0e0',
+    border: '1px solid #e5e7eb',
     borderRadius: '6px',
     fontSize: '13px',
     fontWeight: '500',
     cursor: 'pointer',
     outline: 'none',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
+    background: '#ffffff'
   },
   resultsCount: {
     fontSize: '13px',
     fontWeight: '600',
-    color: '#2c3e50'
+    color: '#1e3a8a'
   },
-  hotelCard: {
-    background: '#f5f6f5',
-    borderRadius: '10px',
+  roomCard: {
+    background: '#ffffff',
+    borderRadius: '12px',
     padding: '0',
     overflow: 'hidden',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-    transition: 'all 0.4s ease',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+    transition: 'all 0.3s ease',
     cursor: 'pointer',
-    border: '1px solid #e0e0e0'
+    border: '1px solid #e5e7eb'
   },
-  hotelCardInner: {
+  roomCardInner: {
     display: 'grid',
-    gridTemplateColumns: '250px 1fr',
+    gridTemplateColumns: '280px 1fr',
     gap: '0'
   },
   imageSection: {
     position: 'relative',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    background: '#f3f4f6'
   },
-  hotelImage: {
+  roomImage: {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
@@ -311,27 +193,27 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'space-between'
   },
-  hotelHeader: {
+  roomHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: '12px'
   },
-  hotelInfo: {
+  roomInfo: {
     flex: 1
   },
-  hotelName: {
+  roomName: {
     fontSize: '18px',
     fontWeight: '700',
     marginBottom: '6px',
-    color: '#2c3e50'
+    color: '#1e3a8a'
   },
-  location: {
+  hostelName: {
     display: 'flex',
     alignItems: 'center',
     gap: '5px',
     fontSize: '13px',
-    color: '#7f8c8d',
+    color: '#6b7280',
     marginBottom: '10px'
   },
   features: {
@@ -344,89 +226,72 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '4px',
-    padding: '4px 8px',
-    background: '#ecf0f1',
+    padding: '4px 10px',
+    background: '#eff6ff',
     borderRadius: '6px',
     fontSize: '11px',
     fontWeight: '600',
-    color: '#2c3e50'
-  },
-  rating: {
-    display: 'flex',
-    gap: '3px',
-    marginBottom: '8px'
+    color: '#1e3a8a'
   },
   badges: {
     display: 'flex',
     gap: '6px',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    marginTop: '8px'
   },
   badge: {
-    padding: '3px 8px',
-    background: '#ecf0f1',
-    borderRadius: '4px',
+    padding: '4px 10px',
+    background: '#f3f4f6',
+    borderRadius: '6px',
     fontSize: '11px',
     fontWeight: '600',
-    color: '#7f8c8d'
+    color: '#6b7280'
   },
-  hotelFooter: {
+  availabilityBadge: {
+    padding: '4px 10px',
+    background: '#dcfce7',
+    borderRadius: '6px',
+    fontSize: '11px',
+    fontWeight: '600',
+    color: '#166534'
+  },
+  roomFooter: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     paddingTop: '15px',
-    borderTop: '1px solid #e0e0e0'
+    borderTop: '1px solid #e5e7eb'
   },
-  reviewSection: {
+  roomDetails: {
     display: 'flex',
-    gap: '10px',
+    gap: '15px',
     alignItems: 'center'
   },
-  ratingScore: {
-    background: '#2c3e50',
-    color: '#ffffff',
-    padding: '6px 12px',
-    borderRadius: '8px',
-    fontWeight: '700',
-    fontSize: '16px',
-    boxShadow: '0 2px 6px rgba(44, 62, 80, 0.2)'
-  },
-  reviewInfo: {
+  detailItem: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: '2px'
-  },
-  ratingLabel: {
+    alignItems: 'center',
+    gap: '5px',
     fontSize: '13px',
-    fontWeight: '700',
-    color: '#2c3e50'
-  },
-  reviewCount: {
-    fontSize: '12px',
-    color: '#7f8c8d',
+    color: '#374151',
     fontWeight: '500'
   },
   priceSection: {
     textAlign: 'right'
   },
-  nights: {
-    fontSize: '11px',
-    color: '#7f8c8d',
-    marginBottom: '3px'
-  },
   price: {
     fontSize: '24px',
     fontWeight: '700',
-    color: '#2c3e50',
+    color: '#1e3a8a',
     lineHeight: 1
   },
   priceLabel: {
     fontSize: '11px',
-    color: '#7f8c8d',
+    color: '#6b7280',
     marginTop: '3px',
     marginBottom: '10px'
   },
   viewButton: {
-    background: '#2c3e50',
+    background: '#3b82f6',
     color: '#ffffff',
     padding: '10px 20px',
     border: 'none',
@@ -434,81 +299,90 @@ const styles = {
     cursor: 'pointer',
     fontWeight: '600',
     fontSize: '13px',
-    boxShadow: '0 2px 6px rgba(44, 62, 80, 0.2)',
+    boxShadow: '0 2px 6px rgba(59, 130, 246, 0.3)',
     transition: 'all 0.3s ease',
     display: 'flex',
     alignItems: 'center',
     gap: '4px'
+  },
+  loading: {
+    textAlign: 'center',
+    padding: '60px 20px',
+    fontSize: '16px',
+    color: '#6b7280'
+  },
+  error: {
+    textAlign: 'center',
+    padding: '60px 20px',
+    fontSize: '16px',
+    color: '#dc2626',
+    background: '#fee2e2',
+    borderRadius: '12px',
+    margin: '20px'
+  },
+  emptyState: {
+    textAlign: 'center',
+    padding: '60px 20px',
+    background: '#ffffff',
+    borderRadius: '12px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+  },
+  emptyStateTitle: {
+    fontSize: '20px',
+    fontWeight: '700',
+    color: '#1e3a8a',
+    marginBottom: '8px'
+  },
+  emptyStateText: {
+    fontSize: '14px',
+    color: '#6b7280'
   }
 };
 
-const hotels = [
-  {
-    id: 1,
-    name: 'Narcissus Hotel',
-    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&h=400&fit=crop',
-    distance: '1 km from City Centre',
-    rating: 5,
-    ratingScore: 9.1,
-    ratingLabel: 'Extraordinary',
-    reviews: 876,
-    price: 100,
-    nights: '1 night, 2 adults',
-    features: ['wifi', 'pool', 'breakfast']
-  },
-  {
-    id: 2,
-    name: 'Viva Hotel',
-    image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&h=400&fit=crop',
-    distance: '1.2 km from City Centre',
-    rating: 4,
-    ratingScore: 7.5,
-    ratingLabel: 'Good',
-    reviews: 702,
-    price: 98,
-    nights: '1 night, 2 adults',
-    features: ['wifi', 'gym', 'parking']
-  },
-  {
-    id: 3,
-    name: 'Lila Hotel',
-    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop',
-    distance: '0.4 km from City Centre',
-    rating: 5,
-    ratingScore: 8.5,
-    ratingLabel: 'Excellent',
-    reviews: 600,
-    price: 120,
-    nights: '1 night, 2 adults',
-    features: ['wifi', 'pool', 'ac']
-  },
-  {
-    id: 4,
-    name: 'Marin Hotel',
-    image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&h=400&fit=crop',
-    distance: '0.5 km from City Centre',
-    rating: 5,
-    ratingScore: 8.7,
-    ratingLabel: 'Excellent',
-    reviews: 702,
-    price: 150,
-    nights: '1 night, 2 adults',
-    features: ['wifi', 'breakfast', 'pool']
-  }
-];
-
-const featureIcons = {
-  wifi: <Wifi size={12} />,
-  pool: <Waves size={12} />,
-  breakfast: <Coffee size={12} />,
-  gym: <Dumbbell size={12} />,
-  ac: <Wind size={12} />,
-  parking: <MapPin size={12} />
-};
-
-export default function HotelListing() {
+export default function RoomsList() {
+  const { hostelId } = useParams();
+  const navigate = useNavigate();
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [hostelInfo, setHostelInfo] = useState(null);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`http://localhost:5000/api/rooms/hostel/${hostelId}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success && Array.isArray(result.data)) {
+          setRooms(result.data);
+     
+          // Set hostel info from first room
+          if (result.data.length > 0 && result.data[0].hostelId) {
+            setHostelInfo(result.data[0].hostelId);
+          }
+        } else {
+          setRooms([]);
+        }
+      } catch (error) {
+        console.error('Error fetch rooms by ID', error);
+        setError('Failed to load rooms. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (hostelId) {
+      fetchRooms();
+    }
+  }, [hostelId]);
 
   const toggleFavorite = (id, e) => {
     e.stopPropagation();
@@ -523,11 +397,37 @@ export default function HotelListing() {
     });
   };
 
+    const getBookingFeeDisplay = (room) => {
+    if (room.bookingPrice && room.bookingPrice > 0) {
+      return (
+        <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+          + UGX {room.bookingPrice.toLocaleString()} booking fee
+        </div>
+      );
+    }
+    return null;
+  };
+
+
+  if (loading) {
+    return (
+      <div>
+        loadingMessage
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        {error}
+      </div>
+    );
+  }
+
   return (
     <div style={styles.container}>
-      <SearchBar/>
-
-      <div style={styles.mainContent}>
+       <div style={styles.mainContent}>
         <aside style={styles.sidebar}>
           <div style={styles.filterHeader}>
             Filters
@@ -535,34 +435,16 @@ export default function HotelListing() {
           </div>
 
           <div style={styles.filterSection}>
-            <div style={styles.filterTitle}>Price Range</div>
-            <div style={styles.priceRange}>
-              <div style={styles.priceChart}>
-                {[25, 50, 70, 90, 100, 85, 70, 55, 40, 30, 20, 15, 10, 8, 5].map((height, i) => (
-                  <div 
-                    key={i} 
-                    style={{...styles.chartBar, height: `${height}%`}}
-                    onMouseEnter={(e) => e.target.style.opacity = '0.7'}
-                    onMouseLeave={(e) => e.target.style.opacity = '1'}
-                  />
-                ))}
-              </div>
-              <div style={styles.priceLabels}>
-                <span>$40</span>
-                <span>$500+</span>
-              </div>
-            </div>
-            
+            <div style={styles.filterTitle}>Availability</div>
             {[
-              { label: 'Free Cancellation', count: 90 },
-              { label: '5 Stars', count: 7 },
-              { label: '4 Stars', count: 52 },
-              { label: 'Book Without Card', count: 3 }
+              { label: 'Available Now', count: rooms.filter(r => r.availability).length },
+              { label: 'Single Rooms', count: rooms.filter(r => r.maxOccupancy === 1).length },
+              { label: 'Shared Rooms', count: rooms.filter(r => r.maxOccupancy > 1).length }
             ].map(item => (
               <label 
                 key={item.label} 
                 style={styles.checkbox}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#f0f2f5'}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#f3f4f6'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
               >
                 <input type="checkbox" style={styles.checkboxInput} />
@@ -573,17 +455,16 @@ export default function HotelListing() {
           </div>
 
           <div style={styles.filterSection}>
-            <div style={styles.filterTitle}>Amenities</div>
+            <div style={styles.filterTitle}>Room Type</div>
             {[
-              { label: 'Free WiFi', count: 103 },
-              { label: 'Breakfast Included', count: 100 },
-              { label: 'Pool', count: 48 },
-              { label: 'Free Parking', count: 49 }
+              { label: 'Single', count: rooms.filter(r => r.maxOccupancy === 1).length },
+              { label: 'Double', count: rooms.filter(r => r.maxOccupancy === 2).length },
+              { label: 'Triple+', count: rooms.filter(r => r.maxOccupancy >= 3).length }
             ].map(item => (
               <label 
                 key={item.label} 
                 style={styles.checkbox}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#f0f2f5'}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#f3f4f6'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
               >
                 <input type="checkbox" style={styles.checkboxInput} />
@@ -591,13 +472,6 @@ export default function HotelListing() {
                 <span style={styles.count}>{item.count}</span>
               </label>
             ))}
-            <span 
-              style={styles.showMore}
-              onMouseEnter={(e) => e.target.style.opacity = '0.7'}
-              onMouseLeave={(e) => e.target.style.opacity = '1'}
-            >
-              Show More ↓
-            </span>
           </div>
         </aside>
 
@@ -607,120 +481,140 @@ export default function HotelListing() {
               Sort by:
               <select 
                 style={styles.select}
-                onFocus={(e) => e.target.style.borderColor = '#2c3e50'}
-                onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+                onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
               >
                 <option>Recommended</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
-                <option>Top Rated</option>
+                <option>Availability</option>
               </select>
             </div>
-            <div style={styles.resultsCount}>322 Facilities Found</div>
+            <div style={styles.resultsCount}>{rooms.length} Rooms Found</div>
           </div>
 
-          {hotels.map(hotel => (
-            <div 
-              key={hotel.id} 
-              style={{
-                ...styles.hotelCard,
-                transform: hoveredCard === hotel.id ? 'translateY(-4px)' : 'translateY(0)',
-                boxShadow: hoveredCard === hotel.id ? '0 8px 20px rgba(44, 62, 80, 0.1)' : '0 4px 12px rgba(0,0,0,0.05)',
-                borderColor: hoveredCard === hotel.id ? '#2c3e50' : '#e0e0e0'
-              }}
-              onMouseEnter={() => setHoveredCard(hotel.id)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              <div style={styles.hotelCardInner}>
-                <div style={styles.imageSection}>
-                  <img 
-                    src={hotel.image} 
-                    alt={hotel.name} 
-                    style={{
-                      ...styles.hotelImage,
-                      transform: hoveredCard === hotel.id ? 'scale(1.05)' : 'scale(1)'
-                    }} 
-                  />
-                  <button 
-                    style={{
-                      ...styles.heartButton,
-                      transform: hoveredCard === hotel.id ? 'scale(1.1)' : 'scale(1)'
-                    }}
-                    onClick={(e) => toggleFavorite(hotel.id, e)}
-                  >
-                    <Heart 
-                      size={16} 
-                      fill={favorites.has(hotel.id) ? '#e74c3c' : 'none'}
-                      color={favorites.has(hotel.id) ? '#e74c3c' : '#7f8c8d'}
+          {rooms.length === 0 ? (
+            <div style={styles.emptyState}>
+              <div style={styles.emptyStateTitle}>No Rooms Available</div>
+              <div style={styles.emptyStateText}>
+                There are currently no rooms available for this hostel.
+              </div>
+            </div>
+          ) : (
+            rooms.map(room => (
+              <div 
+                key={room._id} 
+                style={{
+                  ...styles.roomCard,
+                  transform: hoveredCard === room._id ? 'translateY(-4px)' : 'translateY(0)',
+                  boxShadow: hoveredCard === room._id ? '0 8px 20px rgba(59, 130, 246, 0.15)' : '0 2px 8px rgba(0,0,0,0.06)',
+                  borderColor: hoveredCard === room._id ? '#3b82f6' : '#e5e7eb'
+                }}
+                onMouseEnter={() => setHoveredCard(room._id)}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
+                <div style={styles.roomCardInner}>
+                  <div style={styles.imageSection}>
+                    <img 
+                      src={room.image || 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=400&h=300&fit=crop'} 
+                      alt={room.roomNumber || 'Room'} 
+                      style={{
+                        ...styles.roomImage,
+                        transform: hoveredCard === room._id ? 'scale(1.05)' : 'scale(1)'
+                      }} 
                     />
-                  </button>
-                </div>
-                
-                <div style={styles.contentSection}>
-                  <div>
-                    <div style={styles.hotelHeader}>
-                      <div style={styles.hotelInfo}>
-                        <h3 style={styles.hotelName}>{hotel.name}</h3>
-                        <div style={styles.location}>
-                          <MapPin size={14} />
-                          {hotel.distance}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div style={styles.features}>
-                      {hotel.features.map(feature => (
-                        <div key={feature} style={styles.featureTag}>
-                          {featureIcons[feature]}
-                          {feature.charAt(0).toUpperCase() + feature.slice(1)}
-                        </div>
-                      ))}
-                    </div>
-                    
-                    <div style={styles.rating}>
-                      {[...Array(hotel.rating)].map((_, i) => (
-                        <Star key={i} size={14} fill="#f1c40f" color="#f1c40f" />
-                      ))}
-                    </div>
-                    
-                    <div style={styles.badges}>
-                      <span style={styles.badge}>Hotel</span>
-                      <span style={styles.badge}>All-Inclusive</span>
-                    </div>
+                    <button 
+                      style={{
+                        ...styles.heartButton,
+                        transform: hoveredCard === room._id ? 'scale(1.1)' : 'scale(1)'
+                      }}
+                      onClick={(e) => toggleFavorite(room._id, e)}
+                    >
+                      <Heart 
+                        size={16} 
+                        fill={favorites.has(room._id) ? '#ef4444' : 'none'}
+                        color={favorites.has(room._id) ? '#ef4444' : '#6b7280'}
+                      />
+                    </button>
                   </div>
-
-                  <div style={styles.hotelFooter}>
-                    <div style={styles.reviewSection}>
-                      <div style={styles.ratingScore}>{hotel.ratingScore}</div>
-                      <div style={styles.reviewInfo}>
-                        <div style={styles.ratingLabel}>{hotel.ratingLabel}</div>
-                        <div style={styles.reviewCount}>{hotel.reviews} Reviews</div>
+                  
+                  <div style={styles.contentSection}>
+                    <div>
+                      <div style={styles.roomHeader}>
+                        <div style={styles.roomInfo}>
+                          <h3 style={styles.roomName}>
+                            Room {room.roomNumber || 'N/A'}
+                          </h3>
+                          <div style={styles.hostelName}>
+                            <MapPin size={14} />
+                            {room.hostelId?.name || 'Hostel'}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div style={styles.features}>
+                        <div style={styles.featureTag}>
+                          <Users size={12} />
+                          {room.maxOccupancy} {room.maxOccupancy === 1 ? 'Person' : 'People'}
+                        </div>
+                        <div style={styles.featureTag}>
+                          <Bed size={12} />
+                          {room.roomType || 'Standard'}
+                        </div>
+                      </div>
+                      
+                      <div style={styles.badges}>
+                        {room.availability && (
+                          <span style={styles.availabilityBadge}>Available</span>
+                        )}
+                        <span style={styles.badge}>
+                          {room.hostelId?.HostelGender || 'Mixed'}
+                        </span>
                       </div>
                     </div>
-                    
-                    <div style={styles.priceSection}>
-                      <div style={styles.nights}>{hotel.nights}</div>
-                      <div style={styles.price}>${hotel.price}</div>
-                      <div style={styles.priceLabel}>Taxes included</div>
-                      <button 
-                        style={styles.viewButton}
-                        onMouseEnter={(e) => {
-                          e.target.style.transform = 'translateY(-2px)';
-                          e.target.style.boxShadow = '0 4px 12px rgba(44, 62, 80, 0.3)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.transform = 'translateY(0)';
-                          e.target.style.boxShadow = '0 2px 6px rgba(44, 62, 80, 0.2)';
-                        }}
-                      >
-                        View Hotel <ChevronRight size={14} />
-                      </button>
+
+                    <div style={styles.roomFooter}>
+                      <div style={styles.roomDetails}>
+                        <div style={styles.detailItem}>
+                          <DoorOpen size={16} />
+                          Room {room.roomNumber}
+                        </div>
+                      </div>
+                      
+                      <div style={styles.priceSection}>
+                        <div style={styles.price}>
+                          UGX {room.roomPrice ? room.roomPrice.toLocaleString() : '0'}
+                          
+                          
+
+                        </div>
+                        <div style={styles.priceLabel}>/semester
+                          {getBookingFeeDisplay(room)}
+                        </div>
+                        <button 
+                          style={styles.viewButton}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = 'translateY(-2px)';
+                            e.target.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.4)';
+                            e.target.style.background = '#2563eb';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = 'translateY(0)';
+                            e.target.style.boxShadow = '0 2px 6px rgba(59, 130, 246, 0.3)';
+                            e.target.style.background = '#3b82f6';
+                          }}
+                          onClick={() => navigate(`/room/${room._id}`)}
+                        >
+                          Book Room <ChevronRight size={14} />
+                          
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

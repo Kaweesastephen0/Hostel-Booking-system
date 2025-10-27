@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5001/api';
+const API_BASE_URL = 'http://localhost:5002/api';
 
 const hostelService = {
   // Create a hostel
@@ -14,6 +14,27 @@ const hostelService = {
     }
   },
 
+    createBooking: async (data) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/bookings/book`, data);
+      return response.data;
+    } catch (error) {
+      // If there's a validation error with field-specific messages
+      if (error.response?.data?.errors) {
+        throw {
+          response: {
+            data: {
+              success: false,
+              message: error.response.data.message || 'Validation failed',
+              errors: error.response.data.errors
+            }
+          }
+        };
+      }
+      // For other errors
+      throw error;
+    }
+  },
   // Create a room
   createRoom: async (data) => {
     try {

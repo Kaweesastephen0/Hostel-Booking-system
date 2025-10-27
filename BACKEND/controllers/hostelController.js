@@ -262,3 +262,5 @@ export const getAffordableHostels = async (req, res) => {
         });
     }
 };
+
+ 

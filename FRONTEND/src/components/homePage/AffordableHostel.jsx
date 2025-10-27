@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import styles from './AffordableHostel.module.css';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function AffordableHostels() {
+  const navigate = useNavigate();
   const [affordableHostels, setAffordableHostels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,7 +12,7 @@ function AffordableHostels() {
   useEffect(() => {
     const fetchAffordableHostels = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/hostels/affordable');
+        const response = await fetch('http://localhost:5000/api/hostels/affordable');
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -37,6 +39,10 @@ function AffordableHostels() {
            hostel.HostelGender === 'female' ? 'Female' : 'Male';
   };
 
+  // navigate to particular hostel id on roam listing page
+  const handleHostelClick=(hostelId)=>{
+    navigate(`/rooms/${hostelId}`)
+  }
   if (loading) {
     return (
       <section className={styles.affordableSection}>
@@ -70,7 +76,12 @@ function AffordableHostels() {
       <div className={styles.horizontalScrollContainer}>
         <div className={styles.propertiesGridHorizontal}>
           {affordableHostels.map((hostel) => (
-            <div key={hostel._id} className={styles.propertyCard}>
+            <div 
+            key={hostel._id} 
+            className={styles.propertyCard}
+            onClick={()=>handleHostelClick(hostel._id)}
+            style={{ cursor: 'pointer'}}
+            >
               <div className={styles.cardImage}>
                 <img src={hostel.image} alt={hostel.name} />
                 <div className={styles.overlay}></div>
