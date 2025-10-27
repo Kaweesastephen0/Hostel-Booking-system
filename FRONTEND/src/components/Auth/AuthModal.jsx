@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { ArrowLeft, Mail, Lock, User, CreditCard, Hash, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AuthModal.module.css';
+import API_URL from './config/api';
+
 
 // PASSWORD VALIDATION UTILITIES
 
@@ -113,7 +115,7 @@ function Auth() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -165,7 +167,7 @@ function Auth() {
     }
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/register', {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -616,7 +618,7 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/forgot-password', {
+      const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email })
@@ -659,7 +661,7 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
     }
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/reset-password', {
+      const response = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
