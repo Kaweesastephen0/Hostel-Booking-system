@@ -1,4 +1,3 @@
-
 import React from "react"
 import { Routes, Route, useLocation } from "react-router-dom"
 import HostelList from "./components/homePage/HostelList"
@@ -10,20 +9,22 @@ import Booking from "./components/booking/Booking"
 import MukBookFooter from "./components/footer/HostelFooter"
 import RoomListingPage from "./components/roomList/RoomList"
 import ExactRoom from "./components/roomList/ExactRoom"
+import UserProfile from "./components/Auth/UserProfile"
 
 const App = () => {
   const location = useLocation();
 
-  const noHeaderNoFooter = location.pathname.includes("/login") || location.pathname.includes("/auth");
-  
+  const noHeaderNoFooter = location.pathname.includes("/login") || location.pathname.includes("/auth") || location.pathname.includes("/profile");
+
   return (
     <div>
-       {!noHeaderNoFooter && <HostelHeader />} 
-      
+      {!noHeaderNoFooter && <HostelHeader />}
+
       <Routes>
         <Route path="/" element={<HostelList />} />
         <Route path="/login" element={<Auth />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/profile" element={<UserProfile />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/hostels" element={<HostelList />} />

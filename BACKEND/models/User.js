@@ -62,9 +62,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-userSchema.index({ email: 1 });
-userSchema.index({ studentNumber: 1 }, { sparse: true });
-userSchema.index({ nin: 1 }, { sparse: true });
+// Only index non-unique fields
 userSchema.index({ createdAt: -1 });
 userSchema.index({ lastLogin: -1 });
 

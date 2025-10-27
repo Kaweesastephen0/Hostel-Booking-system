@@ -104,11 +104,18 @@
   padding: 8px;
   display: flex;
   align-items: center;
+  gap: 8px;
   transition: color 0.2s;
 }
 
 .userBtn:hover {
   color: #111827;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
 }
 
 .main {
