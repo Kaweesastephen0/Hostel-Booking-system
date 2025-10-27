@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+import User from '../Models/User.js';
 import asyncHandler from '../middleware/async.js';
 
 const parsePositiveInt = (value, fallback) => {
