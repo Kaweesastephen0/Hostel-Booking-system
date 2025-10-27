@@ -17,7 +17,7 @@ export default function Hero() {
   useEffect(()=>{
     const fetchFeaturedHostels= async()=>{
       try{
-        const response = await fetch(`http://localhost:5001/api/hostels/featured`);
+        const response = await fetch(`http://localhost:5000/api/hostels/featured`);
         if(!response.ok){
           throw new Error(`HTTP error ! status: ${response.status}`)
 

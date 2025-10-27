@@ -18,7 +18,7 @@ const App = () => {
   
   return (
     <div>
-      {!noHeaderNoFooter && <HostelHeader />}
+       {!noHeaderNoFooter && <HostelHeader />} 
       
       <Routes>
         <Route path="/" element={<HostelList />} />
@@ -28,7 +28,8 @@ const App = () => {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/hostels" element={<HostelList />} />
         <Route path="/rooms/:hostelId" element={<RoomListingPage />} />
-        <Route path="/ExactRoom" element={<ExactRoom />} />
+        <Route path="/room/:roomId" element={<ExactRoom />} />
+        <Route path='/booking' element={<Booking/>}/>
       </Routes>
 
       {!noHeaderNoFooter && <MukBookFooter />}

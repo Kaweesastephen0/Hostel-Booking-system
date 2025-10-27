@@ -22,7 +22,7 @@ function HostelList() {
   useEffect(() => {
     const fetchHostels = async () => {
       try {
-        const response = await fetch('http://localhost:5002/api/hostels/hostel');
+        const response = await fetch('http://localhost:5000/api/hostels/hostel');
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
@@ -57,14 +57,7 @@ function HostelList() {
   }
 
 
-  const formatePrice = (price) => {
-    return price?.toLocaleString() || '0'
-  };
-
-  const getHostelImage = (hostel) => {
-    return hostel.image || (hostel.image && hostel.images[0]) || 'https://images.pexels.com/photos/20237982/pexels-photo-20237982.jpeg';
-  }
-
+  
   if (loading) {
     return (
       <div>

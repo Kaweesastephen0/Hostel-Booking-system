@@ -353,7 +353,7 @@ export default function RoomsList() {
     const fetchRooms = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:5001/api/rooms/hostel/${hostelId}`);
+        const response = await fetch(`http://localhost:5000/api/rooms/hostel/${hostelId}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -603,8 +603,10 @@ export default function RoomsList() {
                             e.target.style.boxShadow = '0 2px 6px rgba(59, 130, 246, 0.3)';
                             e.target.style.background = '#3b82f6';
                           }}
+                          onClick={() => navigate(`/room/${room._id}`)}
                         >
                           Book Room <ChevronRight size={14} />
+                          
                         </button>
                       </div>
                     </div>

@@ -13,7 +13,7 @@ function FeaturedHostels() {
   useEffect(() => {
     const fetchPremiumHostels = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/hostels/premiumHostel');
+        const response = await fetch('http://localhost:5000/api/hostels/premiumHostel');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
