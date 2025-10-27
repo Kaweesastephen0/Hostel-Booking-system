@@ -8,10 +8,10 @@ const Navbar = () => {
   const navigate = useNavigate();
   const profileRef = useRef(null);
   const location = useLocation();
-  const currentUser = JSON.parse(localStorage.getItem("user"))
+  const currentUser = JSON.parse(localStorage.getItem('user'));
 
   const user = {
-    name: currentUser?.fullName || "Guest",
+    name: currentUser?.fullName,
     avatar: `https://ui-avatars.com/api/?name=${currentUser?.fullName}&background=4f46e5&color=fff&bold=true`,
   };
 

@@ -1,0 +1,87 @@
+.hostel-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hostel-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+.hostel-card-image-container {
+  position: relative;
+  height: 180px;
+}
+
+.hostel-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hostel-card-rating {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hostel-card-status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: capitalize;
+}
+
+.status-available { background-color: #16a34a; }
+.status-full { background-color: #dc2626; }
+
+.hostel-card-content {
+  padding: 1.25rem;
+}
+
+.hostel-card-name {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.hostel-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.hostel-card-info .info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gender-tag {
+  text-transform: capitalize;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: #f1f5f9;
+}

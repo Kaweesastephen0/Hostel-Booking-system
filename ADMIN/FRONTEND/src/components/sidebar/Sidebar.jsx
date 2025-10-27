@@ -18,8 +18,8 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-   
-    localStorage.removeItem("user")
+    // Stephan I think this is you to Implement the logout logic here
+    console.log('Logging out...');
     navigate('/login');
   };
 

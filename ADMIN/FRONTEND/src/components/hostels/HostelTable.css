@@ -1,0 +1,29 @@
+.hostel-table-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.edit-btn {
+  background-color: #e0e7ff; 
+  color: #4338ca; 
+}
+.edit-btn:hover { background-color: #c7d2fe; }
+
+.delete-btn {
+  background-color: #fee2e2; 
+  color: #b91c1c; /
+}
+.delete-btn:hover { background-color: #fecaca; }
+
