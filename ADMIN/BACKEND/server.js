@@ -6,7 +6,8 @@ import hostelRoute from "./routes/hostelRoute.js";
 import roomRoute from "./routes/roomRoute.js";
 import authRoutes from "./routes/auth.js";
 import bookingRoutes from "./routes/bookings.js";
-
+import userRoutes from "./routes/users.js";
+import paymentRoutes from "./routes/payments.js";
 
 // Load environment variables
 dotenv.config();
@@ -17,16 +18,49 @@ connectDB();
 const app = express();
 
 // Middlewares
+<<<<<<< HEAD
 app.use(cors());
+=======
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+>>>>>>> origin/stephen
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/hostels', hostelRoute);
+<<<<<<< HEAD
 app.use("/api/rooms", roomRoute); // This was causing the error
 app.use("/api/auth", authRoutes); // This would have been the next error
 app.use("/api/bookings", bookingRoutes); // This would have been the error after that
 app.use("/api/premium", hostelRoute);
+=======
+app.use("/api/rooms", roomRoute); 
+app.use("/api/auth", authRoutes); 
+app.use("/api/bookings", bookingRoutes); 
+app.use("/api/auth", authRoutes); // This would have been the next error
+app.use("/api/bookings", bookingRoutes); // This would have been the error after that
+app.use("/api/premium", hostelRoute);
+app.use("/api/users", userRoutes);
+app.use("/api/payments", paymentRoutes);
+>>>>>>> origin/stephen
  
 
 // Health check endpoint

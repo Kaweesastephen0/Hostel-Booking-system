@@ -16,11 +16,6 @@ import Profile from './pages/Profile/Profile';
 
 
 import './App.css';
-//THESE ARE JUST PLACEHOLDERS FOR PAGES THAT ARE YET TO BE DEVELOPED
-const PlaceholderPage = ({ title }) => <div style={{ padding: '2rem' }}><h1>{title}</h1><p>This page has not been Developed yet</p></div>;
-// const BookingsPage = () => <PlaceholderPage title="Manage Bookings" />;
-// const UsersPage = () => <PlaceholderPage title="Manage Users" />;
-// const PaymentsPage = () => <PlaceholderPage title="Manage Payments" />;
 
 /**
  * MainLayout component to wrap authenticated pages

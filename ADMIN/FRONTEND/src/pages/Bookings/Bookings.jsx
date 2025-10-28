@@ -593,35 +593,36 @@ const Bookings = () => {
     }
   };
 
-  const handleBookingUpdated = (updatedBooking) => {
-    fetchBookings();
-    setSnackbar({
-      open: true,
-      message: 'Booking updated successfully',
-      severity: 'success'
-    });
-  };
+  // const handleBookingUpdated = (updatedBooking) => {
+  //   fetchBookings();
+  //   setSnackbar({
+  //     open: true,
+  //     message: 'Booking updated successfully',
+  //     severity: 'success'
+  //   });
+  // };
 
-  const handleError = (error) => {
-    console.error('Error:', error);
-    setSnackbar({
-      open: true,
-      message: error.message || 'An error occurred',
-      severity: 'error'
-    });
-  };
+  // const handleError = (error) => {
+  //   console.error('Error:', error);
+  //   setSnackbar({
+  //     open: true,
+  //     message: error.message || 'An error occurred',
+  //     severity: 'error'
+  //   });
+  // };
 
   const columns = useMemo(() => [
-    {
-      id: 'reference',
-      label: 'Reference',
-      minWidth: 120,
-      format: (value, row) => value || row.id || '—',
-    },
+    // {
+    //   id: 'reference',
+    //   label: 'Reference',
+    //   minWidth: 50,
+    //   format: (value, row) => value || row.id || '—',
+    // },
     {
       id: 'guestName',
       label: 'Guest',
-      minWidth: 160,
+      minWidth: 50,
+      overflowY: "hidden",
       format: (_value, row) => (
         <Box display="flex" flexDirection="column">
           <Typography variant="body2">{row.guestName || '—'}</Typography>
@@ -636,13 +637,13 @@ const Bookings = () => {
     {
       id: 'roomNumber',
       label: 'Room',
-      minWidth: 100,
+      minWidth: 50,
       format: (value) => value || '—',
     },
     {
       id: 'status',
       label: 'Status',
-      minWidth: 110,
+      minWidth: 50,
       format: (value) => (
         <Chip
           label={value ? value.charAt(0).toUpperCase() + value.slice(1) : 'Pending'}
@@ -655,26 +656,26 @@ const Bookings = () => {
     {
       id: 'checkIn',
       label: 'Check-In',
-      minWidth: 120,
+      minWidth: 100,
       format: (value) => formatDate(value),
     },
     {
       id: 'checkOut',
       label: 'Check-Out',
-      minWidth: 120,
+      minWidth: 100,
       format: (value) => formatDate(value),
     },
     {
       id: 'amount',
       label: 'Amount',
-      minWidth: 120,
+      minWidth: 50,
       align: 'right',
       format: (value) => formatCurrency(typeof value === 'number' ? value : Number(value) || 0),
     },
     {
       id: 'createdAt',
       label: 'Created',
-      minWidth: 140,
+      minWidth: 50,
       format: (value) => formatDate(value),
     },
   ], []);
@@ -732,7 +733,7 @@ const Bookings = () => {
 
   if (fetchError) {
     return (
-      <Box marginLeft="290px" p={3}>
+      <Box p={3}>
         <Alert severity="error" sx={{ mb: 2 }}>
           {fetchError}
         </Alert>
@@ -741,7 +742,7 @@ const Bookings = () => {
   }
 
   return (
-    <Box marginLeft="290px" p={3}>
+    <Box p={3}>
       <Box mb={3}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h4">Bookings</Typography>
@@ -767,145 +768,104 @@ const Bookings = () => {
         {showFilters && (
           <Box>
             <Paper sx={{ p: 2 }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={3}>
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  placeholder="Search bookings..."
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search />
-                      </InputAdornment>
-                    ),
-                  }}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12} md={2}>
-                <FormControl variant="outlined" size="small" fullWidth>
-                  <InputLabel>Status</InputLabel>
-                  <Select
-                    value={filters.status}
-                    onChange={handleFilterChange('status')}
-                    label="Status"
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    placeholder="Search bookings..."
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search />
+                        </InputAdornment>
+                      ),
+                    }}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <FormControl variant="outlined" size="small" fullWidth>
+                    <InputLabel>Status</InputLabel>
+                    <Select
+                      value={filters.status}
+                      onChange={handleFilterChange('status')}
+                      label="Status"
+                    >
+                      <MenuItem value="all">All Statuses</MenuItem>
+                      <MenuItem value="pending">Pending</MenuItem>
+                      <MenuItem value="confirmed">Confirmed</MenuItem>
+                      <MenuItem value="cancelled">Cancelled</MenuItem>
+                      <MenuItem value="completed">Completed</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <FormControl fullWidth variant="outlined" size="small">
+                    <InputLabel>Date Range</InputLabel>
+                    <Select
+                      value={filters.dateRange}
+                      onChange={handleFilterChange('dateRange')}
+                      label="Date Range"
+                    >
+                      <MenuItem value="all">All Dates</MenuItem>
+                      <MenuItem value="today">Today</MenuItem>
+                      <MenuItem value="thisWeek">This Week</MenuItem>
+                      <MenuItem value="thisMonth">This Month</MenuItem>
+                      <MenuItem value="upcoming">Upcoming</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <FormControl fullWidth variant="outlined" size="small">
+                    <InputLabel>Room Type</InputLabel>
+                    <Select
+                      value={filters.roomType}
+                      onChange={handleFilterChange('roomType')}
+                      label="Room Type"
+                    >
+                      <MenuItem value="all">All Types</MenuItem>
+                      <MenuItem value="single">Single</MenuItem>
+                      <MenuItem value="double">Double</MenuItem>
+
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <FormControl fullWidth variant="outlined" size="small">
+                    <InputLabel>Payment Status</InputLabel>
+                    <Select
+                      value={filters.paymentStatus}
+                      onChange={handleFilterChange('paymentStatus')}
+                      label="Payment Status"
+                    >
+                      <MenuItem value="all">All Payments</MenuItem>
+                      <MenuItem value="paid">Paid</MenuItem>
+                      <MenuItem value="pending">Pending</MenuItem>
+                      <MenuItem value="partial">Partial</MenuItem>
+                      <MenuItem value="refunded">Refunded</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={1} display="flex" justifyContent="flex-end">
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={clearFilters}
+                    fullWidth
                   >
-                    <MenuItem value="all">All Statuses</MenuItem>
-                    <MenuItem value="pending">Pending</MenuItem>
-                    <MenuItem value="confirmed">Confirmed</MenuItem>
-                    <MenuItem value="cancelled">Cancelled</MenuItem>
-                    <MenuItem value="completed">Completed</MenuItem>
-                  </Select>
-                </FormControl>
+                    Clear
+                  </Button>
+                </Grid>
               </Grid>
-              <Grid item xs={12} md={2}>
-                <FormControl fullWidth variant="outlined" size="small">
-                  <InputLabel>Date Range</InputLabel>
-                  <Select
-                    value={filters.dateRange}
-                    onChange={handleFilterChange('dateRange')}
-                    label="Date Range"
-                  >
-                    <MenuItem value="all">All Dates</MenuItem>
-                    <MenuItem value="today">Today</MenuItem>
-                    <MenuItem value="thisWeek">This Week</MenuItem>
-                    <MenuItem value="thisMonth">This Month</MenuItem>
-                    <MenuItem value="upcoming">Upcoming</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} md={2}>
-                <FormControl fullWidth variant="outlined" size="small">
-                  <InputLabel>Room Type</InputLabel>
-                  <Select
-                    value={filters.roomType}
-                    onChange={handleFilterChange('roomType')}
-                    label="Room Type"
-                  >
-                    <MenuItem value="all">All Types</MenuItem>
-                    <MenuItem value="single">Single</MenuItem>
-                    <MenuItem value="double">Double</MenuItem>
-                    <MenuItem value="dormitory">Dormitory</MenuItem>
-                    <MenuItem value="suite">Suite</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} md={2}>
-                <FormControl fullWidth variant="outlined" size="small">
-                  <InputLabel>Payment Status</InputLabel>
-                  <Select
-                    value={filters.paymentStatus}
-                    onChange={handleFilterChange('paymentStatus')}
-                    label="Payment Status"
-                  >
-                    <MenuItem value="all">All Payments</MenuItem>
-                    <MenuItem value="paid">Paid</MenuItem>
-                    <MenuItem value="pending">Pending</MenuItem>
-                    <MenuItem value="partial">Partial</MenuItem>
-                    <MenuItem value="refunded">Refunded</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} md={1} display="flex" justifyContent="flex-end">
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={clearFilters}
-                  fullWidth
-                >
-                  Clear
-                </Button>
-              </Grid>
-            </Grid>
             </Paper>
           </Box>
         )}
 
       </Box>
 
-      <Box display="flex" gap={2} mb={3} flexWrap="wrap">
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="Search bookings..."
-          value={searchTerm}
-          onChange={handleSearch}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-          sx={{ minWidth: 250 }}
-        />
-
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Status</InputLabel>
-          <Select value={statusFilter} onChange={handleStatusFilterChange} label="Status">
-            <MenuItem value="all">All Status</MenuItem>
-            {STATUS_OPTIONS.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option.charAt(0).toUpperCase() + option.slice(1)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Date Range</InputLabel>
-          <Select value={dateRange} onChange={handleDateRangeChange} label="Date Range">
-            {DATE_RANGE_OPTIONS.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
 
       <DataTable
         columns={columns}

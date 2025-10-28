@@ -9,6 +9,8 @@
 .env.production
 .env.test
 .env.*
+.Environment
+
 
 # Logs and debug files
 logs
