@@ -3,50 +3,37 @@ import styles from './HostelHeader.module.css';
 import { Home, UserPlus, User } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import SidebarMenu from '../sidebar/sidebarMenu';
-import UserProfile from '../Auth/UserProfile';
 
 //umaru
 const HostelHeader = () => {
   const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [userData, setUserData] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName]=useState('')
 
   useEffect(() => {
     const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
     const storedUserData = localStorage.getItem('userData') || sessionStorage.getItem('userData');
 
     if (token && storedUserData) {
+      setIsLoggedIn(true)
       try {
-        const parsedData = JSON.parse(storedUserData);
-        setUserData(parsedData);
-        setIsLoggedIn(true);
+        const userData = JSON.parse(storedUserData);
+        setUserName(userData.firstName || '');
       } catch (error) {
         console.error('Error parsing user data:', error);
-        handleLogout();
       }
     }
   }, []);
 
   const handleUserIconClick = () => {
     if (isLoggedIn) {
-      setIsProfileOpen(true);
+      navigate('/profile')
     } else {
       navigate('/auth');
     }
   };
-  const handleLogout = () => {
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('userData');
-    localStorage.removeItem('lastLoginTime');
-    sessionStorage.removeItem('userToken');
-    sessionStorage.removeItem('userData');
-    sessionStorage.removeItem('lastLoginTime');
-
-    setUserData(null);
-    setIsLoggedIn(false);
-    setIsProfileOpen(false);
-  };
+ 
 // end umaru
 
   return (
@@ -86,17 +73,18 @@ const HostelHeader = () => {
           </div>
 
           <div className={styles.userIcons} onClick={handleUserIconClick}>
-            {isLoggedIn ? <User size={32} /> : <UserPlus size={32} />}
+            {/* {isLoggedIn ? <User size={32} /> : <UserPlus size={32} />} */}
+            {isLoggedIn ? (
+            <>
+              <span className={styles.userName}>{userName}</span>
+              <User size={32} />
+            </>
+          ) : (
+            <UserPlus size={32} />
+            )}
           </div>
         </div>
       </header>
-      
-      <UserProfile
-        isOpen={isProfileOpen}
-        onClose={() => setIsProfileOpen(false)}
-        userData={userData}
-        onLogout={handleLogout}
-      />
     </>
   );
 };

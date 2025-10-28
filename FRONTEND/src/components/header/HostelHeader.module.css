@@ -92,6 +92,11 @@
     margin-left: 20px;
     cursor: pointer;
 }
+.userName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
 /* .userBtn {
   background: none;
   border: none;

@@ -4,7 +4,7 @@ import HostelList from "./components/homePage/HostelList"
 import Auth from "./components/Auth/AuthModal"
 import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
-import HostelHeader from "./components/header/HostelHeader"
+import HostelHeader from "./components/header/HostelHeader.jsx";
 import Booking from "./components/booking/Booking"
 import MukBookFooter from "./components/footer/HostelFooter"
 import RoomListingPage from "./components/roomList/RoomList"
@@ -14,7 +14,7 @@ import UserProfile from "./components/Auth/UserProfile"
 const App = () => {
   const location = useLocation();
 
-  const noHeaderNoFooter = location.pathname.includes("/login") || location.pathname.includes("/auth") || location.pathname.includes("/profile");
+  const noHeaderNoFooter = location.pathname.includes("/login") || location.pathname.includes("/auth") 
 
   return (
     <div>
