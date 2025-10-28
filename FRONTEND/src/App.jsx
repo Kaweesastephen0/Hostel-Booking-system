@@ -31,7 +31,7 @@ const App = () => {
         <Route path="/rooms/:hostelId" element={<RoomListingPage />} />
         <Route path="/room/:roomId" element={<ExactRoom />} />
         <Route path='/booking' element={<Booking/>}/>
-        <Route path='/HostelHeader' element={<HostelHeader/>}/>
+        
       </Routes>
 
       {!noHeaderNoFooter && <MukBookFooter />}
