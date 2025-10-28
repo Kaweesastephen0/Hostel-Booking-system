@@ -61,15 +61,13 @@ const HostelHeader = () => {
           </div>
 
           <div className={styles.branding}>
-            <div className={styles.brandingTop}>
-              <Home className={styles.brandIcon} size={24} />
-              <h6 className={styles.brandName}>
-                 <Link className={styles.brandNameLink} to="/">MUK-Book</Link>
-                </h6>
+            <div className={styles.topBranding}>
+              <Home className={styles.brandIcon} size={24} /><Link className={styles.brandNameLink} to="/">MUK-Book</Link>
             </div>
+            
             <h5 className={styles.brandPhone}>
-              <a href="tel:+256709167919">Tel: +256709167919</a>
-            </h5>
+                  <a href="tel:+256709167919">Tel: +256709167919</a>
+                </h5>
           </div>
 
           <div className={styles.userIcons} onClick={handleUserIconClick}>
