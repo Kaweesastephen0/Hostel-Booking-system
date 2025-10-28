@@ -8,44 +8,30 @@ import UserProfile from '../Auth/UserProfile';
 //umaru
 const HostelHeader = () => {
   const navigate = useNavigate();
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [userData, setUserData] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
     const storedUserData = localStorage.getItem('userData') || sessionStorage.getItem('userData');
 
     if (token && storedUserData) {
+      setIsLoggedIn(true);
       try {
-        const parsedData = JSON.parse(storedUserData);
-        setUserData(parsedData);
-        setIsLoggedIn(true);
+        const userData = JSON.parse(storedUserData);
+        setUserName(userData.firstName || '');
       } catch (error) {
         console.error('Error parsing user data:', error);
-        handleLogout();
       }
     }
   }, []);
 
   const handleUserIconClick = () => {
     if (isLoggedIn) {
-      setIsProfileOpen(true);
+      navigate('/profile');
     } else {
       navigate('/auth');
     }
-  };
-  const handleLogout = () => {
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('userData');
-    localStorage.removeItem('lastLoginTime');
-    sessionStorage.removeItem('userToken');
-    sessionStorage.removeItem('userData');
-    sessionStorage.removeItem('lastLoginTime');
-
-    setUserData(null);
-    setIsLoggedIn(false);
-    setIsProfileOpen(false);
   };
 // end umaru
 
@@ -58,22 +44,22 @@ const HostelHeader = () => {
           </div>
           
 
-          <div className={styles.sortOptions}>
-            <div className={styles.sortOption}>
-              <div className={styles.sortLabel}>sort by</div>
-              <div className={styles.sortValue}>price</div>
-            </div>
-            <div className={styles.sortOption}>
-              <div className={styles.sortLabel}>sort by</div>
-              <div className={styles.sortValue}>distance</div>
-            </div>
-            <div className={styles.sortOption}>
-              <div className={styles.sortLabel}>sort by</div>
-              <div className={styles.sortValue}>Amenity</div>
-            </div>
+        <div className={styles.sortOptions}>
+          <div className={styles.sortOption}>
+            <div className={styles.sortLabel}>sort by</div>
+            <div className={styles.sortValue}>price</div>
           </div>
+          <div className={styles.sortOption}>
+            <div className={styles.sortLabel}>sort by</div>
+            <div className={styles.sortValue}>distance</div>
+          </div>
+          <div className={styles.sortOption}>
+            <div className={styles.sortLabel}>sort by</div>
+            <div className={styles.sortValue}>Amenity</div>
+          </div>
+        </div>
 
-          <div className={styles.branding}>
+        <div className={styles.branding}>
             <div className={styles.brandingTop}>
               <Home className={styles.brandIcon} size={24} />
               <h6 className={styles.brandName}>
@@ -85,18 +71,13 @@ const HostelHeader = () => {
             </h5>
           </div>
 
-          <div className={styles.userIcons} onClick={handleUserIconClick}>
+
+         <div className={styles.userIcons} onClick={handleUserIconClick}>
             {isLoggedIn ? <User size={32} /> : <UserPlus size={32} />}
           </div>
-        </div>
-      </header>
-      
-      <UserProfile
-        isOpen={isProfileOpen}
-        onClose={() => setIsProfileOpen(false)}
-        userData={userData}
-        onLogout={handleLogout}
-      />
+
+      </div>
+    </header>
     </>
   );
 };

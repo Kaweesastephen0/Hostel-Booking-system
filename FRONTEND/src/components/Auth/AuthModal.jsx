@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { ArrowLeft, Mail, Lock, User, CreditCard, Hash } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, CreditCard, Hash, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AuthModal.module.css';
+import API_URL from './config/api';
+
 
 // PASSWORD VALIDATION UTILITIES
 
@@ -56,6 +58,8 @@ function Auth() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [passwordValidation, setPasswordValidation] = useState({ isValid: false, errors: [] });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 
   // FORM VALIDATION HELPERS
@@ -111,7 +115,7 @@ function Auth() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -163,7 +167,7 @@ function Auth() {
     }
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/register', {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -270,7 +274,7 @@ function Auth() {
                   <div className={styles.inputGroup}>
                     <Lock className={styles.inputIcon} size={20} />
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       name="password"
                       placeholder="Enter your password"
                       value={formData.password}
@@ -278,6 +282,15 @@ function Auth() {
                       required
                       className={styles.input}
                     />
+                    {formData.password && (
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className={styles.eyeIcon}
+                      >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -473,7 +486,7 @@ function Auth() {
                   <div className={styles.inputGroup}>
                     <Lock className={styles.inputIcon} size={20} />
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       name="password"
                       placeholder="Create a password"
                       value={formData.password}
@@ -481,6 +494,15 @@ function Auth() {
                       required
                       className={styles.input}
                     />
+                    {formData.password && (
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className={styles.eyeIcon}
+                      >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    )}
                     {formData.password && !passwordValidation.isValid && (
                       <div className={styles.passwordHint}>
                         Required: {passwordValidation.errors.join(', ')}
@@ -494,7 +516,7 @@ function Auth() {
                   <div className={styles.inputGroup}>
                     <Lock className={styles.inputIcon} size={20} />
                     <input
-                      type="password"
+                      type={showConfirmPassword ? "text" : "password"}
                       name="confirmPassword"
                       placeholder="Re-enter your password"
                       value={formData.confirmPassword}
@@ -502,6 +524,15 @@ function Auth() {
                       required
                       className={styles.input}
                     />
+                    {formData.confirmPassword && (
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className={styles.eyeIcon}
+                      >
+                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    )}
                     {formData.confirmPassword && (
                       <div className={formData.password === formData.confirmPassword ? styles.passwordMatch : styles.passwordMismatch}>
                         {formData.password === formData.confirmPassword ? '✓ Matching' : '✗ Not matching'}
@@ -553,6 +584,9 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordValidation, setPasswordValidation] = useState({ isValid: false, errors: [] });
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
 
   //Validates if step 1 form is complete
    
@@ -584,7 +618,7 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/forgot-password', {
+      const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email })
@@ -627,7 +661,7 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
     }
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/reset-password', {
+      const response = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -717,13 +751,22 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
             <div className={styles.inputGroup}>
               <Lock className={styles.inputIcon} size={20} />
               <input
-                type="password"
+                type={showNewPassword ? "text" : "password"}
                 placeholder="Create a new password"
                 value={newPassword}
                 onChange={(e) => handlePasswordChange(e.target.value)}
                 required
                 className={styles.input}
               />
+              {newPassword && (
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className={styles.eyeIcon}
+                >
+                  {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              )}
               {newPassword && !passwordValidation.isValid && (
                 <div className={styles.passwordHint}>
                   Required: {passwordValidation.errors.join(', ')}
@@ -737,13 +780,22 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
             <div className={styles.inputGroup}>
               <Lock className={styles.inputIcon} size={20} />
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Re-enter your new password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 className={styles.input}
               />
+              {confirmPassword && (
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className={styles.eyeIcon}
+                >
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              )}
               {confirmPassword && (
                 <div className={newPassword === confirmPassword ? styles.passwordMatch : styles.passwordMismatch}>
                   {newPassword === confirmPassword ? '✓ Matching' : '✗ Not matching'}

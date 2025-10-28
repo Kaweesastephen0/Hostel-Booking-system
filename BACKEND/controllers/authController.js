@@ -1,11 +1,15 @@
+
 import User from '../models/User.js';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'your-secret-key', {
-    expiresIn: '30d'
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not configured');
+  }
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE 
   });
 };
 
@@ -45,8 +49,8 @@ export const register = async (req, res) => {
 
     if (user) {
       const transporter = nodemailer.createTransport({
-        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-        port: parseInt(process.env.EMAIL_PORT || '587'),
+        host: process.env.EMAIL_HOST,
+        port: parseInt(process.env.EMAIL_PORT),
         secure: process.env.EMAIL_SECURE === 'true',
         auth: {
           user: process.env.EMAIL_USER,
@@ -57,15 +61,14 @@ export const register = async (req, res) => {
         }
       });
 
-      // Verify transporter configuration
       try {
         await transporter.verify();
         console.log('Email server is ready to send messages');
       } catch (verifyError) {
-        console.error('Email verification failed:', verifyError);
+        console.error('Email verification failed');
       }
 
-      const loginUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth`;
+      const loginUrl = `${process.env.FRONTEND_URL}/auth`;
 
       const welcomeMessage = `
         <!DOCTYPE html>
@@ -83,11 +86,11 @@ export const register = async (req, res) => {
         <body>
           <div class="container">
             <div class="header">
-              <h1>Welcome to MUK-Book!</h1>
+              <h1>Welcome to ${process.env.APP_NAME}!</h1>
             </div>
             <div class="content">
               <p>Hello ${user.gender === 'Male' ? 'Mr.' : 'Ms.'} ${user.firstName} ${user.surname},</p>
-              <p>Thank you for registering with MUK-Book Hostel Booking System!</p>
+              <p>Thank you for registering with ${process.env.APP_NAME} Hostel Booking System!</p>
               <p>Your account has been successfully created. You can now login and start booking your ideal accommodation.</p>
               <p><strong>Account Details:</strong></p>
               <ul>
@@ -102,10 +105,10 @@ export const register = async (req, res) => {
               </p>
               <p style="margin-top: 20px;">If the button doesn't work, copy and paste this link into your browser:</p>
               <p style="color: #2563eb; word-break: break-all;">${loginUrl}</p>
-              <p>If you have any questions, please don't hesitate to contact us at +256740822691.</p>
+              <p>If you have any questions, please don't hesitate to contact us at ${process.env.SUPPORT_PHONE}.</p>
             </div>
             <div class="footer">
-              <p>MUK-Book Hostel Booking System</p>
+              <p>${process.env.APP_NAME} Hostel Booking System</p>
               <p>This is an automated message, please do not reply.</p>
             </div>
           </div>
@@ -115,15 +118,15 @@ export const register = async (req, res) => {
 
       try {
         await transporter.sendMail({
-          from: `"MUK-Book" <${process.env.EMAIL_USER}>`,
+          from: `"${process.env.APP_NAME}" <${process.env.EMAIL_USER}>`,
           to: user.email,
-          subject: 'Welcome to MUK-Book - Registration Successful',
+          subject: `Welcome to ${process.env.APP_NAME} - Registration Successful`,
           html: welcomeMessage,
-          text: `Welcome to MUK-Book!\n\nHello ${user.firstName} ${user.surname},\n\nThank you for registering with MUK-Book Hostel Booking System!\n\nYour account has been successfully created.`
+          text: `Welcome to ${process.env.APP_NAME}!\n\nHello ${user.firstName} ${user.surname},\n\nThank you for registering with ${process.env.APP_NAME} Hostel Booking System!\n\nYour account has been successfully created.`
         });
         console.log('Welcome email sent successfully');
       } catch (emailError) {
-        console.error('Failed to send welcome email:', emailError);
+        console.error('Failed to send welcome email');
       }
 
       res.status(201).json({
@@ -139,7 +142,7 @@ export const register = async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'An error occurred during registration' });
   }
 };
 
@@ -169,7 +172,7 @@ export const login = async (req, res) => {
       res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'An error occurred during login' });
   }
 };
 
@@ -190,14 +193,13 @@ export const forgotPassword = async (req, res) => {
       .update(resetToken)
       .digest('hex');
 
-    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+    user.resetPasswordExpire = Date.now() + parseInt(process.env.RESET_TOKEN_EXPIRE );
 
     await user.save();
 
-    // ========== EMAIL TRANSPORTER CONFIGURATION ==========
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.EMAIL_PORT || '587'),
+      host: process.env.EMAIL_HOST,
+      port: parseInt(process.env.EMAIL_PORT),
       secure: process.env.EMAIL_SECURE === 'true',
       auth: {
         user: process.env.EMAIL_USER,
@@ -208,18 +210,17 @@ export const forgotPassword = async (req, res) => {
       }
     });
 
-    // Verify transporter configuration
     try {
       await transporter.verify();
       console.log('Email server is ready to send messages');
     } catch (verifyError) {
-      console.error('Email server verification failed:', verifyError);
+      console.error('Email server verification failed');
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
       return res.status(500).json({
-        message: 'Email service configuration error. Please contact administrator on 0707366082.',
-        error: process.env.NODE_ENV === 'development' ? verifyError.message : undefined
+        message: 'Email service configuration error. Please contact administrator.',
+        error: process.env.NODE_ENV === 'development' ? 'Email service unavailable' : undefined
       });
     }
 
@@ -249,7 +250,7 @@ export const forgotPassword = async (req, res) => {
               <p>Your reset code is:</p>
               <div class="code">${resetToken}</div>
             </div>
-            <p><strong>This code will expire in 10 minutes.</strong></p>
+            <p><strong>This code will expire in ${parseInt(process.env.RESET_TOKEN_EXPIRE ) / 60000} minutes.</strong></p>
             <p>If you didn't request this password reset, please ignore this email and your password will remain unchanged.</p>
           </div>
           <div class="footer">
@@ -260,35 +261,34 @@ export const forgotPassword = async (req, res) => {
       </html>
     `;
 
-    // ========== SEND THE EMAIL ==========
     try {
       const info = await transporter.sendMail({
-        from: `"MUK-Book" <${process.env.EMAIL_USER}>`,
+        from: `"${process.env.APP_NAME}" <${process.env.EMAIL_USER}>`,
         to: user.email,
-        subject: 'Password Reset Code - MUK-Book',
+        subject: `Password Reset Code - ${process.env.APP_NAME}`,
         html: message,
-        text: `Password Reset Request\n\nYou requested a password reset for your MUK-Book account.\n\nYour reset code is: ${resetToken}\n\nThis code will expire in 10 minutes.\n\nIf you didn't request this, please ignore this email.`
+        text: `Password Reset Request\n\nYou requested a password reset for your ${process.env.APP_NAME} account.\n\nYour reset code is: ${resetToken}\n\nThis code will expire in ${parseInt(process.env.RESET_TOKEN_EXPIRE) / 60000} minutes.\n\nIf you didn't request this, please ignore this email.`
       });
 
-      console.log('Password reset email sent successfully:', info.messageId);
+      console.log('Password reset email sent successfully');
       res.status(200).json({
         message: 'Reset code sent to email',
         success: true
       });
     } catch (emailError) {
-      console.error('Failed to send email:', emailError);
+      console.error('Failed to send email');
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
 
       return res.status(500).json({
         message: 'Failed to send reset code. Please try again later.',
-        error: process.env.NODE_ENV === 'development' ? emailError.message : undefined
+        error: process.env.NODE_ENV === 'development' ? 'Email delivery failed' : undefined
       });
     }
   } catch (error) {
-    console.error('Forgot password error:', error);
-    res.status(500).json({ message: error.message });
+    console.error('Forgot password error');
+    res.status(500).json({ message: 'An error occurred during password reset' });
   }
 };
 
@@ -319,6 +319,135 @@ export const resetPassword = async (req, res) => {
 
     res.status(200).json({ message: 'Password reset successful' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'An error occurred during password reset' });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not configured');
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { firstName, surname, userType, studentNumber, nin } = req.body;
+
+    if (userType !== user.userType) {
+      if (userType === 'student' && studentNumber) {
+        const existingStudent = await User.findOne({
+          studentNumber,
+          _id: { $ne: user._id }
+        });
+        if (existingStudent) {
+          return res.status(400).json({ message: 'Student number already registered' });
+        }
+      }
+
+      if (userType === 'non-student' && nin) {
+        const existingNin = await User.findOne({
+          nin,
+          _id: { $ne: user._id }
+        });
+        if (existingNin) {
+          return res.status(400).json({ message: 'NIN already registered' });
+        }
+      }
+    } else {
+      if (userType === 'student' && studentNumber && studentNumber !== user.studentNumber) {
+        const existingStudent = await User.findOne({
+          studentNumber,
+          _id: { $ne: user._id }
+        });
+        if (existingStudent) {
+          return res.status(400).json({ message: 'Student number already registered' });
+        }
+      }
+
+      if (userType === 'non-student' && nin && nin !== user.nin) {
+        const existingNin = await User.findOne({
+          nin,
+          _id: { $ne: user._id }
+        });
+        if (existingNin) {
+          return res.status(400).json({ message: 'NIN already registered' });
+        }
+      }
+    }
+
+    user.firstName = firstName;
+    user.surname = surname;
+    user.userType = userType;
+
+    if (userType === 'student') {
+      user.studentNumber = studentNumber;
+      user.nin = undefined;
+    } else {
+      user.nin = nin;
+      user.studentNumber = undefined;
+    }
+
+    await user.save();
+
+    res.json({
+      _id: user._id,
+      firstName: user.firstName,
+      surname: user.surname,
+      email: user.email,
+      gender: user.gender,
+      userType: user.userType,
+      studentNumber: user.studentNumber,
+      nin: user.nin,
+      createdAt: user.createdAt,
+      lastLogin: user.lastLogin
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred during profile update' });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not configured');
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { oldPassword, newPassword } = req.body;
+
+    const isMatch = await user.matchPassword(oldPassword);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred during password change' });
   }
 };
