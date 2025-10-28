@@ -49,33 +49,6 @@ const styles = {
     textTransform: 'uppercase',
     letterSpacing: '0.5px'
   },
-  priceRange: {
-    padding: '15px',
-    background: '#eff6ff',
-    borderRadius: '8px',
-    marginBottom: '15px'
-  },
-  priceChart: {
-    height: '50px',
-    display: 'flex',
-    alignItems: 'flex-end',
-    gap: '2px',
-    marginBottom: '10px'
-  },
-  chartBar: {
-    flex: 1,
-    background: '#3b82f6',
-    borderRadius: '2px 2px 0 0',
-    minHeight: '4px',
-    transition: 'all 0.3s ease'
-  },
-  priceLabels: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    fontSize: '12px',
-    fontWeight: '600',
-    color: '#1e3a8a'
-  },
   checkbox: {
     display: 'flex',
     alignItems: 'center',
@@ -216,6 +189,12 @@ const styles = {
     color: '#6b7280',
     marginBottom: '10px'
   },
+  roomDescription: {
+    fontSize: '13px',
+    color: '#6b7280',
+    marginTop: '8px',
+    lineHeight: '1.5'
+  },
   features: {
     display: 'flex',
     gap: '8px',
@@ -290,6 +269,11 @@ const styles = {
     marginTop: '3px',
     marginBottom: '10px'
   },
+  bookingFee: {
+    fontSize: '12px',
+    color: '#6b7280',
+    marginTop: '4px'
+  },
   viewButton: {
     background: '#3b82f6',
     color: '#ffffff',
@@ -352,27 +336,35 @@ export default function RoomsList() {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
+        console.log('🔍 Fetching rooms for hostel:', hostelId);
         setLoading(true);
+        
         const response = await fetch(`http://localhost:5000/api/rooms/hostel/${hostelId}`);
+        
+        console.log('📡 Response status:', response.status);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const result = await response.json();
+        console.log('📦 API Response:', result);
         
         if (result.success && Array.isArray(result.data)) {
+          console.log('✅ Found rooms:', result.data.length);
           setRooms(result.data);
      
           // Set hostel info from first room
           if (result.data.length > 0 && result.data[0].hostelId) {
             setHostelInfo(result.data[0].hostelId);
+            console.log('🏨 Hostel info:', result.data[0].hostelId);
           }
         } else {
+          console.log('⚠️ No rooms found');
           setRooms([]);
         }
       } catch (error) {
-        console.error('Error fetch rooms by ID', error);
+        console.error('❌ Error fetching rooms:', error);
         setError('Failed to load rooms. Please try again later.');
       } finally {
         setLoading(false);
@@ -381,6 +373,10 @@ export default function RoomsList() {
 
     if (hostelId) {
       fetchRooms();
+    } else {
+      console.error('❌ No hostelId in URL');
+      setError('No hostel ID provided');
+      setLoading(false);
     }
   }, [hostelId]);
 
@@ -397,10 +393,10 @@ export default function RoomsList() {
     });
   };
 
-    const getBookingFeeDisplay = (room) => {
+  const getBookingFeeDisplay = (room) => {
     if (room.bookingPrice && room.bookingPrice > 0) {
       return (
-        <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+        <div style={styles.bookingFee}>
           + UGX {room.bookingPrice.toLocaleString()} booking fee
         </div>
       );
@@ -408,26 +404,25 @@ export default function RoomsList() {
     return null;
   };
 
-
   if (loading) {
     return (
-      <div>
-        loadingMessage
+      <div style={styles.container}>
+        <div style={styles.loading}>Loading rooms...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div>
-        {error}
+      <div style={styles.container}>
+        <div style={styles.error}>{error}</div>
       </div>
     );
   }
 
   return (
     <div style={styles.container}>
-       <div style={styles.mainContent}>
+      <div style={styles.mainContent}>
         <aside style={styles.sidebar}>
           <div style={styles.filterHeader}>
             Filters
@@ -435,11 +430,11 @@ export default function RoomsList() {
           </div>
 
           <div style={styles.filterSection}>
-            <div style={styles.filterTitle}>Availability</div>
+            <div style={styles.filterTitle}>Room Type</div>
             {[
-              { label: 'Available Now', count: rooms.filter(r => r.availability).length },
-              { label: 'Single Rooms', count: rooms.filter(r => r.maxOccupancy === 1).length },
-              { label: 'Shared Rooms', count: rooms.filter(r => r.maxOccupancy > 1).length }
+              { label: 'Single', count: rooms.filter(r => r.roomType === 'single').length },
+              { label: 'Double', count: rooms.filter(r => r.roomType === 'double').length },
+              { label: 'Shared', count: rooms.filter(r => r.roomType === 'shared').length }
             ].map(item => (
               <label 
                 key={item.label} 
@@ -455,11 +450,11 @@ export default function RoomsList() {
           </div>
 
           <div style={styles.filterSection}>
-            <div style={styles.filterTitle}>Room Type</div>
+            <div style={styles.filterTitle}>Gender</div>
             {[
-              { label: 'Single', count: rooms.filter(r => r.maxOccupancy === 1).length },
-              { label: 'Double', count: rooms.filter(r => r.maxOccupancy === 2).length },
-              { label: 'Triple+', count: rooms.filter(r => r.maxOccupancy >= 3).length }
+              { label: 'Male', count: rooms.filter(r => r.roomGender === 'male').length },
+              { label: 'Female', count: rooms.filter(r => r.roomGender === 'female').length },
+              { label: 'Mixed', count: rooms.filter(r => r.roomGender === 'mixed').length }
             ].map(item => (
               <label 
                 key={item.label} 
@@ -487,10 +482,11 @@ export default function RoomsList() {
                 <option>Recommended</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
-                <option>Availability</option>
               </select>
             </div>
-            <div style={styles.resultsCount}>{rooms.length} Rooms Found</div>
+            <div style={styles.resultsCount}>
+              {rooms.length} {rooms.length === 1 ? 'Room' : 'Rooms'} Found
+            </div>
           </div>
 
           {rooms.length === 0 ? (
@@ -516,7 +512,7 @@ export default function RoomsList() {
                 <div style={styles.roomCardInner}>
                   <div style={styles.imageSection}>
                     <img 
-                      src={room.image || 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=400&h=300&fit=crop'} 
+                      src={room.roomImage || 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg'} 
                       alt={room.roomNumber || 'Room'} 
                       style={{
                         ...styles.roomImage,
@@ -543,12 +539,17 @@ export default function RoomsList() {
                       <div style={styles.roomHeader}>
                         <div style={styles.roomInfo}>
                           <h3 style={styles.roomName}>
-                            Room {room.roomNumber || 'N/A'}
+                            {room.roomNumber || 'Room N/A'}
                           </h3>
                           <div style={styles.hostelName}>
                             <MapPin size={14} />
-                            {room.hostelId?.name || 'Hostel'}
+                            {room.hostelId?.name || hostelInfo?.name || 'Hostel'}
                           </div>
+                          {room.roomDescription && (
+                            <div style={styles.roomDescription}>
+                              {room.roomDescription}
+                            </div>
+                          )}
                         </div>
                       </div>
                       
@@ -559,16 +560,14 @@ export default function RoomsList() {
                         </div>
                         <div style={styles.featureTag}>
                           <Bed size={12} />
-                          {room.roomType || 'Standard'}
+                          {room.roomType ? room.roomType.charAt(0).toUpperCase() + room.roomType.slice(1) : 'Standard'}
                         </div>
                       </div>
                       
                       <div style={styles.badges}>
-                        {room.availability && (
-                          <span style={styles.availabilityBadge}>Available</span>
-                        )}
+                        <span style={styles.availabilityBadge}>Available</span>
                         <span style={styles.badge}>
-                          {room.hostelId?.HostelGender || 'Mixed'}
+                          {room.roomGender ? room.roomGender.charAt(0).toUpperCase() + room.roomGender.slice(1) : 'Mixed'}
                         </span>
                       </div>
                     </div>
@@ -577,18 +576,16 @@ export default function RoomsList() {
                       <div style={styles.roomDetails}>
                         <div style={styles.detailItem}>
                           <DoorOpen size={16} />
-                          Room {room.roomNumber}
+                          {room.roomNumber}
                         </div>
                       </div>
                       
                       <div style={styles.priceSection}>
                         <div style={styles.price}>
                           UGX {room.roomPrice ? room.roomPrice.toLocaleString() : '0'}
-                          
-                          
-
                         </div>
-                        <div style={styles.priceLabel}>/semester
+                        <div style={styles.priceLabel}>
+                          /semester
                           {getBookingFeeDisplay(room)}
                         </div>
                         <button 
@@ -606,7 +603,6 @@ export default function RoomsList() {
                           onClick={() => navigate(`/room/${room._id}`)}
                         >
                           Book Room <ChevronRight size={14} />
-                          
                         </button>
                       </div>
                     </div>

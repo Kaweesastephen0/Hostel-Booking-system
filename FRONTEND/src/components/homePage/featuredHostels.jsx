@@ -112,10 +112,7 @@ function FeaturedHostels() {
               </div>
               
               <div className={styles.cardContent}>
-                <div className={styles.price}>
-                  UGX {hostel.roomPrice ? hostel.roomPrice.toLocaleString() : '0'}
-                  <span className={styles.perMonth}>/semester</span>
-                </div>
+               
                 <div className={styles.hostelName}>{hostel.name}</div>
                 <div className={styles.address}>{getHostelType(hostel)}</div>
               </div>
