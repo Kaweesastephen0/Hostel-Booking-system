@@ -1,25 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  Typography,
-  IconButton,
-  Tooltip,
-  Chip,
-  TextField,
-  InputAdornment,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Alert,
-  Snackbar,
-} from '@mui/material';
+import { Box, Button, Typography, Chip, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel,
+         Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar } from '@mui/material';
 import { Add, Edit, Delete, Search, Block, CheckCircle } from '@mui/icons-material';
 import DataTable from '../../components/common/DataTable';
 
@@ -248,9 +230,9 @@ const Users = () => {
         prev.map((item) =>
           item.id === user.id
             ? {
-                ...item,
-                isActive: nextIsActive,
-              }
+              ...item,
+              isActive: nextIsActive,
+            }
             : item
         )
       );
@@ -265,9 +247,9 @@ const Users = () => {
   };
 
   const columns = [
-    { 
-      id: 'fullName', 
-      label: 'Name', 
+    {
+      id: 'fullName',
+      label: 'Name',
       minWidth: 150,
       sortable: true,
       format: (value, row) => (
@@ -277,26 +259,26 @@ const Users = () => {
         </Box>
       )
     },
-    { 
-      id: 'role', 
-      label: 'Role', 
+    {
+      id: 'role',
+      label: 'Role',
       minWidth: 100,
       sortable: true,
       format: (value) => (
-        <Chip 
-          label={value.charAt(0).toUpperCase() + value.slice(1)} 
+        <Chip
+          label={value.charAt(0).toUpperCase() + value.slice(1)}
           color={value === 'admin' ? 'primary' : 'default'}
           size="small"
         />
       )
     },
-    { 
-      id: 'isActive', 
-      label: 'Status', 
+    {
+      id: 'isActive',
+      label: 'Status',
       minWidth: 80,
       sortable: true,
       format: (value) => (
-        <Chip 
+        <Chip
           label={value ? 'Active' : 'Inactive'}
           color={value ? 'success' : 'default'}
           size="small"
@@ -304,9 +286,9 @@ const Users = () => {
         />
       )
     },
-    { 
-      id: 'lastLogin', 
-      label: 'Last Login', 
+    {
+      id: 'lastLogin',
+      label: 'Last Login',
       minWidth: 150,
       sortable: true,
       format: (value) => value ? new Date(value).toLocaleString() : 'Never'
@@ -406,8 +388,8 @@ const Users = () => {
   };
 
   return (
-    <Box marginLeft="290px">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} >
+    <Box>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} zIndex="1">
         <Typography variant="h5" component="h1">
           Users Management
         </Typography>
