@@ -1,13 +1,10 @@
+/* hosteLlist.module.css */
 .container {
-  min-height: 100vh;
   background: white;
+  max-width: 100vw;
+  overflow-x: hidden;
   
 }
-
-
-
-
-
 .menuBtn {
   background: none;
   border: none;
@@ -22,9 +19,6 @@
 .menuBtn:hover {
   color: #111827;
 }
-
-
-
 .userName {
   font-size: 14px;
   font-weight: 600;
@@ -34,17 +28,6 @@
 .main {
   padding-top: 80px;
 }
-
-
-/* .searchBarWrapper {
-  position: absolute;
-  bottom: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 1400px;
-  z-index: 10;
-} */
 
 .listingsSection {
   padding: 40px 64px 48px;
