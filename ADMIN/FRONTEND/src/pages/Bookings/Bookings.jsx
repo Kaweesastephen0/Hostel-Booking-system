@@ -612,12 +612,12 @@ const Bookings = () => {
   // };
 
   const columns = useMemo(() => [
-    {
-      id: 'reference',
-      label: 'Reference',
-      minWidth: 50,
-      format: (value, row) => value || row.id || '—',
-    },
+    // {
+    //   id: 'reference',
+    //   label: 'Reference',
+    //   minWidth: 50,
+    //   format: (value, row) => value || row.id || '—',
+    // },
     {
       id: 'guestName',
       label: 'Guest',

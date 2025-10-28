@@ -4,7 +4,7 @@ import { Box, Button, Typography, Chip, TextField, InputAdornment, MenuItem, Sel
          Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar } from '@mui/material';
 import { Add, Edit, Delete, Search, Block, CheckCircle } from '@mui/icons-material';
 import DataTable from '../../components/common/DataTable';
-
+import Swal from 'sweetalert2'
 const Users = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -167,9 +167,16 @@ const Users = () => {
 
   const handleDeleteUser = async (user) => {
     const displayName = user.fullName || user.email || 'this user';
-    if (!window.confirm(`Are you sure you want to delete ${displayName}? This action cannot be undone.`)) {
-      return;
-    }
+     await Swal.fire({
+          title: 'Delete User?',
+          text: `Are you sure you want to delete ${displayName}? This action cannot be undone.`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d32f2f',
+          cancelButtonColor: '#1976d2',
+          confirmButtonText: 'Yes, delete it',
+          cancelButtonText: 'Cancel',
+        });
 
     updateRowActionState(user.id, 'deleting', true);
 
