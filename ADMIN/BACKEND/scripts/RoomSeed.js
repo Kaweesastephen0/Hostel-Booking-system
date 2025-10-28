@@ -106,7 +106,7 @@ const sampleRooms = [
 
 const seedRooms = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URI);
+        await mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://Stephen:stephen@hotel.vwjhayb.mongodb.net/hostels?retryWrites=true&w=majority&appName=Hotel") ;
         console.log("Connected to MongoDB and ready to seed rooms...")
 
         // Clear existing rooms

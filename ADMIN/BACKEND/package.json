@@ -7,7 +7,7 @@
     "test": "mocha --exit tests/*",
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "seed": "node scripts/hostelSeed.js",
+    "seed": "node scripts/RoomSeed.js",
     "seed:dev": "nodemon scripts/hostelSeed.js"
   },
   "type": "module",

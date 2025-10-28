@@ -43,7 +43,7 @@ const sampleHostels = [
     address: "Makerere University Road",
     image: "https://images.pexels.com/photos/1838639/pexels-photo-1838639.jpeg",
     amenities: ["wifi", "security", "water", "electricity"],
-    HostelGender: "male", // Added required field
+    HostelGender: "male", 
     distance: "0.7 km",
     location: "Wandegeya",
     availability: true,
@@ -137,7 +137,7 @@ const sampleHostels = [
 
 const seedHostels = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGO_URI );
     console.log('Connected to MongoDB and ready to seed Sir Sam');
 
     // Clear existing hostels
