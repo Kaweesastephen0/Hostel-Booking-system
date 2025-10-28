@@ -726,7 +726,7 @@ const Payments = () => {
     {
       id: 'bookingReference',
       label: 'Booking',
-      minWidth: 180,
+      minWidth: 100,
       sortable: false,
       format: (_value, row) => (
         <Box>
@@ -741,7 +741,7 @@ const Payments = () => {
     {
       id: 'amount',
       label: 'Amount',
-      minWidth: 110,
+      minWidth: 100,
       align: 'right',
       sortable: true,
       format: (value) => formatCurrency(value),
@@ -770,7 +770,7 @@ const Payments = () => {
     {
       id: 'paidAt',
       label: 'Paid At',
-      minWidth: 150,
+      minWidth: 120,
       sortable: true,
       format: (value) => formatDate(value, true),
     },
@@ -827,7 +827,7 @@ const Payments = () => {
   }), []);
 
   return (
-    <Box marginLeft="290px">
+    <Box >
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h5" component="h1">
           Payments Management

@@ -17,9 +17,12 @@ import {
   DialogActions,
   Alert,
   Snackbar,
+  Grid,
+  Paper
 } from '@mui/material';
 import {
   Add,
+  FilterList,
   Search,
   Edit,
   Delete,
@@ -27,14 +30,15 @@ import {
   CheckCircle,
   Close,
   Info,
+  Replay
 } from '@mui/icons-material';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
-import Tooltip from '@mui/material/Tooltip';
 import { format } from 'date-fns';
 import DataTable from '../../components/common/DataTable';
+import Swal from 'sweetalert2';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -56,15 +60,38 @@ const DATE_RANGE_OPTIONS = [
 ];
 
 const defaultBookingForm = {
-  guestName: '',
-  guestEmail: '',
-  guestPhone: '',
+  // Guest Information
+  fullName: '',
+  gender: '',
+  age: '',
+  occupation: '',
+  idNumber: '',
+  phone: '',
+  email: '',
+  location: '',
+
+  // Booking Information
+  hostelName: '',
   roomNumber: '',
-  status: 'pending',
+  roomType: '',
+  duration: '',
   checkIn: '',
-  checkOut: '',
-  amount: '',
-  notes: '',
+
+  // Payment Information
+  paymentMethod: '',
+  bookingFee: '',
+  paymentNumber: '',
+
+  // System Fields
+  status: 'pending',
+};
+
+const durationMap = {
+  daily: 1,
+  weekly: 7,
+  monthly: 30,
+  quarterly: 90,
+  yearly: 365
 };
 
 const formatDate = (value) => {
@@ -97,8 +124,15 @@ const Bookings = () => {
   const [orderBy, setOrderBy] = useState('checkIn');
   const [order, setOrder] = useState('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    status: 'all',
+    dateRange: 'all',
+    roomType: 'all',
+    paymentStatus: 'all',
+  });
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateRange, setDateRange] = useState('all');
+  const [showFilters, setShowFilters] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [rowActionState, setRowActionState] = useState({});
 
@@ -143,17 +177,17 @@ const Bookings = () => {
         order,
       });
 
+      // Add search term
       if (searchTerm.trim()) {
         params.append('search', searchTerm.trim());
       }
 
-      if (statusFilter !== 'all') {
-        params.append('status', statusFilter);
-      }
-
-      if (dateRange !== 'all') {
-        params.append('dateRange', dateRange);
-      }
+      // Add filters
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value && value !== 'all') {
+          params.append(key, value);
+        }
+      });
 
       const token = localStorage.getItem('token');
 
@@ -214,7 +248,7 @@ const Bookings = () => {
     } finally {
       setLoading(false);
     }
-  }, [dateRange, order, orderBy, page, rowsPerPage, searchTerm, statusFilter]);
+  }, [filters, order, orderBy, page, rowsPerPage, searchTerm]);
 
   useEffect(() => {
     fetchBookings();
@@ -240,12 +274,43 @@ const Bookings = () => {
   };
 
   const handleStatusFilterChange = (event) => {
-    setStatusFilter(event.target.value);
+    const value = event.target.value;
+    setStatusFilter(value);
+    setFilters((prev) => ({
+      ...prev,
+      status: value,
+    }));
     setPage(0);
   };
 
   const handleDateRangeChange = (event) => {
-    setDateRange(event.target.value);
+    const value = event.target.value;
+    setDateRange(value);
+    setFilters((prev) => ({
+      ...prev,
+      dateRange: value,
+    }));
+    setPage(0);
+  };
+
+  const handleFilterChange = (filterName) => (event) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterName]: event.target.value
+    }));
+    setPage(0);
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      status: 'all',
+      dateRange: 'all',
+      roomType: 'all',
+      paymentStatus: 'all',
+    });
+    setSearchTerm('');
+    setStatusFilter('all');
+    setDateRange('all');
     setPage(0);
   };
 
@@ -256,7 +321,18 @@ const Bookings = () => {
   const handleDeleteBooking = async (booking) => {
     const displayName = booking.reference || booking.guestName || booking.roomNumber || 'this booking';
 
-    if (!window.confirm(`Are you sure you want to delete ${displayName}? This action cannot be undone.`)) {
+    const result = await Swal.fire({
+      title: 'Delete booking?',
+      text: `Are you sure you want to delete ${displayName}? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d32f2f',
+      cancelButtonColor: '#1976d2',
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (!result.isConfirmed) {
       return;
     }
 
@@ -417,29 +493,52 @@ const Bookings = () => {
     event.preventDefault();
     setCreateError(null);
 
-    const { guestName, roomNumber, checkIn, checkOut, amount } = newBooking;
+    // Destructure and validate required fields
+    const {
+      fullName, gender, age, idNumber, phone, email, location,
+      hostelName, roomNumber, roomType, duration, checkIn,
+      paymentMethod, bookingFee, paymentNumber
+    } = newBooking;
 
-    if (!guestName.trim() || !roomNumber.trim() || !checkIn || !checkOut) {
-      setCreateError('Guest name, room number, check-in, and check-out are required.');
+    // Validate required fields
+    const requiredFields = [
+      { field: 'fullName', label: 'Guest name' },
+      { field: 'roomNumber', label: 'Room number' },
+      { field: 'checkIn', label: 'Check-in date' },
+      { field: 'duration', label: 'Duration' },
+      { field: 'bookingFee', label: 'Amount' },
+    ];
+
+    const missingField = requiredFields.find(({ field }) => !newBooking[field]?.toString().trim());
+    if (missingField) {
+      setCreateError(`${missingField.label} is required`);
       return;
     }
 
-    const checkInDate = new Date(checkIn);
-    const checkOutDate = new Date(checkOut);
-
-    if (Number.isNaN(checkInDate.getTime()) || Number.isNaN(checkOutDate.getTime())) {
-      setCreateError('Please provide valid check-in and check-out dates.');
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setCreateError('Please enter a valid email address');
       return;
     }
 
-    if (checkOutDate <= checkInDate) {
-      setCreateError('Check-out date must be after check-in date.');
+    // Validate age is a positive number
+    const ageValue = parseInt(age, 10);
+    if (isNaN(ageValue) || ageValue <= 0) {
+      setCreateError('Age must be a positive number');
       return;
     }
 
-    const amountValue = Number(amount);
-    if (Number.isNaN(amountValue) || amountValue < 0) {
-      setCreateError('Please provide a valid booking amount.');
+    // Validate booking fee is a positive number
+    const bookingFeeValue = parseFloat(bookingFee);
+    if (isNaN(bookingFeeValue) || bookingFeeValue <= 0) {
+      setCreateError('Booking fee must be a positive number');
+      return;
+    }
+
+    const durationDays = durationMap[duration];
+    if (!durationDays) {
+      setCreateError('Please select a valid duration');
       return;
     }
 
@@ -447,6 +546,25 @@ const Bookings = () => {
 
     try {
       const token = localStorage.getItem('token');
+      const payload = {
+        fullName,
+        gender,
+        age: ageValue,
+        occupation: newBooking.occupation,
+        idNumber,
+        phone,
+        email,
+        location,
+        hostelName,
+        roomNumber,
+        roomType,
+        duration: durationDays,
+        checkIn,
+        paymentMethod,
+        bookingFee: bookingFeeValue,
+        paymentNumber,
+        status: newBooking.status,
+      };
 
       const response = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: 'POST',
@@ -455,98 +573,77 @@ const Bookings = () => {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         credentials: 'include',
-        body: JSON.stringify({
-          guestName: newBooking.guestName.trim(),
-          guestEmail: newBooking.guestEmail.trim() || undefined,
-          guestPhone: newBooking.guestPhone.trim() || undefined,
-          roomNumber: newBooking.roomNumber.trim(),
-          status: newBooking.status,
-          checkIn,
-          checkOut,
-          amount: amountValue,
-          notes: newBooking.notes.trim() || undefined,
-        }),
+        body: JSON.stringify(payload),
       });
 
-      const payload = await response.json().catch(() => ({}));
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(payload.message || 'Failed to create booking.');
+        throw new Error(data.message || 'Failed to create booking.');
       }
 
       showSnackbar('Booking created successfully.');
-      setIsAddDialogOpen(false);
-      setNewBooking(defaultBookingForm);
-      fetchBookings();
+      await fetchBookings();
+      closeAddDialog();
     } catch (error) {
       console.error('Error creating booking:', error);
       setCreateError(error.message || 'Failed to create booking.');
-      showSnackbar(error.message || 'Failed to create booking.', 'error');
     } finally {
       setCreatingBooking(false);
     }
   };
 
+  // const handleBookingUpdated = (updatedBooking) => {
+  //   fetchBookings();
+  //   setSnackbar({
+  //     open: true,
+  //     message: 'Booking updated successfully',
+  //     severity: 'success'
+  //   });
+  // };
+
+  // const handleError = (error) => {
+  //   console.error('Error:', error);
+  //   setSnackbar({
+  //     open: true,
+  //     message: error.message || 'An error occurred',
+  //     severity: 'error'
+  //   });
+  // };
+
   const columns = useMemo(() => [
+    // {
+    //   id: 'reference',
+    //   label: 'Reference',
+    //   minWidth: 50,
+    //   format: (value, row) => value || row.id || '—',
+    // },
     {
-      id: 'reference',
-      label: 'Reference',
-      minWidth: 140,
-      sortable: true,
-      format: (value, row) => (
-        <Box>
-          <Typography variant="subtitle2" noWrap>{value || row.id}</Typography>
-          <Typography variant="caption" color="textSecondary">{row.guestName}</Typography>
+      id: 'guestName',
+      label: 'Guest',
+      minWidth: 50,
+      overflowY: "hidden",
+      format: (_value, row) => (
+        <Box display="flex" flexDirection="column">
+          <Typography variant="body2">{row.guestName || '—'}</Typography>
+          {(row.guestEmail || row.guestPhone) && (
+            <Typography variant="caption" color="textSecondary">
+              {[row.guestEmail, row.guestPhone].filter(Boolean).join(' · ') || '—'}
+            </Typography>
+          )}
         </Box>
       ),
     },
     {
-      id: 'guestEmail',
-      label: 'Guest Email',
-      minWidth: 180,
-      sortable: true,
-      format: (value) => value || '—',
-    },
-    {
       id: 'roomNumber',
       label: 'Room',
-      minWidth: 100,
-      sortable: true,
-    },
-    {
-      id: 'checkIn',
-      label: 'Check-In',
-      minWidth: 140,
-      sortable: true,
-      format: (value) => formatDate(value),
-    },
-    {
-      id: 'checkOut',
-      label: 'Check-Out',
-      minWidth: 140,
-      sortable: true,
-      format: (value) => formatDate(value),
-    },
-    {
-      id: 'nights',
-      label: 'Nights',
-      minWidth: 70,
-      align: 'center',
-      sortable: true,
-    },
-    {
-      id: 'amount',
-      label: 'Amount',
-      minWidth: 110,
-      align: 'right',
-      sortable: true,
-      format: (value) => formatCurrency(typeof value === 'number' ? value : Number(value)),
+      minWidth: 50,
+      format: (value) => value || '—',
     },
     {
       id: 'status',
       label: 'Status',
-      minWidth: 110,
-      sortable: true,
+      minWidth: 50,
       format: (value) => (
         <Chip
           label={value ? value.charAt(0).toUpperCase() + value.slice(1) : 'Pending'}
@@ -555,6 +652,31 @@ const Bookings = () => {
           variant="outlined"
         />
       ),
+    },
+    {
+      id: 'checkIn',
+      label: 'Check-In',
+      minWidth: 100,
+      format: (value) => formatDate(value),
+    },
+    {
+      id: 'checkOut',
+      label: 'Check-Out',
+      minWidth: 100,
+      format: (value) => formatDate(value),
+    },
+    {
+      id: 'amount',
+      label: 'Amount',
+      minWidth: 50,
+      align: 'right',
+      format: (value) => formatCurrency(typeof value === 'number' ? value : Number(value) || 0),
+    },
+    {
+      id: 'createdAt',
+      label: 'Created',
+      minWidth: 50,
+      format: (value) => formatDate(value),
     },
   ], []);
 
@@ -574,54 +696,29 @@ const Bookings = () => {
       disabled: (row) => Boolean(rowActionState[row.id]?.deleting || rowActionState[row.id]?.updating),
     },
     {
-      getIcon: (row) => {
-        switch (row.status) {
-          case 'pending':
-            return <CheckCircle fontSize="small" />;
-          case 'confirmed':
-            return <Cancel fontSize="small" />;
-          case 'cancelled':
-            return <CheckCircle fontSize="small" />;
-          case 'completed':
-            return <Info fontSize="small" />;
-          default:
-            return <CheckCircle fontSize="small" />;
-        }
+      icon: (row) => {
+        const status = row.status?.toLowerCase();
+        if (status === 'pending') return <CheckCircle fontSize="small" />;
+        if (status === 'confirmed') return <Cancel fontSize="small" />;
+        if (status === 'cancelled') return <Replay fontSize="small" />;
+        return <Info fontSize="small" />;
       },
-      getTooltip: (row) => {
-        switch (row.status) {
-          case 'pending':
-            return 'Mark Confirmed';
-          case 'confirmed':
-            return 'Cancel Booking';
-          case 'cancelled':
-            return 'Reopen Booking';
-          case 'completed':
-            return 'Reopen Booking';
-          default:
-            return 'Update Booking Status';
-        }
+      tooltip: (row) => {
+        const status = row.status?.toLowerCase();
+        if (status === 'pending') return 'Mark as Confirmed';
+        if (status === 'confirmed') return 'Cancel Booking';
+        if (status === 'cancelled') return 'Reopen Booking';
+        return 'View Details';
       },
       onClick: (row) => {
-        const target = row.status === 'pending'
-          ? 'confirmed'
-          : row.status === 'confirmed'
-            ? 'cancelled'
-            : 'pending';
-        handleUpdateStatus(row, target);
+        const status = row.status?.toLowerCase();
+        if (status === 'pending') return handleUpdateStatus(row, 'confirmed');
+        if (status === 'confirmed') return handleUpdateStatus(row, 'cancelled');
+        if (status === 'cancelled') return handleUpdateStatus(row, 'pending');
+        handleOpenDetails(row);
       },
-      getColor: (row) => {
-        switch (row.status) {
-          case 'pending':
-            return 'success';
-          case 'confirmed':
-            return 'warning';
-          case 'cancelled':
-          case 'completed':
-            return 'info';
-          default:
-            return 'primary';
-        }
+      get color() {
+        return 'primary';
       },
       disabled: (row) => Boolean(rowActionState[row.id]?.updating || rowActionState[row.id]?.deleting),
     },
@@ -630,72 +727,145 @@ const Bookings = () => {
       tooltip: 'Delete Booking',
       onClick: handleDeleteBooking,
       color: 'error',
-      disabled: (row) => Boolean(rowActionState[row.id]?.deleting),
-    },
-  ], [handleDeleteBooking, handleEditBooking, handleUpdateStatus, rowActionState]);
+      disabled: (row) => Boolean(rowActionState[row.id]?.deleting)
+    }
+  ], [handleDeleteBooking, handleEditBooking, handleOpenDetails, handleUpdateStatus, rowActionState]);
 
-  return (
-    <Box marginLeft="290px">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5" component="h1">
-          Bookings Management
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={openAddDialog}
-        >
-          New Booking
-        </Button>
-      </Box>
-
-      {fetchError && (
+  if (fetchError) {
+    return (
+      <Box p={3}>
         <Alert severity="error" sx={{ mb: 2 }}>
           {fetchError}
         </Alert>
-      )}
-
-      <Box display="flex" gap={2} mb={3} flexWrap="wrap">
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="Search bookings..."
-          value={searchTerm}
-          onChange={handleSearch}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-          sx={{ minWidth: 250 }}
-        />
-
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Status</InputLabel>
-          <Select value={statusFilter} onChange={handleStatusFilterChange} label="Status">
-            <MenuItem value="all">All Status</MenuItem>
-            {STATUS_OPTIONS.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option.charAt(0).toUpperCase() + option.slice(1)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Date Range</InputLabel>
-          <Select value={dateRange} onChange={handleDateRangeChange} label="Date Range">
-            {DATE_RANGE_OPTIONS.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
       </Box>
+    );
+  }
+
+  return (
+    <Box p={3}>
+      <Box mb={3}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h4">Bookings</Typography>
+          <Box>
+            <Button
+              variant="outlined"
+              onClick={() => setShowFilters(!showFilters)}
+              sx={{ mr: 2 }}
+              startIcon={<FilterList />}
+            >
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Add />}
+              onClick={openAddDialog}
+            >
+              New Booking
+            </Button>
+          </Box>
+        </Box>
+        {showFilters && (
+          <Box>
+            <Paper sx={{ p: 2 }}>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    placeholder="Search bookings..."
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search />
+                        </InputAdornment>
+                      ),
+                    }}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <FormControl variant="outlined" size="small" fullWidth>
+                    <InputLabel>Status</InputLabel>
+                    <Select
+                      value={filters.status}
+                      onChange={handleFilterChange('status')}
+                      label="Status"
+                    >
+                      <MenuItem value="all">All Statuses</MenuItem>
+                      <MenuItem value="pending">Pending</MenuItem>
+                      <MenuItem value="confirmed">Confirmed</MenuItem>
+                      <MenuItem value="cancelled">Cancelled</MenuItem>
+                      <MenuItem value="completed">Completed</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <FormControl fullWidth variant="outlined" size="small">
+                    <InputLabel>Date Range</InputLabel>
+                    <Select
+                      value={filters.dateRange}
+                      onChange={handleFilterChange('dateRange')}
+                      label="Date Range"
+                    >
+                      <MenuItem value="all">All Dates</MenuItem>
+                      <MenuItem value="today">Today</MenuItem>
+                      <MenuItem value="thisWeek">This Week</MenuItem>
+                      <MenuItem value="thisMonth">This Month</MenuItem>
+                      <MenuItem value="upcoming">Upcoming</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <FormControl fullWidth variant="outlined" size="small">
+                    <InputLabel>Room Type</InputLabel>
+                    <Select
+                      value={filters.roomType}
+                      onChange={handleFilterChange('roomType')}
+                      label="Room Type"
+                    >
+                      <MenuItem value="all">All Types</MenuItem>
+                      <MenuItem value="single">Single</MenuItem>
+                      <MenuItem value="double">Double</MenuItem>
+
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <FormControl fullWidth variant="outlined" size="small">
+                    <InputLabel>Payment Status</InputLabel>
+                    <Select
+                      value={filters.paymentStatus}
+                      onChange={handleFilterChange('paymentStatus')}
+                      label="Payment Status"
+                    >
+                      <MenuItem value="all">All Payments</MenuItem>
+                      <MenuItem value="paid">Paid</MenuItem>
+                      <MenuItem value="pending">Pending</MenuItem>
+                      <MenuItem value="partial">Partial</MenuItem>
+                      <MenuItem value="refunded">Refunded</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={1} display="flex" justifyContent="flex-end">
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={clearFilters}
+                    fullWidth
+                  >
+                    Clear
+                  </Button>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Box>
+        )}
+
+      </Box>
+
 
       <DataTable
         columns={columns}
@@ -714,99 +884,241 @@ const Bookings = () => {
         emptyMessage="No bookings found. Try adjusting your search or filters."
       />
 
-      <Dialog open={isAddDialogOpen} onClose={closeAddDialog} fullWidth maxWidth="sm">
-        <DialogTitle>Create Booking</DialogTitle>
-        <DialogContent component="form" onSubmit={handleCreateBooking} sx={{ mt: 1 }}>
-          <Box display="flex" flexDirection="column" gap={2}>
-            {createError && <Alert severity="error">{createError}</Alert>}
-            <TextField
-              label="Guest Name"
-              value={newBooking.guestName}
-              onChange={handleNewBookingChange('guestName')}
-              required
-              fullWidth
-            />
-            <TextField
-              label="Guest Email"
-              type="email"
-              value={newBooking.guestEmail}
-              onChange={handleNewBookingChange('guestEmail')}
-              fullWidth
-            />
-            <TextField
-              label="Guest Phone"
-              value={newBooking.guestPhone}
-              onChange={handleNewBookingChange('guestPhone')}
-              fullWidth
-            />
-            <TextField
-              label="Room Number"
-              value={newBooking.roomNumber}
-              onChange={handleNewBookingChange('roomNumber')}
-              required
-              fullWidth
-            />
-            <Box display="flex" gap={2} flexWrap="wrap">
-              <TextField
-                label="Check-In"
-                type="date"
-                value={newBooking.checkIn}
-                onChange={handleNewBookingChange('checkIn')}
-                InputLabelProps={{ shrink: true }}
-                required
-                sx={{ flex: 1, minWidth: 180 }}
-              />
-              <TextField
-                label="Check-Out"
-                type="date"
-                value={newBooking.checkOut}
-                onChange={handleNewBookingChange('checkOut')}
-                InputLabelProps={{ shrink: true }}
-                required
-                sx={{ flex: 1, minWidth: 180 }}
-              />
+      <Dialog open={isAddDialogOpen} onClose={closeAddDialog} maxWidth="md" fullWidth>
+        <form onSubmit={handleCreateBooking}>
+          <DialogTitle>Add New Booking</DialogTitle>
+          <DialogContent>
+            {createError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {createError}
+              </Alert>
+            )}
+            <Box sx={{ mt: 2, maxHeight: '70vh', overflowY: 'auto', pr: 1 }}>
+              <Typography variant="h6" gutterBottom>Guest Information</Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Full Name"
+                    value={newBooking.fullName}
+                    onChange={handleNewBookingChange('fullName')}
+                    margin="normal"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth margin="normal" required>
+                    <InputLabel>Gender</InputLabel>
+                    <Select
+                      value={newBooking.gender}
+                      onChange={handleNewBookingChange('gender')}
+                      label="Gender"
+                    >
+                      <MenuItem value="male">Male</MenuItem>
+                      <MenuItem value="female">Female</MenuItem>
+                      <MenuItem value="other">Other</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Age"
+                    type="number"
+                    value={newBooking.age}
+                    onChange={handleNewBookingChange('age')}
+                    margin="normal"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="ID/STN Number"
+                    value={newBooking.idNumber}
+                    onChange={handleNewBookingChange('idNumber')}
+                    margin="normal"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Phone Number"
+                    value={newBooking.phone}
+                    onChange={handleNewBookingChange('phone')}
+                    margin="normal"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    type="email"
+                    value={newBooking.email}
+                    onChange={handleNewBookingChange('email')}
+                    margin="normal"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Location/Address"
+                    value={newBooking.location}
+                    onChange={handleNewBookingChange('location')}
+                    margin="normal"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Occupation"
+                    value={newBooking.occupation}
+                    onChange={handleNewBookingChange('occupation')}
+                    margin="normal"
+                  />
+                </Grid>
+              </Grid>
+
+              <Divider sx={{ my: 3 }} />
+              <Typography variant="h6" gutterBottom>Booking Information</Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Hostel Name"
+                    value={newBooking.hostelName}
+                    onChange={handleNewBookingChange('hostelName')}
+                    margin="normal"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Room Number"
+                    value={newBooking.roomNumber}
+                    onChange={handleNewBookingChange('roomNumber')}
+                    margin="normal"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth margin="normal" required>
+                    <InputLabel>Room Type</InputLabel>
+                    <Select
+                      value={newBooking.roomType}
+                      onChange={handleNewBookingChange('roomType')}
+                      label="Room Type"
+                    >
+                      <MenuItem value="single">Single</MenuItem>
+                      <MenuItem value="double">Double</MenuItem>
+                      <MenuItem value="dormitory">Dormitory</MenuItem>
+                      <MenuItem value="suite">Suite</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth margin="normal" required>
+                    <InputLabel>Duration</InputLabel>
+                    <Select
+                      value={newBooking.duration}
+                      onChange={handleNewBookingChange('duration')}
+                      label="Duration"
+                    >
+                      <MenuItem value="daily">Daily</MenuItem>
+                      <MenuItem value="weekly">Weekly</MenuItem>
+                      <MenuItem value="monthly">Monthly</MenuItem>
+                      <MenuItem value="quarterly">Quarterly</MenuItem>
+                      <MenuItem value="yearly">Yearly</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Check-in Date"
+                    type="date"
+                    value={newBooking.checkIn}
+                    onChange={handleNewBookingChange('checkIn')}
+                    margin="normal"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    required
+                  />
+                </Grid>
+              </Grid>
+
+              <Divider sx={{ my: 3 }} />
+              <Typography variant="h6" gutterBottom>Payment Information</Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth margin="normal" required>
+                    <InputLabel>Payment Method</InputLabel>
+                    <Select
+                      value={newBooking.paymentMethod}
+                      onChange={handleNewBookingChange('paymentMethod')}
+                      label="Payment Method"
+                    >
+                      <MenuItem value="cash">Cash</MenuItem>
+                      <MenuItem value="mobile_money">Mobile Money</MenuItem>
+                      <MenuItem value="bank_transfer">Bank Transfer</MenuItem>
+                      <MenuItem value="credit_card">Credit Card</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Booking Fee"
+                    type="number"
+                    value={newBooking.bookingFee}
+                    onChange={handleNewBookingChange('bookingFee')}
+                    margin="normal"
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                    }}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Payment Reference/Number"
+                    value={newBooking.paymentNumber}
+                    onChange={handleNewBookingChange('paymentNumber')}
+                    margin="normal"
+                    required
+                  />
+                </Grid>
+              </Grid>
             </Box>
-            <TextField
-              label="Amount"
-              type="number"
-              value={newBooking.amount}
-              onChange={handleNewBookingChange('amount')}
-              required
-              fullWidth
-              inputProps={{ min: 0, step: 0.01 }}
-            />
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={newBooking.status}
-                onChange={handleNewBookingChange('status')}
-                label="Status"
-              >
-                {STATUS_OPTIONS.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option.charAt(0).toUpperCase() + option.slice(1)}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField
-              label="Notes"
-              multiline
-              minRows={3}
-              value={newBooking.notes}
-              onChange={handleNewBookingChange('notes')}
-              fullWidth
-            />
-          </Box>
-          <DialogActions sx={{ mt: 3 }}>
-            <Button onClick={closeAddDialog} disabled={creatingBooking}>
+          </DialogContent>
+          <DialogActions sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
+            <Button
+              onClick={closeAddDialog}
+              disabled={creatingBooking}
+              variant="outlined"
+              color="inherit"
+            >
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary" disabled={creatingBooking}>
+            <Button
+              type="submit"
+              color="primary"
+              variant="contained"
+              disabled={creatingBooking}
+              startIcon={creatingBooking ? <CircularProgress size={20} /> : null}
+              sx={{ minWidth: 150 }}
+            >
               {creatingBooking ? 'Creating...' : 'Create Booking'}
             </Button>
           </DialogActions>
-        </DialogContent>
+        </form>
       </Dialog>
 
       <Snackbar
@@ -945,9 +1257,11 @@ const Bookings = () => {
               </Box>
             </Box>
           ) : (
-            <Typography variant="body2" color="textSecondary">
-              Select a booking to view more details.
-            </Typography>
+            <Box>
+              <Typography variant="body2" color="textSecondary">
+                Select a booking to view more details.
+              </Typography>
+            </Box>
           )}
         </Box>
       </Drawer>

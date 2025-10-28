@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Booking from '../models/Booking.js';
 import asyncHandler from '../middleware/async.js';
 
@@ -30,42 +31,152 @@ const formatBookingResponse = (booking) => {
 
 export const createBooking = asyncHandler(async (req, res) => {
   const {
-    guestName,
-    guestEmail,
-    guestPhone,
+    fullName,
     roomNumber,
-    status = 'pending',
     checkIn,
-    checkOut,
-    amount,
-    notes,
+    duration,
+    bookingFee,
+    // Optional fields with defaults
+    gender = '',
+    age = '',
+    idNumber = '',
+    phone = '',
+    email = '',
+    location = '',
+    hostelName = '',
+    roomType = '',
+    paymentMethod = '',
+    paymentNumber = '',
+    status = 'pending'
   } = req.body;
 
-  if (!guestName || !roomNumber || !checkIn || !checkOut || typeof amount !== 'number') {
+  // Validate required fields
+  if (!fullName || !roomNumber || !checkIn || !duration || !bookingFee) {
     return res.status(400).json({
       success: false,
-      message: 'Guest name, room number, check-in, check-out, and amount are required.',
+      message: 'Guest name, room number, check-in, duration, and booking fee are required.',
     });
   }
 
-  const booking = await Booking.create({
-    guestName,
-    guestEmail,
-    guestPhone,
-    roomNumber,
-    status,
-    checkIn,
-    checkOut,
-    amount,
-    notes,
-  });
+  // Convert booking fee to number
+  const bookingFeeValue = parseFloat(bookingFee);
+  if (isNaN(bookingFeeValue) || bookingFeeValue <= 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'Booking fee must be a valid positive number.',
+    });
+  }
 
-  res.status(201).json({
-    success: true,
-    data: {
-      booking: formatBookingResponse(booking),
-    },
-  });
+  // Parse and validate duration
+  const durationDays = parseInt(duration, 10);
+  if (isNaN(durationDays) || durationDays < 1) {
+    return res.status(400).json({
+      success: false,
+      message: 'Please provide a valid duration (at least 1 day)',
+    });
+  }
+
+  // Calculate check-out date based on duration
+  const checkInDate = new Date(checkIn);
+  if (isNaN(checkInDate.getTime())) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid check-in date',
+    });
+  }
+
+  const checkOutDate = new Date(checkInDate);
+  checkOutDate.setDate(checkInDate.getDate() + durationDays);
+
+  const session = await mongoose.startSession();
+  
+  try {
+    session.startTransaction();
+    
+    // Create the booking
+    const booking = await Booking.create([{
+      // Guest Information
+      guestName: fullName,
+      guestEmail: email,
+      guestPhone: phone,
+      gender,
+      age: parseInt(age) || 0,
+      idNumber,
+      location,
+      
+      // Booking Information
+      roomNumber,
+      roomType,
+      hostelName,
+      status,
+      checkIn: checkInDate,
+      checkOut: checkOutDate,
+      duration: durationDays,
+      nights: durationDays,
+      
+      // Payment Information
+      amount: bookingFeeValue,
+      paymentMethod,
+      paymentNumber,
+      
+      // System Fields
+      reference: `BKG-${Date.now()}`,
+    }], { session });
+
+    // Create the payment record
+    const Payment = mongoose.model('Payment');
+    const payment = await Payment.create([{
+      booking: booking[0]._id,
+      method: paymentMethod || 'cash',
+      status: 'completed',
+      amount: bookingFeeValue,
+      notes: `Payment for booking ${booking[0].reference}`,
+      paidAt: new Date()
+    }], { session });
+
+    // Update booking with payment reference
+    booking[0].paymentReference = payment[0]._id;
+    await booking[0].save({ session });
+
+    // Commit the transaction
+    await session.commitTransaction();
+    
+    // Get the populated booking after transaction is committed
+    const populatedBooking = await Booking.findById(booking[0]._id).populate('paymentReference');
+    
+    // End the session
+    session.endSession();
+    
+    // Send response
+    res.status(201).json({
+      success: true,
+      data: {
+        booking: formatBookingResponse(populatedBooking),
+        payment: {
+          id: payment[0]._id,
+          reference: payment[0].reference,
+          status: payment[0].status,
+          amount: payment[0].amount,
+          method: payment[0].method,
+          paidAt: payment[0].paidAt
+        }
+      },
+    });
+    
+  } catch (error) {
+    // If anything fails, rollback the transaction if it was started
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+    
+    // Always end the session
+    if (session.inTransaction()) {
+      session.endSession();
+    }
+    
+    console.error('Error creating booking:', error);
+    throw error;
+  }
 });
 
 export const getBookings = asyncHandler(async (req, res) => {

@@ -1,0 +1,38 @@
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: #252525;
+  border-bottom: 1px solid #333;
+  flex-shrink: 0;
+}
+
+.room-header-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.room-header-info h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.participant-count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #3a3a3a;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.record-button {
+  background-color: #e74c3c;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

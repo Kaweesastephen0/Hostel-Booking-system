@@ -11,15 +11,21 @@ const formatPaymentResponse = (payment) => {
   if (!payment) return null;
   const source = typeof payment.toObject === 'function' ? payment.toObject() : payment;
 
+  const bookingSource = typeof source.booking === 'object' && source.booking !== null
+    ? source.booking
+    : null;
+
   return {
     id: source._id || source.id,
     reference: source.reference,
-    booking: typeof source.booking === 'object' ? {
-      id: source.booking._id || source.booking.id,
-      reference: source.booking.reference,
-      guestName: source.booking.guestName,
-      roomNumber: source.booking.roomNumber,
-    } : source.booking,
+    booking: bookingSource
+      ? {
+        id: bookingSource._id || bookingSource.id,
+        reference: bookingSource.reference,
+        guestName: bookingSource.guestName,
+        roomNumber: bookingSource.roomNumber,
+      }
+      : source.booking ?? null,
     method: source.method,
     status: source.status,
     amount: source.amount,
