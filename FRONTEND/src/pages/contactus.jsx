@@ -36,16 +36,37 @@ const ContactUs = () => {
     setSubmitMessage('');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
       
-      setSubmitStatus('success');
-      setSubmitMessage('Thank you for your message! We will get back to you within 24 hours.');
-      
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      const response = await fetch(`${API_BASE_URL}/api/contact/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setSubmitMessage(result.message);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setSubmitStatus('error');
+        
+        // Handle validation errors
+        if (result.errors) {
+          const errorMessages = result.errors.map(error => Object.values(error)[0]).join(', ');
+          setSubmitMessage(errorMessages);
+        } else {
+          setSubmitMessage(result.message || 'Sorry, there was an error sending your message. Please try again or contact us directly.');
+        }
+      }
     } catch (error) {
+      console.error('Contact form error:', error);
       setSubmitStatus('error');
-      setSubmitMessage('Sorry, there was an error sending your message. Please try again or contact us directly.');
+      setSubmitMessage('Network error. Please check your connection and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -222,6 +243,8 @@ const ContactUs = () => {
                       disabled={isSubmitting}
                       className={styles.formInput}
                       placeholder="Enter your full name"
+                      minLength="2"
+                      maxLength="100"
                     />
                   </div>
 
@@ -255,6 +278,8 @@ const ContactUs = () => {
                     disabled={isSubmitting}
                     className={styles.formInput}
                     placeholder="e.g., Hostel Booking Inquiry, Room Availability"
+                    minLength="5"
+                    maxLength="200"
                   />
                 </div>
 
@@ -271,6 +296,8 @@ const ContactUs = () => {
                     rows="6"
                     className={`${styles.formInput} ${styles.formTextarea}`}
                     placeholder="Tell us about your accommodation needs: preferred location, budget, room type, duration of stay, etc."
+                    minLength="10"
+                    maxLength="2000"
                   ></textarea>
                 </div>
 
