@@ -112,9 +112,9 @@ const RoomsPage = () => {
     return rooms.filter(room => {
       if (!room.hostel) return false;
       // Ensure room.hostel exists and has a name property for search, and _id for filter
-      if (!room.hostel || !room.hostel.name || !room.hostel._id) {
-        return false; // Skip rooms with incomplete hostel data
-      }
+      // if (!room.hostel || !room.hostel.name || !room.hostel._id) {
+      //   return false; // Skip rooms with incomplete hostel data
+      // }
       const searchMatch = room.roomNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           room.hostel.name.toLowerCase().includes(searchTerm.toLowerCase());
 

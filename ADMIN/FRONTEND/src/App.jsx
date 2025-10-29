@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
-
+import Register from './components/Auth/Register'
 import Sidebar from './components/sidebar/Sidebar';
 import Navbar from './components/navbar/Navbar';
 import UsersPage from './pages/Users/Users'
@@ -42,7 +42,7 @@ function App() {
       <Routes>
         
         <Route path="/login" element={<Login />} />
-
+         <Route path="/register" element={<Register />} />
         
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
