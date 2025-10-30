@@ -28,7 +28,7 @@
 }
 
 .backBtn:hover {
-  background: rgba(255, 255, 255, 1);
+  background: rgb(4, 24, 205);
   transform: translateX(-4px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -92,6 +92,7 @@
   padding: 40px;
   overflow-y: auto;
   max-width: 600px;
+  min-height: 0;
 }
 
 @keyframes fadeInUp {
@@ -117,7 +118,7 @@
 }
 
 .formContainer {
-  padding: 40px 32px;
+  padding: 20px 32px;
   width: 100%;
   max-width: 480px;
   animation: slideInRight 0.6s ease-out;
@@ -126,28 +127,52 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 .fieldWrapper {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 3px;
 }
 
 .fieldLabel {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #374151;
   margin-left: 2px;
+  white-space: nowrap;
+}
+
+.fieldWrapperFull {
+  grid-column: 1 / -1;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 16px;
 }
 
 .error {
   background: #fee2e2;
   color: #dc2626;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   text-align: center;
 }
 
@@ -166,10 +191,10 @@
 
 .input {
   width: 100%;
-  padding: 14px 16px 14px 48px;
+  padding: 10px 16px 10px 48px;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 14px;
   transition: all 0.2s;
   box-sizing: border-box;
 }
@@ -182,17 +207,21 @@
 
 .radioGroup {
   display: flex;
-  gap: 24px;
-  padding: 8px 0;
+  gap: 16px;
+  padding: 2px 0;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .radioLabel {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 15px;
+  gap: 6px;
+  font-size: 14px;
   color: #374151;
   cursor: pointer;
+  white-space: normal;
+  word-break: keep-all;
 }
 
 .radio {
@@ -241,13 +270,13 @@
   background: #2563eb;
   color: white;
   border: none;
-  padding: 14px;
+  padding: 11px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  margin-top: 8px;
+  margin-top: 2px;
 }
 
 .submitBtn:hover:not(:disabled) {
@@ -298,32 +327,33 @@
 }
 
 .passwordHint {
-  margin-top: 8px;
-  padding: 8px 12px;
+  margin-top: 4px;
+  padding: 6px 10px;
   background: #fef3c7;
   color: #92400e;
   border-radius: 6px;
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: 12px;
+  line-height: 1.3;
+  word-break: break-word;
 }
 
 .passwordMatch {
-  margin-top: 8px;
-  padding: 8px 12px;
+  margin-top: 4px;
+  padding: 6px 10px;
   background: #d1fae5;
   color: #065f46;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
 }
 
 .passwordMismatch {
-  margin-top: 8px;
-  padding: 8px 12px;
+  margin-top: 4px;
+  padding: 6px 10px;
   background: #fee2e2;
   color: #991b1b;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -449,5 +479,115 @@
 
   .brandTagline {
     font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    background: white;
+  }
+
+  .backBtn {
+    top: 16px;
+    left: 16px;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .backBtn:hover {
+    transform: translateX(-2px);
+  }
+
+  .imageSection {
+    min-height: 250px;
+  }
+
+  .brandTitle {
+    font-size: 48px;
+  }
+
+  .brandTagline {
+    font-size: 16px;
+  }
+
+  .formCard {
+    padding: 24px 16px;
+  }
+
+  .formContainer {
+    padding: 20px 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .form {
+    gap: 14px;
+  }
+
+  .input {
+    padding: 16px 16px 16px 48px;
+    font-size: 16px;
+  }
+
+  .radioGroup {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .imageSection {
+    min-height: 200px;
+  }
+
+  .imageBranding {
+    padding: 20px;
+  }
+
+  .brandTitle {
+    font-size: 36px;
+  }
+
+  .brandTagline {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Desktop only - add rounded corners to image on form side and prevent form overflow */
+@media (min-width: 1025px) {
+  .heroImg {
+    border-radius: 0 20px 20px 0;
+  }
+
+  .formCard {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .formContainer {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .radioLabel {
+    white-space: nowrap;
+  }
+
+  .radioGroup {
+    flex-wrap: nowrap;
   }
 }

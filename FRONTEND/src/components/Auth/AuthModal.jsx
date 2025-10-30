@@ -341,203 +341,205 @@ function Auth() {
               <form onSubmit={handleRegister} className={styles.form}>
                 {error && <div className={styles.error}>{error}</div>}
 
-                <div className={styles.fieldWrapper}>
-                  <label className={styles.fieldLabel}>First Name</label>
-                  <div className={styles.inputGroup}>
-                    <User className={styles.inputIcon} size={20} />
-                    <input
-                      type="text"
-                      name="firstName"
-                      placeholder="Enter your first name"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      required
-                      className={styles.input}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.fieldWrapper}>
-                  <label className={styles.fieldLabel}>Surname</label>
-                  <div className={styles.inputGroup}>
-                    <User className={styles.inputIcon} size={20} />
-                    <input
-                      type="text"
-                      name="surname"
-                      placeholder="Enter your surname"
-                      value={formData.surname}
-                      onChange={handleChange}
-                      required
-                      className={styles.input}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.fieldWrapper}>
-                  <label className={styles.fieldLabel}>Email Address</label>
-                  <div className={styles.inputGroup}>
-                    <Mail className={styles.inputIcon} size={20} />
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Enter your email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className={styles.input}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.fieldWrapper}>
-                  <label className={styles.fieldLabel}>Gender</label>
-                  <div className={styles.radioGroup}>
-                    <label className={styles.radioLabel}>
-                      <input
-                        type="radio"
-                        name="gender"
-                        value="Male"
-                        checked={formData.gender === 'Male'}
-                        onChange={handleChange}
-                        className={styles.radio}
-                      />
-                      Male
-                    </label>
-                    <label className={styles.radioLabel}>
-                      <input
-                        type="radio"
-                        name="gender"
-                        value="Female"
-                        checked={formData.gender === 'Female'}
-                        onChange={handleChange}
-                        className={styles.radio}
-                      />
-                      Female
-                    </label>
-                  </div>
-                </div>
-
-                <div className={styles.fieldWrapper}>
-                  <label className={styles.fieldLabel}>User Type</label>
-                  <div className={styles.radioGroup}>
-                    <label className={styles.radioLabel}>
-                      <input
-                        type="radio"
-                        name="userType"
-                        value="student"
-                        checked={formData.userType === 'student'}
-                        onChange={handleChange}
-                        className={styles.radio}
-                      />
-                      Student
-                    </label>
-                    <label className={styles.radioLabel}>
-                      <input
-                        type="radio"
-                        name="userType"
-                        value="non-student"
-                        checked={formData.userType === 'non-student'}
-                        onChange={handleChange}
-                        className={styles.radio}
-                      />
-                      Non-Student
-                    </label>
-                  </div>
-                </div>
-
-                {formData.userType === 'student' && (
+                <div className={styles.formGrid}>
                   <div className={styles.fieldWrapper}>
-                    <label className={styles.fieldLabel}>Student Number</label>
+                    <label className={styles.fieldLabel}>First Name</label>
                     <div className={styles.inputGroup}>
-                      <Hash className={styles.inputIcon} size={20} />
+                      <User className={styles.inputIcon} size={20} />
                       <input
                         type="text"
-                        name="studentNumber"
-                        placeholder="Enter your student number"
-                        value={formData.studentNumber}
+                        name="firstName"
+                        placeholder="Enter your first name"
+                        value={formData.firstName}
                         onChange={handleChange}
                         required
                         className={styles.input}
                       />
                     </div>
                   </div>
-                )}
 
-                {formData.userType === 'non-student' && (
                   <div className={styles.fieldWrapper}>
-                    <label className={styles.fieldLabel}>National ID Number</label>
+                    <label className={styles.fieldLabel}>Surname</label>
                     <div className={styles.inputGroup}>
-                      <CreditCard className={styles.inputIcon} size={20} />
+                      <User className={styles.inputIcon} size={20} />
                       <input
                         type="text"
-                        name="nin"
-                        placeholder="Enter your national ID number"
-                        value={formData.nin}
+                        name="surname"
+                        placeholder="Enter your surname"
+                        value={formData.surname}
                         onChange={handleChange}
                         required
                         className={styles.input}
                       />
                     </div>
                   </div>
-                )}
 
-                <div className={styles.fieldWrapper}>
-                  <label className={styles.fieldLabel}>Password</label>
-                  <div className={styles.inputGroup}>
-                    <Lock className={styles.inputIcon} size={20} />
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      placeholder="Create a password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                      className={styles.input}
-                    />
-                    {formData.password && (
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className={styles.eyeIcon}
-                      >
-                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                      </button>
-                    )}
-                    {formData.password && !passwordValidation.isValid && (
-                      <div className={styles.passwordHint}>
-                        Required: {passwordValidation.errors.join(', ')}
-                      </div>
-                    )}
+                  <div className={`${styles.fieldWrapper} ${styles.fieldWrapperFull}`}>
+                    <label className={styles.fieldLabel}>Email Address</label>
+                    <div className={styles.inputGroup}>
+                      <Mail className={styles.inputIcon} size={20} />
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className={styles.input}
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className={styles.fieldWrapper}>
-                  <label className={styles.fieldLabel}>Confirm Password</label>
-                  <div className={styles.inputGroup}>
-                    <Lock className={styles.inputIcon} size={20} />
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      name="confirmPassword"
-                      placeholder="Re-enter your password"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      required
-                      className={styles.input}
-                    />
-                    {formData.confirmPassword && (
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className={styles.eyeIcon}
-                      >
-                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                      </button>
-                    )}
-                    {formData.confirmPassword && (
-                      <div className={formData.password === formData.confirmPassword ? styles.passwordMatch : styles.passwordMismatch}>
-                        {formData.password === formData.confirmPassword ? '✓ Matching' : '✗ Not matching'}
+                  <div className={styles.fieldWrapper}>
+                    <label className={styles.fieldLabel}>Gender</label>
+                    <div className={styles.radioGroup}>
+                      <label className={styles.radioLabel}>
+                        <input
+                          type="radio"
+                          name="gender"
+                          value="Male"
+                          checked={formData.gender === 'Male'}
+                          onChange={handleChange}
+                          className={styles.radio}
+                        />
+                        Male
+                      </label>
+                      <label className={styles.radioLabel}>
+                        <input
+                          type="radio"
+                          name="gender"
+                          value="Female"
+                          checked={formData.gender === 'Female'}
+                          onChange={handleChange}
+                          className={styles.radio}
+                        />
+                        Female
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className={styles.fieldWrapper}>
+                    <label className={styles.fieldLabel}>User Type</label>
+                    <div className={styles.radioGroup}>
+                      <label className={styles.radioLabel}>
+                        <input
+                          type="radio"
+                          name="userType"
+                          value="student"
+                          checked={formData.userType === 'student'}
+                          onChange={handleChange}
+                          className={styles.radio}
+                        />
+                        Student
+                      </label>
+                      <label className={styles.radioLabel}>
+                        <input
+                          type="radio"
+                          name="userType"
+                          value="non-student"
+                          checked={formData.userType === 'non-student'}
+                          onChange={handleChange}
+                          className={styles.radio}
+                        />
+                        Non-Student
+                      </label>
+                    </div>
+                  </div>
+
+                  {formData.userType === 'student' && (
+                    <div className={`${styles.fieldWrapper} ${styles.fieldWrapperFull}`}>
+                      <label className={styles.fieldLabel}>Student Number</label>
+                      <div className={styles.inputGroup}>
+                        <Hash className={styles.inputIcon} size={20} />
+                        <input
+                          type="text"
+                          name="studentNumber"
+                          placeholder="Enter your student number"
+                          value={formData.studentNumber}
+                          onChange={handleChange}
+                          required
+                          className={styles.input}
+                        />
                       </div>
-                    )}
+                    </div>
+                  )}
+
+                  {formData.userType === 'non-student' && (
+                    <div className={`${styles.fieldWrapper} ${styles.fieldWrapperFull}`}>
+                      <label className={styles.fieldLabel}>National ID Number</label>
+                      <div className={styles.inputGroup}>
+                        <CreditCard className={styles.inputIcon} size={20} />
+                        <input
+                          type="text"
+                          name="nin"
+                          placeholder="Enter your national ID number"
+                          value={formData.nin}
+                          onChange={handleChange}
+                          required
+                          className={styles.input}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className={styles.fieldWrapper}>
+                    <label className={styles.fieldLabel}>Password</label>
+                    <div className={styles.inputGroup}>
+                      <Lock className={styles.inputIcon} size={20} />
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        placeholder="Create a password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                        className={styles.input}
+                      />
+                      {formData.password && (
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className={styles.eyeIcon}
+                        >
+                          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                      )}
+                      {formData.password && !passwordValidation.isValid && (
+                        <div className={styles.passwordHint}>
+                          Required: {passwordValidation.errors.join(', ')}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className={styles.fieldWrapper}>
+                    <label className={styles.fieldLabel}>Confirm Password</label>
+                    <div className={styles.inputGroup}>
+                      <Lock className={styles.inputIcon} size={20} />
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirmPassword"
+                        placeholder="Re-enter your password"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        required
+                        className={styles.input}
+                      />
+                      {formData.confirmPassword && (
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className={styles.eyeIcon}
+                        >
+                          {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                      )}
+                      {formData.confirmPassword && (
+                        <div className={formData.password === formData.confirmPassword ? styles.passwordMatch : styles.passwordMismatch}>
+                          {formData.password === formData.confirmPassword ? '✓ Matching' : '✗ Not matching'}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
