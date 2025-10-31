@@ -116,7 +116,9 @@
 }
 
 .searchBtn {
-  background: #0066ff;
+  /* background: #0066ff; */
+    background: linear-gradient(135deg, #0a3d5c 0%, #0d5278 50%, #0a3d5c 100%);
+
   color: white;
   border: none;
   padding: 20px 48px;
