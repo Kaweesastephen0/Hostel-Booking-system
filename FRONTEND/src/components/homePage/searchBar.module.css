@@ -10,6 +10,7 @@
   margin: 0 auto;
   position: relative;
   font-family: 'Roboto', sans-serif;
+  background-color: white;
 }
 
 .searchField {
