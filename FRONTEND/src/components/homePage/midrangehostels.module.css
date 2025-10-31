@@ -1,0 +1,256 @@
+.hostelHeroSection {
+  background: linear-gradient(135deg, #0a3d5c 0%, #0d5278 50%, #0a3d5c 100%);
+  padding: 20px 0;
+  
+}
+
+.hostelContainer {
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hostelHeader {
+  margin-bottom: 20px;
+  margin-left: 70px;
+}
+
+.hostelTitle {
+  font-size: 60px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 15px;
+  letter-spacing: -1px;
+}
+
+.hostelSubtitle {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 300;
+}
+
+.hostelCarouselWrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.hostelCarouselContainer {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  /* -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent; */
+  /* padding: 0 60px; */
+}
+
+.hostelCarouselContainer::-webkit-scrollbar {
+  height: 8px;
+}
+
+.hostelCarouselContainer::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.hostelCarouselContainer::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+.hostelCarouselContainer::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.hostelCarouselTrack {
+  display: flex;
+  gap: 24px;
+  padding: 20px 0;
+  padding-right: 24px;
+}
+
+.hostelCityCard {
+  min-width: 320px;
+  flex-shrink: 0;
+  position: relative;
+  height: 400px;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hostelCityCard:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+}
+
+.hostelCardImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease;
+}
+
+.hostelCityCard:hover .hostelCardImage {
+  transform: scale(1.1);
+}
+
+.hostelCardOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%);
+}
+
+.hostelPriceBadge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: #ff6b6b;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 10;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+  text-transform: capitalize;
+}
+
+.hostelGenderBadge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: #ff6b6b;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 700;
+  z-index: 10;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.hostelCityName {
+  position: absolute;
+  bottom: 25px;
+  left: 25px;
+  z-index: 10;
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  max-width: calc(100% - 50px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hostelNavButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hostelNavButton:hover {
+  background: white;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.hostelNavButton.prev {
+  left: 10px;
+}
+
+.hostelNavButton.next {
+  right: 10px;
+}
+
+.hostelScrollTop {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  background: #ff6b6b;
+  border: none;
+  padding: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.hostelScrollTop:hover {
+  background: #ff5252;
+  transform: scale(1.1);
+}
+
+.hostelLoading {
+  text-align: center;
+  color: white;
+  font-size: 24px;
+  padding: 100px 0;
+}
+
+.hostelError {
+  text-align: center;
+  color: #ff6b6b;
+  font-size: 20px;
+  padding: 50px 20px;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 12px;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+@media (max-width: 768px) {
+  .hostelTitle {
+    font-size: 40px;
+  }
+  
+  .hostelSubtitle {
+    font-size: 18px;
+  }
+
+  .hostelCityCard {
+    min-width: 280px;
+  }
+
+  .hostelCarouselWrapper {
+    padding: 0 20px;
+  }
+
+  .hostelCarouselContainer {
+    padding-right: 20px;
+  }
+
+  .hostelHeader {
+    margin-left: 20px;
+  }
+
+  .hostelCityName {
+    font-size: 24px;
+  }
+}

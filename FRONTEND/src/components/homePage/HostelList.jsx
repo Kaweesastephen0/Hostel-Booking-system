@@ -1,5 +1,3 @@
-import { Menu, Home, UserPlus } from 'lucide-react';
-import SearchBar from './SearchBar';
 import styles from './HostelList.module.css';
 import { useNavigate } from 'react-router-dom';
 import FeaturedProperties from './featuredHostels';
@@ -8,6 +6,7 @@ import { useEffect, useState } from 'react';
 import Gallery from './gallery';
 import HotelCard from '../hotelCard';
 import Hero from './Hero';
+import MidRangeHostel from './midrangeHostel';
 
 
 function HostelList() {
@@ -86,6 +85,10 @@ function HostelList() {
           
         </section>
         <FeaturedProperties hostels={hostels.filter(h=>h.featured)}/>
+          
+           <MidRangeHostel/>
+
+          
         <AffordableHostels/>
 
         <section className={styles.listingsSection}>
@@ -112,6 +115,7 @@ function HostelList() {
             </div>
           </div>
         </section>
+        
 
         <Gallery/>
       </main>

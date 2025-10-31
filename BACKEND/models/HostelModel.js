@@ -1,3 +1,4 @@
+// Hostel Model
 import mongoose from 'mongoose';
 
 const hostelSchema = new mongoose.Schema({
@@ -65,11 +66,7 @@ const hostelSchema = new mongoose.Schema({
     featured: {
         type: Boolean,
         default: false
-    },
-    rooms: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Room'
-    }]
+    }
 }, {
     timestamps: true
 });
@@ -83,6 +80,16 @@ hostelSchema.index({ HostelGender: 1 });
 hostelSchema.virtual('primaryImage').get(function() {
     const primaryImg = this.images?.find(img => img.isPrimary);
     return primaryImg?.url || this.images?.[0]?.url || '';
+});
+
+// Virtual to get all images sorted (primary first)
+hostelSchema.virtual('sortedImages').get(function() {
+    if (!this.images || this.images.length === 0) return [];
+    
+    const primary = this.images.filter(img => img.isPrimary);
+    const others = this.images.filter(img => !img.isPrimary);
+    
+    return [...primary, ...others];
 });
 
 // Ensure virtuals are included in JSON
