@@ -13,12 +13,12 @@ export default function MukBookFooter() {
               <h3 className={styles.footerHeading}>HOW TO...</h3>
               <ul className={styles.footerList}>
                 <li><a href="#" className={styles.footerLink}>book hostels</a></li>
-                <li><a href="#" className={styles.footerLink}>pack your backpack</a></li>
-                <li><a href="#" className={styles.footerLink}>stay first-time in a hostel</a></li>
-                <li><a href="#" className={styles.footerLink}>All Articles</a></li>
+                <li><a href="#" className={styles.footerLink}>post hostel</a></li>
+                <li><a href="#" className={styles.footerLink}>comment on hostel</a></li>
+                <li><a href="#" className={styles.footerLink}>rate hostel</a></li>
                 <li>
                   <a href="#" className={styles.footerLink}>
-                    Exclusive Articles <span className={styles.badge}>Plus</span>
+                    Report hostel <span className={styles.badge}>report</span>
                   </a>
                 </li>
               </ul>
@@ -27,10 +27,10 @@ export default function MukBookFooter() {
             <div className={styles.footerColumn}>
               <h3 className={styles.footerHeading}>EXPLORE</h3>
               <ul className={styles.footerList}>
-                <li><a href="#" className={styles.footerLink}>How Hostelz works</a></li>
+                <li><a href="#" className={styles.footerLink}>Opportunities</a></li>
                 <li><a href="#" className={styles.footerLink}>About Us</a></li>
                 <li><a href="#" className={styles.footerLink}>Help</a></li>
-                <li><a href="#" className={styles.footerLink}>What's New? The Changelog</a></li>
+                <li><a href="#" className={styles.footerLink}>FAQs</a></li>
                 <li><a href="#" className={styles.footerLink}>Sign up</a></li>
               </ul>
             </div>
@@ -42,27 +42,26 @@ export default function MukBookFooter() {
                 <li><a href="#" className={styles.footerLink}>Hostels with Private Rooms</a></li>
                 <li><a href="#" className={styles.footerLink}>Party Hostels</a></li>
                 <li><a href="#" className={styles.footerLink}>Cheapest Hostels</a></li>
-                <li><a href="#" className={styles.footerLink}>Female Solo-Traveler</a></li>
-                <li><a href="#" className={styles.footerLink}>Youth Hostels</a></li>
-                <li><a href="#" className={styles.footerLink}>Find Hostel Jobs</a></li>
-                <li><a href="#" className={styles.footerLink}>Hostel Chains</a></li>
+                <li><a href="#" className={styles.footerLink}>Hostels with On roof balcony</a></li>
+                <li><a href="#" className={styles.footerLink}>No rules hostel</a></li>
+                <li><a href="#" className={styles.footerLink}>Hostel with buses</a></li>
                 <li><a href="#" className={styles.footerLink}>All Hostels</a></li>
               </ul>
             </div>
 
             <div className={styles.footerColumn}>
-              <h3 className={styles.footerHeading}>COMPARE & SAVE</h3>
+              <h3 className={styles.footerHeading}>LIKE & SAVE</h3>
               <ul className={styles.footerList}>
                 <li>
                   <a href="#" className={styles.footerLink}>
-                    Hostel Comparison Tool <span className={styles.badgeNew}>NEW</span>
+                    My favorites <span className={styles.badgeNew}>NEW</span>
                   </a>
                 </li>
-                <li><a href="#" className={styles.footerLink}>Best Hostel Booking Sites</a></li>
+                <li><a href="#" className={styles.footerLink}>Rates and reviews</a></li>
               </ul>
-              <h3 className={styles.footerHeading} style={{marginTop: '32px'}}>TRAVEL ESSENTIALS</h3>
+              <h3 className={styles.footerHeading} style={{marginTop: '32px'}}>POST BOOKING</h3>
               <ul className={styles.footerList}>
-                <li><a href="#" className={styles.footerLink}>Best Travel Insurances</a></li>
+                <li><a href="#" className={styles.footerLink}>safety precautions</a></li>
               </ul>
             </div>
           </div>
@@ -94,7 +93,7 @@ export default function MukBookFooter() {
             </div>
 
             <div className={styles.currencySelector}>
-              <span className={styles.currency}>UGX | shs</span>
+              <span className={styles.currency}>&copy; MUK-BOOK 2025</span>
               
             </div>
           </div>
