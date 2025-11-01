@@ -1,3 +1,4 @@
+import { Query } from "mongoose";
 import HostelModel from "../models/HostelModel.js";
 import { categorizeHostelsByPrice } from "../utils/hostelCategorization.js";
 
@@ -52,7 +53,7 @@ export const getFeaturedHostels = async(req, res) => {
 // GET PREMIUM HOSTELS (rooms >= 1,000,000)
 export const getPremiumHostels = async(req, res) => {
     try {
-        console.log('🔍 Fetching premium hostels...');
+        console.log('Fetching premium hostels...');
         
         const allHostels = await HostelModel.find({}).lean();
         console.log(`Total hostels fetched: ${allHostels.length}`);
@@ -66,15 +67,15 @@ export const getPremiumHostels = async(req, res) => {
             const category = categories[hostelId];
             
             if (!category) {
-                console.log(`⚠️ ${hostel.name}: No rooms found`);
+                console.log(`${hostel.name}: No rooms found`);
                 return false;
             }
             
-            console.log(`🏨 ${hostel.name}: Min=${category.minPrice}, Max=${category.maxPrice}, Premium=${category.isPremium}`);
+            console.log(`${hostel.name}: Min=${category.minPrice}, Max=${category.maxPrice}, Premium=${category.isPremium}`);
             return category.isPremium;
         });
 
-        console.log(`✅ Found ${premiumHostels.length} premium hostels`);
+        console.log(`Found ${premiumHostels.length} premium hostels`);
 
         if (premiumHostels.length > 0) {
             res.status(200).json({
@@ -83,7 +84,7 @@ export const getPremiumHostels = async(req, res) => {
                 data: premiumHostels
             });
         } else {
-            console.log('❌ No premium hostels found');
+            console.log('No premium hostels found');
             res.status(404).json({
                 success: false, 
                 message: 'No premium hostels found',
@@ -105,10 +106,10 @@ export const getPremiumHostels = async(req, res) => {
 // GET AFFORDABLE HOSTELS (all rooms < 600,000)
 export const getAffordableHostels = async (req, res) => {
     try {
-        console.log('🔍 Fetching affordable hostels (below 600,000 UGX)...');
+        console.log('Fetching affordable hostels (below 600,000 UGX)...');
         
         const allHostels = await HostelModel.find({}).lean();
-        console.log(`📊 Total hostels in database: ${allHostels.length}`);
+        console.log(`Total hostels in database: ${allHostels.length}`);
         
         if (allHostels.length === 0) {
             return res.status(404).json({
@@ -127,21 +128,21 @@ export const getAffordableHostels = async (req, res) => {
             const category = categories[hostelId];
             
             if (!category) {
-                console.log(`⚠️ ${hostel.name}: No rooms found`);
+                console.log(`${hostel.name}: No rooms found`);
                 return false;
             }
             
-            console.log(`🏨 ${hostel.name}: ${category.roomCount} rooms, Max=${category.maxPrice}, Affordable=${category.isAffordable}`);
+            console.log(`${hostel.name}: ${category.roomCount} rooms, Max=${category.maxPrice}, Affordable=${category.isAffordable}`);
             return category.isAffordable;
         });
 
-        console.log(`💰 Found ${affordableHostels.length} affordable hostels`);
+        console.log(`Found ${affordableHostels.length} affordable hostels`);
 
         if (affordableHostels.length > 0) {
-            console.log('✅ Affordable hostels:');
+            console.log('Affordable hostels:');
             affordableHostels.forEach(hostel => {
                 const category = categories[hostel._id.toString()];
-                console.log(`   🏠 ${hostel.name}: ${category.priceRange}`);
+                console.log(`${hostel.name}: ${category.priceRange}`);
             });
             
             res.status(200).json({
@@ -150,7 +151,7 @@ export const getAffordableHostels = async (req, res) => {
                 message: `Found ${affordableHostels.length} affordable hostels`
             });
         } else {
-            console.log('❌ No affordable hostels found');
+            console.log('No affordable hostels found');
             res.status(404).json({
                 success: false, 
                 message: 'No affordable hostels found',
@@ -159,7 +160,7 @@ export const getAffordableHostels = async (req, res) => {
         }
         
     } catch(error) {
-        console.log('❌ Error getting affordable hostels:', error);
+        console.log('Error getting affordable hostels:', error);
         res.status(500).json({
             success: false,
             message: "Server Error",
@@ -171,10 +172,10 @@ export const getAffordableHostels = async (req, res) => {
 // GET MID-RANGE HOSTELS (600,000 <= rooms < 1,000,000)
 export const getMidRangeHostels = async (req, res) => {
     try {
-        console.log('🔍 Fetching mid-range hostels (600,000 - 999,999 UGX)...');
+        console.log('Fetching mid-range hostels (600,000 - 999,999 UGX)...');
         
         const allHostels = await HostelModel.find({}).lean();
-        console.log(`📊 Total hostels in database: ${allHostels.length}`);
+        console.log(`Total hostels in database: ${allHostels.length}`);
         
         if (allHostels.length === 0) {
             return res.status(404).json({
@@ -193,7 +194,7 @@ export const getMidRangeHostels = async (req, res) => {
             const category = categories[hostelId];
             
             if (!category) {
-                console.log(`⚠️ ${hostel.name}: No rooms found`);
+                console.log(`${hostel.name}: No rooms found`);
                 return false;
             }
             
@@ -201,17 +202,17 @@ export const getMidRangeHostels = async (req, res) => {
             const hasMidRangeRoom = category.minPrice >= 600000 || category.maxPrice >= 600000;
             const isMidRange = hasMidRangeRoom && !category.isPremium;
             
-            console.log(`🏨 ${hostel.name}: Min=${category.minPrice}, Max=${category.maxPrice}, MidRange=${isMidRange}`);
+            console.log(`${hostel.name}: Min=${category.minPrice}, Max=${category.maxPrice}, MidRange=${isMidRange}`);
             return isMidRange;
         });
 
-        console.log(`💼 Found ${midRangeHostels.length} mid-range hostels`);
+        console.log(`Found ${midRangeHostels.length} mid-range hostels`);
 
         if (midRangeHostels.length > 0) {
-            console.log('✅ Mid-range hostels:');
+            console.log(' Mid-range hostels:');
             midRangeHostels.forEach(hostel => {
                 const category = categories[hostel._id.toString()];
-                console.log(`   🏠 ${hostel.name}: ${category.priceRange}`);
+                console.log(` ${hostel.name}: ${category.priceRange}`);
             });
             
             res.status(200).json({
@@ -220,7 +221,7 @@ export const getMidRangeHostels = async (req, res) => {
                 message: `Found ${midRangeHostels.length} mid-range hostels`
             });
         } else {
-            console.log('❌ No mid-range hostels found');
+            console.log(' No mid-range hostels found');
             res.status(404).json({
                 success: false, 
                 message: 'No mid-range hostels found',
@@ -229,7 +230,7 @@ export const getMidRangeHostels = async (req, res) => {
         }
         
     } catch(error) {
-        console.log('❌ Error getting mid-range hostels:', error);
+        console.log(' Error getting mid-range hostels:', error);
         res.status(500).json({
             success: false,
             message: "Server Error",
@@ -237,4 +238,51 @@ export const getMidRangeHostels = async (req, res) => {
         });
     }
 };
+
+export const getSearchbarQuery= async (req, res)=>{
+    try{
+        const { location, semester, roomType }= req.Query;
+        if(!location || !semester || !roomType){
+            console.log("Invalid search")
+           return res.status(400).json({
+                success: false,
+                error: error,
+            })
+            const query={};
+
+            if(location && location !=='Wandegeya'){
+                query.$or=[
+                    {location :{ $regex: location, $options: 'i'}},
+                    { address: { $regex: location, $options: 'i'}},
+                    { name: {$regex: location, $options: 'i'}}
+                ]
+
+            };
+            const hostels = await HostelModel.find(query).lean();
+
+            if(!hostels || hostels.length===0){
+                return res.status(200).json({
+                    success : true,
+                    data: [],
+                    message: 'No hostel matching your criteria',
+                    count: 0
+                })
+
+            }
+
+            
+
+        }
+
+
+
+
+
+    }
+    catch(error){
+        console.log("server Error", error)
+
+    }
+
+}
 

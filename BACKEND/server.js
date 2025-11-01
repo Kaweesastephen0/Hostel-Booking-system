@@ -9,6 +9,7 @@ import roomRoute from "./routes/roomRoute.js";
 import authRoutes from "./routes/authRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import HostelSearchRoute from './routes/searchRoute.js'
 
 // Load environment variables
 dotenv.config();
@@ -48,7 +49,8 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api/hostels', hostelRoute);
+app.use('/api/hostels', hostelRoute)
+app.use('/api/hostels/', HostelSearchRoute)
 app.use("/api/rooms", roomRoute);
 app.use("/api/auth", authRoutes);
 app.use("/api/contact", contactRoutes);
