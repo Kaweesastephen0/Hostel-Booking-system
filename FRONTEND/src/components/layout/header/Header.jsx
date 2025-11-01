@@ -11,18 +11,38 @@ const HostelHeader = () => {
   const [userName, setUserName]=useState('')
 
   useEffect(() => {
-    const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
-    const storedUserData = localStorage.getItem('userData') || sessionStorage.getItem('userData');
+    const checkLoginStatus = () => {
+      const storedUserData = localStorage.getItem('userData') || sessionStorage.getItem('userData');
 
-    if (token && storedUserData) {
-      setIsLoggedIn(true)
-      try {
-        const userData = JSON.parse(storedUserData);
-        setUserName(userData.firstName || '');
-      } catch (error) {
-        console.error('Error parsing user data:', error);
+      if (storedUserData) {
+        setIsLoggedIn(true);
+        try {
+          const userData = JSON.parse(storedUserData);
+          setUserName(userData.firstName || '');
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          setIsLoggedIn(false);
+          setUserName('');
+        }
+      } else {
+        setIsLoggedIn(false);
+        setUserName('');
       }
-    }
+    };
+
+    // Check on mount
+    checkLoginStatus();
+
+    // Listen for storage changes (works across tabs)
+    window.addEventListener('storage', checkLoginStatus);
+
+    // Listen for custom auth events (works within same tab)
+    window.addEventListener('authStateChanged', checkLoginStatus);
+
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+      window.removeEventListener('authStateChanged', checkLoginStatus);
+    };
   }, []);
 
   const handleUserIconClick = () => {

@@ -117,6 +117,7 @@ function Auth() {
     try {
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: formData.email,
@@ -127,12 +128,14 @@ function Auth() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store authentication data based on "Remember Me" preference
+        // Store only user data (not token) in localStorage
         const storage = formData.rememberMe ? localStorage : sessionStorage;
-        storage.setItem('userToken', data.token);
         storage.setItem('userData', JSON.stringify(data));
         storage.setItem('lastLoginTime', new Date().toISOString());
-        
+
+        // Dispatch custom event to update header
+        window.dispatchEvent(new Event('authStateChanged'));
+
         navigate('/');
       } else {
         setError(data.message || 'Login failed');

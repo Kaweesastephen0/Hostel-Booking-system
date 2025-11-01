@@ -1,15 +1,15 @@
-
 import User from '../models/User.js';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
+import cookieParser from 'cookie-parser'; // Import cookie-parser
 
 const generateToken = (id) => {
   if (!process.env.JWT_SECRET) {
     throw new Error('JWT_SECRET is not configured');
   }
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE 
+    expiresIn: process.env.JWT_EXPIRE
   });
 };
 
@@ -129,6 +129,16 @@ export const register = async (req, res) => {
         console.error('Failed to send welcome email');
       }
 
+      const token = generateToken(user._id);
+
+      // Set HTTP-only cookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      });
+
       res.status(201).json({
         _id: user._id,
         firstName: user.firstName,
@@ -137,8 +147,7 @@ export const register = async (req, res) => {
         gender: user.gender,
         userType: user.userType,
         studentNumber: user.studentNumber,
-        createdAt: user.createdAt,
-        token: generateToken(user._id)
+        createdAt: user.createdAt
       });
     }
   } catch (error) {
@@ -156,6 +165,16 @@ export const login = async (req, res) => {
       user.lastLogin = Date.now();
       await user.save();
 
+      const token = generateToken(user._id);
+
+      // Set HTTP-only cookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      });
+
       res.json({
         _id: user._id,
         firstName: user.firstName,
@@ -165,8 +184,7 @@ export const login = async (req, res) => {
         userType: user.userType,
         studentNumber: user.studentNumber,
         createdAt: user.createdAt,
-        lastLogin: user.lastLogin,
-        token: generateToken(user._id)
+        lastLogin: user.lastLogin
       });
     } else {
       res.status(401).json({ message: 'Invalid email or password' });
@@ -325,7 +343,7 @@ export const resetPassword = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = req.cookies.token;
 
     if (!token) {
       return res.status(401).json({ message: 'No token provided' });
@@ -419,7 +437,7 @@ export const updateProfile = async (req, res) => {
 
 export const changePassword = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = req.cookies.token;
 
     if (!token) {
       return res.status(401).json({ message: 'No token provided' });
@@ -449,5 +467,20 @@ export const changePassword = async (req, res) => {
     res.json({ message: 'Password changed successfully' });
   } catch (error) {
     res.status(500).json({ message: 'An error occurred during password change' });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    res.cookie('token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 0
+    });
+
+    res.json({ message: 'Logged out successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred during logout' });
   }
 };

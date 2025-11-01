@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import connectDB from "./config/database.js";
 import hostelRoute from './routes/hostelRoute.js'
@@ -21,6 +22,7 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
+app.use(cookieParser());
 
 // Rate limiting
 const limiter = rateLimit({
