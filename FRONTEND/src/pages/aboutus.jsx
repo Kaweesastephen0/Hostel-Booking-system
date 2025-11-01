@@ -101,7 +101,7 @@ const AboutUs = () => {
 
               <div className={styles.storyFeatures}>
                 <div className={styles.storyFeature}>
-                  <div className={styles.featureIcon} style={{ background: 'linear-gradient(45deg, #667eea, #764ba2)' }}>
+                  <div className={styles.featureIcon}>
                     🎓
                   </div>
                   <p className={styles.featureText}>
@@ -110,7 +110,7 @@ const AboutUs = () => {
                 </div>
 
                 <div className={styles.storyFeature}>
-                  <div className={styles.featureIcon} style={{ background: 'linear-gradient(45deg, #ff6b6b, #ffa726)' }}>
+                  <div className={styles.featureIcon}>
                     🔍
                   </div>
                   <p className={styles.featureText}>
@@ -119,7 +119,7 @@ const AboutUs = () => {
                 </div>
 
                 <div className={styles.storyFeature}>
-                  <div className={styles.featureIcon} style={{ background: 'linear-gradient(45deg, #4ecdc4, #44a08d)' }}>
+                  <div className={styles.featureIcon}>
                     💰
                   </div>
                   <p className={styles.featureText}>
@@ -136,17 +136,16 @@ const AboutUs = () => {
               </h3>
               <div className={styles.timelineItems}>
                 {[
-                  { year: '2023', event: 'Platform Launch', icon: '🚀' },
-                  { year: '2024', event: '100+ Hostels', icon: '🏠' },
-                  { year: '2024', event: 'Mobile App', icon: '📱' },
-                  { year: '2025', event: 'Nationwide', icon: '🌍' }
+                  { year: '2023', event: 'Platform Launch' },
+                  { year: '2024', event: '100+ Hostels' },
+                  { year: '2024', event: 'Mobile App' },
+                  { year: '2025', event: 'Nationwide' }
                 ].map((item, index) => (
                   <div key={index} className={styles.timelineItem}>
                     <div className={styles.timelineYear}>
-                      {item.icon}
+                      {item.year}
                     </div>
                     <div className={styles.timelineContent}>
-                      <div className={styles.timelineYearText}>{item.year}</div>
                       <h4 className={styles.timelineEvent}>{item.event}</h4>
                     </div>
                   </div>
@@ -163,7 +162,7 @@ const AboutUs = () => {
           <div className={styles.missionVisionGrid}>
             {/* Mission */}
             <div className={styles.missionCard}>
-              <div className={`${styles.cardIcon} ${styles.missionIcon}`}>
+              <div className={styles.cardIcon}>
                 🎯
               </div>
               <h3 className={styles.cardTitle}>
@@ -177,7 +176,7 @@ const AboutUs = () => {
 
             {/* Vision */}
             <div className={styles.visionCard}>
-              <div className={`${styles.cardIcon} ${styles.visionIcon}`}>
+              <div className={styles.cardIcon}>
                 🔭
               </div>
               <h3 className={styles.cardTitle}>
