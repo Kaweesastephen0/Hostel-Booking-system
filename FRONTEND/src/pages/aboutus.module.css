@@ -76,6 +76,9 @@
   box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .primaryButton:hover {
@@ -96,6 +99,9 @@
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .secondaryButton:hover {
@@ -148,6 +154,11 @@
   box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);
 }
 
+.statIcon {
+  margin-bottom: 1rem;
+  color: #2563eb;
+}
+
 .statNumber {
   font-size: 4rem;
   font-weight: 900;
@@ -190,7 +201,8 @@
   border-radius: 25px;
   font-weight: 700;
   font-size: 1rem;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin-bottom: 2rem;
   box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
 }
@@ -283,6 +295,9 @@
   margin-bottom: 2.5rem;
   text-align: center;
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .timelineItems {
@@ -330,6 +345,8 @@
   font-size: 1.3rem;
   font-weight: 700;
   color: white;
+  display: flex;
+  align-items: center;
 }
 
 /* Mission Vision Section */
@@ -530,6 +547,14 @@
   
   .cardTitle {
     font-size: 2rem;
+  }
+  
+  .statNumber {
+    font-size: 3rem;
+  }
+  
+  .timelineTitle {
+    font-size: 1.8rem;
   }
 }
 

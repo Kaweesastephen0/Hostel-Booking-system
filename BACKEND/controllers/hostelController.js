@@ -105,10 +105,10 @@ export const getPremiumHostels = async(req, res) => {
 // GET AFFORDABLE HOSTELS (all rooms < 600,000)
 export const getAffordableHostels = async (req, res) => {
     try {
-        console.log('🔍 Fetching affordable hostels (below 600,000 UGX)...');
+        console.log('Fetching affordable hostels (below 600,000 UGX)...');
         
         const allHostels = await HostelModel.find({}).lean();
-        console.log(`📊 Total hostels in database: ${allHostels.length}`);
+        console.log(`Total hostels in database: ${allHostels.length}`);
         
         if (allHostels.length === 0) {
             return res.status(404).json({
