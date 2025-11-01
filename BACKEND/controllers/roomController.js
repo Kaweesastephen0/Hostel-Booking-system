@@ -129,3 +129,4 @@ export const getRoomById = async(req, res) => {
         });
     }
 }
+

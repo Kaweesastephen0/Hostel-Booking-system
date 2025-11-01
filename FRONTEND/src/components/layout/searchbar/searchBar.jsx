@@ -1,24 +1,23 @@
 import { useState, useRef, useEffect } from 'react';
-import { MapPin, Calendar, Users, X, ChevronDown } from 'lucide-react';
+import { MapPin, GraduationCap, Users, X, ChevronDown } from 'lucide-react';
 import styles from './SearchBar.module.css';
 
-export default function SearchBar() {
-  const [location, setLocation] = useState('Wandegeya');
-  const [semester, setSemester] = useState('Semester');
+export default function SearchBar({ onSearch }) {
+  const [location, setLocation] = useState('Makerere');
+  const [university, setUniversity] = useState('University');
   const [rooms, setRooms] = useState(1);
-  const [roomType, setRoomType] = useState('Single');
+  const [roomType, setRoomType] = useState('single');
   const [showRoomDropdown, setShowRoomDropdown] = useState(false);
-  const [showSemesterDropdown, setShowSemesterDropdown] = useState(false);
+  const [showUniversityDropdown, setShowUniversityDropdown] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   
   const roomDropdownRef = useRef(null);
   const guestFieldRef = useRef(null);
-  const semesterDropdownRef = useRef(null);
+  const universityDropdownRef = useRef(null);
   const dateFieldRef = useRef(null);
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Close room dropdown
       if (roomDropdownRef.current && 
           !roomDropdownRef.current.contains(event.target) &&
           guestFieldRef.current && 
@@ -26,12 +25,11 @@ export default function SearchBar() {
         setShowRoomDropdown(false);
       }
 
-      // Close semester dropdown
-      if (semesterDropdownRef.current && 
-          !semesterDropdownRef.current.contains(event.target) &&
+      if (universityDropdownRef.current && 
+          !universityDropdownRef.current.contains(event.target) &&
           dateFieldRef.current && 
           !dateFieldRef.current.contains(event.target)) {
-        setShowSemesterDropdown(false);
+        setShowUniversityDropdown(false);
       }
     };
 
@@ -39,18 +37,14 @@ export default function SearchBar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleClearLocation = () => {
-    setLocation('');
-  };
-
+  const handleClearLocation = () => setLocation('');
   const toggleRoomDropdown = () => {
     setShowRoomDropdown(!showRoomDropdown);
-    setShowSemesterDropdown(false); // Close other dropdown
+    setShowUniversityDropdown(false);
   };
-
-  const toggleSemesterDropdown = () => {
-    setShowSemesterDropdown(!showSemesterDropdown);
-    setShowRoomDropdown(false); // Close other dropdown
+  const toggleUniversityDropdown = () => {
+    setShowUniversityDropdown(!showUniversityDropdown);
+    setShowRoomDropdown(false);
   };
 
   const handleRoomChange = (operation) => {
@@ -61,43 +55,38 @@ export default function SearchBar() {
     }
   };
 
-  const handleRoomTypeSelect = (type) => {
-    setRoomType(type);
+  const handleRoomTypeSelect = (type) => setRoomType(type);
+  const handleUniversitySelect = (uni) => {
+    setUniversity(uni);
+    setShowUniversityDropdown(false);
   };
+  const handleApply = () => setShowRoomDropdown(false);
 
-  const handleSemesterSelect = (semesterOption) => {
-    setSemester(semesterOption);
-    setShowSemesterDropdown(false);
-  };
-
-  const handleApply = () => {
-    setShowRoomDropdown(false);
-  };
-
-  // Semester options for student hostels
-  const semesterOptions = [
-    '1 Semester',
-    '2 Semesters',
-    'Semester holiday',
-    
+  const universityOptions = [
+    'Makerere University', 'Victoria University', 'Isibati University',
+    'Muteesa 1 Royal University', 'UCU', 'IUIU', 'MUBS', 'KIU'
   ];
 
-  const roomTypes = ['Single', 'Double', 'Shared Dorm'];
+  const roomTypes = ['single', 'double', 'shared dorm'];
 
-  const handleSearch = () => {
-    const searchData = {
-      location,
-      semester,
-      rooms,
-      roomType
-    };
-    console.log('Searching for student hostels:', searchData);
-    alert(`Searching for ${rooms} ${roomType} room(s) in ${location} for ${semester}`);
+  const handleSearch = async () => {
+    if (!location.trim()) {
+      alert('Please enter a location');
+      return;
+    }
+
+    setIsSearching(true);
+    
+    // Call parent's onSearch callback
+    if (onSearch) {
+      await onSearch(location, roomType);
+    }
+    
+    setIsSearching(false);
   };
 
   return (
     <div className={styles.searchContainer}>
-      {/* Location Field */}
       <div className={`${styles.searchField} ${styles.location}`}>
         <MapPin className={styles.icon} size={20} />
         <div className={styles.inputWrapper}>
@@ -110,52 +99,45 @@ export default function SearchBar() {
           />
         </div>
         {location && (
-          <button 
-            className={styles.clearBtn} 
-            aria-label="Clear location"
-            onClick={handleClearLocation}
-          >
+          <button className={styles.clearBtn} onClick={handleClearLocation}>
             <X size={20} />
           </button>
         )}
       </div>
 
-      {/* Semester Field */}
       <div 
         className={`${styles.searchField} ${styles.dates}`}
         ref={dateFieldRef}
-        onClick={toggleSemesterDropdown}
+        onClick={toggleUniversityDropdown}
       >
-        <Calendar className={styles.iconCalendar} size={20} />
+        <GraduationCap className={styles.iconCalendar} size={20} /> 
         <div className={styles.inputWrapper}>
-          <div className={styles.dateRange}>{semester}</div>
+          <div className={styles.dateRange}>{university}</div>
         </div>
         <ChevronDown 
-          className={`${styles.dropdownIcon} ${showSemesterDropdown ? styles.rotated : ''}`} 
+          className={`${styles.dropdownIcon} ${showUniversityDropdown ? styles.rotated : ''}`} 
           size={20} 
         />
 
-        {/* Semester Dropdown */}
-        {showSemesterDropdown && (
+        {showUniversityDropdown && (
           <div 
-             ref={semesterDropdownRef}
-          className={`${styles.semesterDropdown} ${showSemesterDropdown ? styles.active : ''}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-            {semesterOptions.map((option, index) => (
-              <div
+            ref={universityDropdownRef}
+            className={`${styles.semesterDropdown} ${showUniversityDropdown ? styles.active : ''}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {universityOptions.map((option, index) => (
+              <button
                 key={index}
-                className={`${styles.semesterOption} ${semester === option ? styles.active : ''}`}
-                onClick={() => handleSemesterSelect(option)}
+                className={`${styles.semesterOption} ${university === option ? styles.active : ''}`}
+                onClick={() => handleUniversitySelect(option)}
               >
                 {option}
-              </div>
+              </button>
             ))}
           </div>
         )}
       </div>
 
-      {/* Room Selection Field */}
       <div 
         className={`${styles.searchField} ${styles.guests}`}
         ref={guestFieldRef}
@@ -172,7 +154,6 @@ export default function SearchBar() {
           size={20} 
         />
 
-        {/* Room Selection Dropdown */}
         <div 
           ref={roomDropdownRef}
           className={`${styles.dropdown} ${showRoomDropdown ? styles.active : ''}`}
@@ -207,25 +188,25 @@ export default function SearchBar() {
                   className={`${styles.roomTypeBtn} ${roomType === type ? styles.active : ''}`}
                   onClick={() => handleRoomTypeSelect(type)}
                 >
-                  {type}
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
                 </button>
               ))}
             </div>
           </div>
 
-          <button 
-            className={styles.applyBtn}
-            onClick={handleApply}
-          >
+          <button className={styles.applyBtn} onClick={handleApply}>
             Apply
           </button>
         </div>
       </div>
 
-      <button className={styles.searchBtn} onClick={handleSearch}>
-        Find Hostels
+      <button 
+        className={styles.searchBtn} 
+        onClick={handleSearch}
+        disabled={isSearching}
+      >
+        {isSearching ? 'Searching...' : 'Find Hostels'}
       </button>
     </div>
   );
 }
-// 😉

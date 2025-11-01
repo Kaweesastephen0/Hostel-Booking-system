@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import SearchBar from '../searchbar/searchBar';
 import { useHostels } from '../../../hooks/useHostels';
 
-export default function Hero() {
+export default function Hero({ onSearch }) {
   const navigate = useNavigate();
   const [imagesLoaded, setImagesLoaded] = useState({});
   
@@ -65,7 +65,7 @@ export default function Hero() {
           </div>
         </div>
         <div className={styles.searchBarWrapper}>
-          <SearchBar />
+          <SearchBar onSearch={onSearch} />
         </div>
       </div>
     );
@@ -76,7 +76,7 @@ export default function Hero() {
       <div className={styles.heroContainer}>
         <div className={styles.errorMessage}>{error}</div>
         <div className={styles.searchBarWrapper}>
-          <SearchBar />
+          <SearchBar onSearch={onSearch} />
         </div>
       </div>
     );
@@ -179,7 +179,8 @@ export default function Hero() {
         </div>
       </div>
       <div className={styles.searchBarWrapper}>
-        <SearchBar />
+        <SearchBar onSearch={onSearch} />
       </div>
     </div>
-  )}
+  );
+}
