@@ -8,6 +8,7 @@ import hostelRoute from './routes/hostelRoute.js'
 import roomRoute from "./routes/roomRoute.js";
 import authRoutes from "./routes/authRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -51,6 +52,9 @@ app.use('/api/hostels', hostelRoute);
 app.use("/api/rooms", roomRoute);
 app.use("/api/auth", authRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/bookings", bookingRoutes);
+app.use("/api/premium", hostelRoute), 
+ 
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
@@ -106,13 +110,15 @@ app.use('/api/*', (req, res) => {
 
 // 404 handler for all other routes
 app.use('*', (req, res) => {
+// 404 handler
+app.use((req, res) => {
     res.status(404).json({
         success: false,
-        message: "Route not found"
+        message: `Route ${req.originalUrl} not found`
     });
 });
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
     console.log(`🚀 Hostel Booking API started on port ${PORT}!!`);
@@ -121,4 +127,7 @@ app.listen(PORT, () => {
     console.log(`📞 Contact API: http://localhost:${PORT}/api/contact`);
     console.log(`🔐 Auth API: http://localhost:${PORT}/api/auth`);
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(` Hostel Booking API started on port ${PORT}!!`);
+    console.log(` Health check: http://localhost:${PORT}/api/health`);
+    console.log(` Hostels API: http://localhost:${PORT}/api/hostels`);
 });

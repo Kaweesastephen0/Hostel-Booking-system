@@ -1,0 +1,35 @@
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background-color: var(--card-bg-color, #ffffff);
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  margin-bottom: 2rem;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-title {
+  font-size: 1.75rem; /* 28px */
+  font-weight: 700;
+  color: var(--primary-text-color, #1f2937);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.header-subtitle {
+  font-size: 0.9rem; /* 14px */
+  color: var(--secondary-text-color, #718096);
+  margin-top: 0.25rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}

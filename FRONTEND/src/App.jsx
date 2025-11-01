@@ -1,36 +1,39 @@
-
 import React from "react"
 import { Routes, Route, useLocation } from "react-router-dom"
-import HostelList from "./components/homePage/HostelList"
+import HomePage from "./pages/HomePage.jsx"
 import Auth from "./components/Auth/AuthModal"
 import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
-import HostelHeader from "./components/header"
-import MukBookFooter from "./components/footer/HostelFooter"
-import RoomListingPage from "./components/roomList/RoomList"
-import ExactRoom from "./components/roomList/ExactRoom"
+import Header from "./components/layout/header/Header.jsx";
+import Booking from "./components/booking/Booking"
+import Footer from "./components/layout/footer/Footer.jsx"
+import RoomListingPage from "./pages/roomListings/RoomList.jsx"
+import RoomDetails from "./pages/RoomDetails/RoomDetails.jsx"
+import UserProfile from "./components/Auth/UserProfile"
 
 const App = () => {
   const location = useLocation();
 
-  const noHeaderNoFooter = location.pathname.includes("/login") || location.pathname.includes("/auth");
-  
+  const noHeaderNoFooter = location.pathname.includes("/login") || location.pathname.includes("/auth") || location.pathname.includes("/auth") || location.pathname.includes("/profile");
+
   return (
     <div>
-      {!noHeaderNoFooter && <HostelHeader />}
-      
+      {!noHeaderNoFooter && <Header />}
+
       <Routes>
-        <Route path="/" element={<HostelList />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Auth />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/profile" element={<UserProfile />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
-        <Route path="/hostels" element={<HostelList />} />
-        <Route path="/RoomListingPage" element={<RoomListingPage />} />
-        <Route path="/ExactRoom" element={<ExactRoom />} />
+        <Route path="/rooms/:hostelId" element={<RoomListingPage />} />
+        <Route path="/room/:roomId" element={<RoomDetails />} />
+        <Route path='/booking' element={<Booking/>}/>
+        
       </Routes>
 
-      {!noHeaderNoFooter && <MukBookFooter />}
+      {!noHeaderNoFooter && <Footer />}
     </div>
   )
 }
