@@ -1,3 +1,10 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import './aboutus.css';
+import {
+  School,
+  Security,
+  Groups,
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -29,6 +36,10 @@ import {
   WaterDrop,
   Tv,
   LocalParking,
+  TrendingUp,
+  EmojiEvents,
+  Target,
+  TravelExplore,
   KeyboardDoubleArrowRight,
   KeyboardDoubleArrowDown,
   PlayArrow,
@@ -74,7 +85,63 @@ const AboutUs = () => {
     };
   }, [isPlaying]);
 
-  // Stats counter animation
+  // Team Members
+  const teamMembers = [
+    {
+      name: "Sarah K.",
+      role: "Co-Founder & CEO",
+      image: "👩‍💼",
+      description: "Former Makerere University student who experienced hostel hunting challenges firsthand"
+    },
+    {
+      name: "David M.",
+      role: "Chief Technology Officer",
+      image: "👨‍💻",
+      description: "Tech enthusiast passionate about building seamless digital experiences for students"
+    },
+    {
+      name: "Grace L.",
+      role: "Operations Head",
+      image: "👩‍🎓",
+      description: "Ensures every listed hostel meets our strict quality and safety standards"
+    },
+    {
+      name: "Mike T.",
+      role: "Partnerships Manager",
+      image: "🤝",
+      description: "Connects with hostel owners to expand our network across Uganda"
+    }
+  ];
+
+  // Timeline Data
+  const timelineData = [
+    {
+      year: '2023',
+      event: 'Platform Launch',
+      icon: '🚀',
+      milestone: 'First 100 successful bookings'
+    },
+    {
+      year: '2024',
+      event: 'Expansion Phase',
+      icon: '🏠',
+      milestone: '100+ hostels across 5 major cities'
+    },
+    {
+      year: '2024',
+      event: 'Mobile App',
+      icon: '📱',
+      milestone: '5000+ app downloads'
+    },
+    {
+      year: '2025',
+      event: 'Nationwide Reach',
+      icon: '🌍',
+      milestone: 'Countrywide coverage achieved'
+    }
+  ];
+
+  // Stats Counter Component
   const Counter = ({ end, duration = 2000 }) => {
     const [count, setCount] = useState(0);
     const [hasAnimated, setHasAnimated] = useState(false);
@@ -570,6 +637,8 @@ const AboutUs = () => {
               <KeyboardDoubleArrowRight sx={{ ml: 1 }} />
             </Link>
           </div>
+        </div>
+      </section>
 
           {/* Trust Indicators */}
           <div className={styles.trustIndicators}>
