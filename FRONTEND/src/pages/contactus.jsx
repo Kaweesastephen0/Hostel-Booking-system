@@ -1,5 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './contactus.module.css';
+import {
+  Phone,
+  Email,
+  LocationOn,
+  Chat,
+  Business,
+  Schedule,
+  Public,
+  FlashOn,
+  Map,
+  School,
+  Send,
+  Check,
+  Close,
+  Person,
+  SupportAgent,
+  BookOnline,
+  Groups
+} from '@mui/icons-material';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -82,13 +101,9 @@ const ContactUs = () => {
         <div className={styles.statusContent}>
           <div className={styles.statusIcon}>
             {submitStatus === 'success' ? (
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-              </svg>
+              <Check style={{ fontSize: '20px' }} />
             ) : (
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <Close style={{ fontSize: '20px' }} />
             )}
           </div>
           <p className={styles.statusText}>{submitMessage}</p>
@@ -99,35 +114,35 @@ const ContactUs = () => {
 
   const contactMethods = [
     {
-      icon: '📞',
+      icon: <Phone style={{ fontSize: '2.5rem' }} />,
       title: 'Call Us',
       details: ['+256 709 167919', '+256 707 366082'],
       description: 'Available 24/7 for urgent inquiries',
-      color: 'linear-gradient(45deg, #2563eb, #1d4ed8)',
+      color: 'linear-gradient(45deg, #1976d2, #1565c0)',
       link: 'tel:+256709167919'
     },
     {
-      icon: '✉️',
+      icon: <Email style={{ fontSize: '2.5rem' }} />,
       title: 'Email Us',
       details: ['kampala@mukbook.com', 'support@mukbook.ug'],
       description: 'Typically respond within 2 hours',
-      color: 'linear-gradient(45deg, #2563eb, #1d4ed8)',
+      color: 'linear-gradient(45deg, #1976d2, #1565c0)',
       link: 'mailto:kampala@mukbook.com'
     },
     {
-      icon: '📍',
+      icon: <LocationOn style={{ fontSize: '2.5rem' }} />,
       title: 'Visit Us',
       details: ['Makerere University', 'Kampala, Uganda'],
       description: 'Walk-ins welcome 8AM-8PM',
-      color: 'linear-gradient(45deg, #2563eb, #1d4ed8)',
+      color: 'linear-gradient(45deg, #1976d2, #1565c0)',
       link: 'https://maps.google.com/?q=Makerere+University,+Kampala'
     },
     {
-      icon: '💬',
+      icon: <Chat style={{ fontSize: '2.5rem' }} />,
       title: 'WhatsApp',
       details: ['+256 759 546308', 'Instant messaging'],
       description: 'Quick responses via WhatsApp',
-      color: 'linear-gradient(45deg, #2563eb, #1d4ed8)',
+      color: 'linear-gradient(45deg, #1976d2, #1565c0)',
       link: 'https://wa.me/256759546308'
     }
   ];
@@ -137,19 +152,22 @@ const ContactUs = () => {
       name: 'Sam M.',
       role: 'Customer Support Manager',
       email: 'support@mukbook.com',
-      phone: '+256 709 167919'
+      phone: '+256 709 167919',
+      icon: <SupportAgent style={{ fontSize: '2rem' }} />
     },
     {
       name: 'Umar B.',
       role: 'Booking Specialist',
       email: 'bookings@mukbook.ug',
-      phone: '+256 707 366082'
+      phone: '+256 707 366082',
+      icon: <BookOnline style={{ fontSize: '2rem' }} />
     },
     {
       name: 'Sarah K.',
       role: 'Hostel Relations',
       email: 'partners@mukbook.ug',
-      phone: '+256 782 555 666'
+      phone: '+256 782 555 666',
+      icon: <Groups style={{ fontSize: '2rem' }} />
     }
   ];
 
@@ -216,6 +234,7 @@ const ContactUs = () => {
             {/* Contact Form */}
             <div className={styles.formSection} ref={formRef}>
               <div className={styles.contactFormBadge}>
+                <Send style={{ marginRight: '8px', fontSize: '1.2rem' }} />
                 Send us a Message
               </div>
               <h2 className={styles.contactFormTitle}>
@@ -232,6 +251,7 @@ const ContactUs = () => {
                 <div className={styles.formGrid}>
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>
+                      <Person style={{ marginRight: '8px', fontSize: '1.2rem' }} />
                       Full Name *
                     </label>
                     <input
@@ -250,6 +270,7 @@ const ContactUs = () => {
 
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>
+                      <Email style={{ marginRight: '8px', fontSize: '1.2rem' }} />
                       Email Address *
                     </label>
                     <input
@@ -308,28 +329,46 @@ const ContactUs = () => {
                 >
                   {isSubmitting ? (
                     <>
-                      <svg className={styles.spinner} width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity="0.25"/>
-                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                      </svg>
+                      <div className={styles.spinner}></div>
                       Sending Message...
                     </>
                   ) : (
-                    'Send Message'
+                    <>
+                      <Send style={{ marginRight: '8px', fontSize: '1.2rem' }} />
+                      Send Message
+                    </>
                   )}
                 </button>
               </form>
 
               {/* Team Contact Cards */}
               <div className={styles.teamSection}>
-                <h3 className={styles.teamTitle}>Meet Our Kampala Team</h3>
+                <h3 className={styles.teamTitle}>
+                  <Groups style={{ marginRight: '12px', fontSize: '2rem' }} />
+                  Meet Our Kampala Team
+                </h3>
                 <div className={styles.teamGrid}>
                   {teamMembers.map((member, index) => (
                     <div key={index} className={styles.teamCard}>
-                      <h4 className={styles.teamMemberName}>{member.name}</h4>
-                      <p className={styles.teamMemberRole}>{member.role}</p>
-                      <p className={styles.teamMemberContact}>📧 {member.email}</p>
-                      <p className={styles.teamMemberContact}>📞 {member.phone}</p>
+                      <div className={styles.teamMemberHeader}>
+                        <div className={styles.teamMemberIcon}>
+                          {member.icon}
+                        </div>
+                        <div>
+                          <h4 className={styles.teamMemberName}>{member.name}</h4>
+                          <p className={styles.teamMemberRole}>{member.role}</p>
+                        </div>
+                      </div>
+                      <div className={styles.teamMemberContacts}>
+                        <p className={styles.teamMemberContact}>
+                          <Email style={{ marginRight: '8px', fontSize: '1rem' }} />
+                          {member.email}
+                        </p>
+                        <p className={styles.teamMemberContact}>
+                          <Phone style={{ marginRight: '8px', fontSize: '1rem' }} />
+                          {member.phone}
+                        </p>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -341,43 +380,69 @@ const ContactUs = () => {
               {/* Office Information */}
               <div className={styles.officeCard}>
                 <h3 className={styles.officeTitle}>
+                  <Business style={{ marginRight: '12px', fontSize: '2rem' }} />
                   Our Kampala Office
                 </h3>
                 
                 <div className={styles.officeInfo}>
                   <div className={styles.officeItem}>
                     <div className={styles.officeIcon}>
-                      🏢
+                      <Business style={{ fontSize: '1.8rem' }} />
                     </div>
                     <div>
                       <h4 className={styles.officeItemTitle}>Main Office</h4>
-                      <p className={styles.officeItemDetail}>📍 Makerere University Campus</p>
-                      <p className={styles.officeItemDetail}>📍 Off Sir Apollo Kaggwa Road</p>
-                      <p className={styles.officeItemDetail}>📍 Kampala, Uganda</p>
+                      <p className={styles.officeItemDetail}>
+                        <LocationOn style={{ marginRight: '8px', fontSize: '1rem' }} />
+                        Makerere University Campus
+                      </p>
+                      <p className={styles.officeItemDetail}>
+                        <LocationOn style={{ marginRight: '8px', fontSize: '1rem' }} />
+                        Off Sir Apollo Kaggwa Road
+                      </p>
+                      <p className={styles.officeItemDetail}>
+                        <LocationOn style={{ marginRight: '8px', fontSize: '1rem' }} />
+                        Kampala, Uganda
+                      </p>
                     </div>
                   </div>
 
                   <div className={styles.officeItem}>
                     <div className={styles.officeIcon}>
-                      🕒
+                      <Schedule style={{ fontSize: '1.8rem' }} />
                     </div>
                     <div>
                       <h4 className={styles.officeItemTitle}>Business Hours</h4>
-                      <p className={styles.officeItemDetail}>📅 Monday - Friday: 8:00 AM - 8:00 PM</p>
-                      <p className={styles.officeItemDetail}>📅 Saturday: 9:00 AM - 6:00 PM</p>
-                      <p className={styles.officeItemDetail}>📅 Sunday: 10:00 AM - 4:00 PM</p>
+                      <p className={styles.officeItemDetail}>
+                        <Schedule style={{ marginRight: '8px', fontSize: '1rem' }} />
+                        Monday - Friday: 8:00 AM - 8:00 PM
+                      </p>
+                      <p className={styles.officeItemDetail}>
+                        <Schedule style={{ marginRight: '8px', fontSize: '1rem' }} />
+                        Saturday: 9:00 AM - 6:00 PM
+                      </p>
+                      <p className={styles.officeItemDetail}>
+                        <Schedule style={{ marginRight: '8px', fontSize: '1rem' }} />
+                        Sunday: 10:00 AM - 4:00 PM
+                      </p>
                     </div>
                   </div>
 
                   <div className={styles.officeItem}>
                     <div className={styles.officeIcon}>
-                      🌍
+                      <Public style={{ fontSize: '1.8rem' }} />
                     </div>
                     <div>
                       <h4 className={styles.officeItemTitle}>Student Expertise</h4>
-                      <p className={styles.officeItemDetail}>🎓 University Accommodation Specialists</p>
-                      <p className={styles.officeItemDetail}>💰 Budget-Friendly Options</p>
-                      <p className={styles.officeItemDetail}>🛡️ Safety & Security Verified</p>
+                      <p className={styles.officeItemDetail}>
+                        <School style={{ marginRight: '8px', fontSize: '1rem' }} />
+                        University Accommodation Specialists
+                      </p>
+                      <p className={styles.officeItemDetail}>
+                        💰 Budget-Friendly Options
+                      </p>
+                      <p className={styles.officeItemDetail}>
+                        🛡️ Safety & Security Verified
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -399,7 +464,10 @@ const ContactUs = () => {
                 <div className={styles.mapFooter}>
                   <div className={styles.mapFooterContent}>
                     <div className={styles.mapFooterText}>
-                      <h4>Visit Our Kampala Office</h4>
+                      <h4>
+                        <Map style={{ marginRight: '8px', fontSize: '1.2rem' }} />
+                        Visit Our Kampala Office
+                      </h4>
                       <p>Located near Makerere University for student convenience!</p>
                     </div>
                     <a 
@@ -408,6 +476,7 @@ const ContactUs = () => {
                       rel="noopener noreferrer"
                       className={styles.directionsButton}
                     >
+                      <Map style={{ marginRight: '8px', fontSize: '1.2rem' }} />
                       Get Directions
                     </a>
                   </div>
@@ -418,7 +487,7 @@ const ContactUs = () => {
               <div className={`${styles.infoCard} ${styles.responseCard}`}>
                 <div className={styles.infoCardHeader}>
                   <div className={`${styles.infoCardIcon} ${styles.responseIcon}`}>
-                    ⚡
+                    <FlashOn style={{ fontSize: '1.8rem' }} />
                   </div>
                   <h4 className={styles.infoCardTitle}>Student Response Time</h4>
                 </div>
@@ -442,25 +511,37 @@ const ContactUs = () => {
               <div className={`${styles.infoCard} ${styles.landmarksCard}`}>
                 <div className={styles.infoCardHeader}>
                   <div className={`${styles.infoCardIcon} ${styles.landmarksIcon}`}>
-                    🗺️
+                    <School style={{ fontSize: '1.8rem' }} />
                   </div>
                   <h4 className={styles.infoCardTitle}>Nearby Universities</h4>
                 </div>
                 <div className={styles.infoList}>
                   <div className={styles.landmarkItem}>
-                    <span>🎓 Makerere University</span>
+                    <span>
+                      <School style={{ marginRight: '8px', fontSize: '1.2rem' }} />
+                      Makerere University
+                    </span>
                     <span className={styles.landmarkDistance}>0.5 km</span>
                   </div>
                   <div className={styles.landmarkItem}>
-                    <span>🎓 Kyambogo University</span>
+                    <span>
+                      <School style={{ marginRight: '8px', fontSize: '1.2rem' }} />
+                      Kyambogo University
+                    </span>
                     <span className={styles.landmarkDistance}>3.2 km</span>
                   </div>
                   <div className={styles.landmarkItem}>
-                    <span>🎓 Uganda Christian University</span>
+                    <span>
+                      <School style={{ marginRight: '8px', fontSize: '1.2rem' }} />
+                      Uganda Christian University
+                    </span>
                     <span className={styles.landmarkDistance}>12 km</span>
                   </div>
                   <div className={styles.landmarkItem}>
-                    <span>🎓 Uganda Martyrs University</span>
+                    <span>
+                      <School style={{ marginRight: '8px', fontSize: '1.2rem' }} />
+                      Uganda Martyrs University
+                    </span>
                     <span className={styles.landmarkDistance}>21 km</span>
                   </div>
                 </div>

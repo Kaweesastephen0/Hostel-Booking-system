@@ -101,7 +101,7 @@ app.use((err, req, res, next) => {
 });
 
 // 404 handler for API routes
-app.use('/api/*', (req, res) => {
+app.use('/api', (req, res) => {
     res.status(404).json({
         success: false,
         message: "API endpoint not found"
@@ -109,25 +109,25 @@ app.use('/api/*', (req, res) => {
 });
 
 // 404 handler for all other routes
-app.use('*', (req, res) => {
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({
-        success: false,
-        message: `Route ${req.originalUrl} not found`
-    });
-});
+// app.use('*', (req, res) => {
+// // 404 handler
+// app.use((req, res) => {
+//     res.status(404).json({
+//         success: false,
+//         message: `Route ${req.originalUrl} not found`
+//     });
+// });
 
 const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
-    console.log(`🚀 Hostel Booking API started on port ${PORT}!!`);
-    console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-    console.log(`🏨 Hostels API: http://localhost:${PORT}/api/hostels`);
-    console.log(`📞 Contact API: http://localhost:${PORT}/api/contact`);
-    console.log(`🔐 Auth API: http://localhost:${PORT}/api/auth`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(` Hostel Booking API started on port ${PORT}!!`);
-    console.log(` Health check: http://localhost:${PORT}/api/health`);
-    console.log(` Hostels API: http://localhost:${PORT}/api/hostels`);
-});
+    console.log(`Hostel Booking API started on port ${PORT}!!`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log(`Hostels API: http://localhost:${PORT}/api/hostels`);
+    console.log(`Contact API: http://localhost:${PORT}/api/contact`);
+    console.log(`Auth API: http://localhost:${PORT}/api/auth`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Hostel Booking API started on port ${PORT}!!`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log(`Hostels API: http://localhost:${PORT}/api/hostels`);
+})
