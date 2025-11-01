@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-import styles from './ExactRoom.module.css';
+import styles from './RoomDetails.module.css';
 import { 
     MoveLeft, Share2, Heart, Plus, MapPin, Users, Clock, 
     Wifi, Bus, BookOpen, Utensils, Lock, Dumbbell, Waves 
 } from 'lucide-react';
 
-const ExactRoom = () => {
+const RoomDetails = () => {
     const { roomId } = useParams();
     const navigate = useNavigate();
     const [room, setRoom] = useState(null);
     const [otherRooms, setOtherRooms] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [imagesLoaded, setImagesLoaded] = useState({});
 
     useEffect(() => {
         fetchRoomDetails();
@@ -32,7 +33,6 @@ const ExactRoom = () => {
             if (result.success && result.data) {
                 setRoom(result.data);
                 
-                // Fetch other rooms from the same hostel
                 if (result.data.hostelId?._id) {
                     fetchOtherRooms(result.data.hostelId._id);
                 }
@@ -91,34 +91,21 @@ const ExactRoom = () => {
         navigate(-1);
     };
 
-    if (loading) {
-        return <div className={styles.loading}>Loading room details...</div>;
-    }
+    const handleImageLoad = (index) => {
+        setImagesLoaded(prev => ({ ...prev, [index]: true }));
+    };
 
-    if (error || !room) {
-        return <div className={styles.error}>{error || 'Room not found'}</div>;
-    }
-
-    // Get images for display
     const getDisplayImages = () => {
+        if (!room) return [];
+        
         const images = [];
         
-        // Add main room image
-        if (room.roomImage) {
-            images.push(room.roomImage);
-        }
-        
-        // Add additional room images
-        if (room.roomImages && room.roomImages.length > 0) {
-            images.push(...room.roomImages);
-        }
-        
-        // Add hostel images if available
+        if (room.roomImage) images.push(room.roomImage);
+        if (room.roomImages && room.roomImages.length > 0) images.push(...room.roomImages);
         if (room.hostelId?.roomImages && room.hostelId.roomImages.length > 0) {
             images.push(...room.hostelId.roomImages);
         }
         
-        // Return at least 5 images (use first image as fallback)
         const mainImage = images[0];
         while (images.length < 5) {
             images.push(mainImage);
@@ -127,9 +114,43 @@ const ExactRoom = () => {
         return images.slice(0, 5);
     };
 
-    const displayImages = getDisplayImages();
+    if (loading) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.topBar}>
+                    <div className={styles.backBoxSkeleton}></div>
+                    <div className={styles.iconsSkeleton}></div>
+                </div>
 
-    // Split amenities into two columns
+                {/* Image Container Skeleton */}
+                <div className={styles.imageContainer}>
+                    <div className={styles.leftImageSkeleton}></div>
+                    <div className={styles.rightImageBox}>
+                        <div className={styles.rightTopImage}>
+                            <div className={styles.imageSkeleton}></div>
+                            <div className={styles.imageSkeleton}></div>
+                        </div>
+                        <div className={styles.rightBottomImage}>
+                            <div className={styles.imageSkeleton}></div>
+                            <div className={styles.imageSkeleton}></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className={styles.skeletonContent}>
+                    <div className={styles.skeletonLine}></div>
+                    <div className={styles.skeletonLine}></div>
+                    <div className={styles.skeletonBox}></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !room) {
+        return <div className={styles.error}>{error || 'Room not found'}</div>;
+    }
+
+    const displayImages = getDisplayImages();
     const amenities = room.hostelId?.amenities || [];
     const halfLength = Math.ceil(amenities.length / 2);
     const firstColumnAmenities = amenities.slice(0, halfLength);
@@ -152,23 +173,50 @@ const ExactRoom = () => {
             {/* Image container */}
             <div className={styles.imageContainer}>
                 <div className={styles.leftImageBox}>
-                    <img src={displayImages[0]} alt="Room main image" />
+                    {!imagesLoaded[0] && <div className={styles.imageLoader}></div>}
+                    <img 
+                        src={displayImages[0]} 
+                        alt="Room main" 
+                        loading="lazy"
+                        onLoad={() => handleImageLoad(0)}
+                        style={{ opacity: imagesLoaded[0] ? 1 : 0 }}
+                    />
                 </div>
                 <div className={styles.rightImageBox}>
                     <div className={styles.rightTopImage}>
-                        <div className={styles.images}>
-                            <img src={displayImages[1]} alt="sub image" />
-                        </div>
-                        <div className={styles.images}>
-                            <img src={displayImages[2]} alt="sub image" />
-                        </div>
+                        {[1, 2].map(i => (
+                            <div key={i} className={styles.images}>
+                                {!imagesLoaded[i] && <div className={styles.imageLoader}></div>}
+                                <img 
+                                    src={displayImages[i]} 
+                                    alt="sub image"
+                                    loading="lazy"
+                                    onLoad={() => handleImageLoad(i)}
+                                    style={{ opacity: imagesLoaded[i] ? 1 : 0 }}
+                                />
+                            </div>
+                        ))}
                     </div>
                     <div className={styles.rightBottomImage}>
                         <div className={styles.images}>
-                            <img src={displayImages[3]} alt="sub image" />
+                            {!imagesLoaded[3] && <div className={styles.imageLoader}></div>}
+                            <img 
+                                src={displayImages[3]} 
+                                alt="sub image"
+                                loading="lazy"
+                                onLoad={() => handleImageLoad(3)}
+                                style={{ opacity: imagesLoaded[3] ? 1 : 0 }}
+                            />
                         </div>
                         <div className={styles.images1}>
-                            <img src={displayImages[4]} alt="sub image" />
+                            {!imagesLoaded[4] && <div className={styles.imageLoader}></div>}
+                            <img 
+                                src={displayImages[4]} 
+                                alt="sub image"
+                                loading="lazy"
+                                onLoad={() => handleImageLoad(4)}
+                                style={{ opacity: imagesLoaded[4] ? 1 : 0 }}
+                            />
                             <div className={styles.moreImage}>
                                 <Plus color="white" /> <span>more</span>
                             </div>
@@ -276,4 +324,4 @@ const ExactRoom = () => {
     );
 };
 
-export default ExactRoom;
+export default RoomDetails;

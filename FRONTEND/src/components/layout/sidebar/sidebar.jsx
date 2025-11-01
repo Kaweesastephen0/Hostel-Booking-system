@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, X, SlidersHorizontal, Linkedin, Mail } from 'lucide-react';
-import styles from './sidebarMenu.module.css';
+import styles from './sidebar.module.css';
 
 function SidebarMenu() {
   const [isOpen, setIsOpen] = useState(false);

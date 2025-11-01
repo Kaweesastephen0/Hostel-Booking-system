@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import styles from './HostelHeader.module.css';
+import styles from './Header.module.css';
 import { Home, UserPlus, User } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import SidebarMenu from '../sidebar/sidebarMenu';
-
+import SidebarMenu from '../sidebar/sidebar';
 //umaru
 const HostelHeader = () => {
   const navigate = useNavigate();
