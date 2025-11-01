@@ -1,5 +1,6 @@
 /* contactus.module.css */
 .contactUsContainer {
+  margin-top: 80px;
   min-height: 100vh;
   background: linear-gradient(135deg, #f8fbff 0%, #e6f0ff 100%);
   position: relative;
@@ -10,9 +11,8 @@
 .contactHeroSection {
   position: relative;
   padding: 6rem 2rem;
-  
   background: 
-    linear-gradient(135deg, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.95) 100%),
+    linear-gradient(135deg, rgba(25, 118, 210, 0.95) 0%, rgba(13, 71, 161, 0.95) 100%),
     url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover;
   color: white;
   text-align: center;
@@ -20,26 +20,28 @@
 }
 
 .contactHeroContent {
-  max-width: 800px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
 }
 
 .contactHeroTitle {
-  font-size: 4.5rem;
+  font-size: 4rem;
   font-weight: 900;
   margin-bottom: 1.5rem;
   color: white;
   text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  letter-spacing: -0.5px;
 }
 
 .contactHeroDescription {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   opacity: 0.95;
   line-height: 1.7;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  color: #e0f2fe;
+  color: #e3f2fd;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 /* Contact Methods */
@@ -57,25 +59,26 @@
 }
 
 .sectionTitle {
-  font-size: 3.2rem;
+  font-size: 3rem;
   font-weight: 800;
-  color: #1e293b;
+  color: #1a237e;
   margin-bottom: 1.5rem;
   position: relative;
 }
 
 .sectionSubtitle {
-  font-size: 1.3rem;
-  color: #475569;
+  font-size: 1.2rem;
+  color: #455a64;
   max-width: 700px;
   margin: 0 auto;
   line-height: 1.6;
+  font-weight: 500;
 }
 
 .contactMethodsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
@@ -84,14 +87,14 @@
 
 .contactMethodCard {
   background: white;
-  padding: 3rem 2.5rem;
+  padding: 2.5rem 2rem;
   border-radius: 20px;
   text-align: center;
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.1);
-  transition: all 0.4s ease;
-  border: 2px solid #e0f2fe;
+  box-shadow: 0 8px 25px rgba(25, 118, 210, 0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 2px solid #e3f2fd;
   position: relative;
   overflow: hidden;
 }
@@ -103,7 +106,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(45deg, #2563eb, #1d4ed8);
+  background: linear-gradient(45deg, #1976d2, #1565c0);
   transform: scaleX(0);
   transition: transform 0.3s ease;
 }
@@ -114,63 +117,62 @@
 
 .contactMethodCard:hover {
   transform: translateY(-8px);
-  border-color: #2563eb;
-  box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);
+  border-color: #1976d2;
+  box-shadow: 0 15px 35px rgba(25, 118, 210, 0.15);
 }
 
 .methodIcon {
-  width: 90px;
-  height: 90px;
+  width: 80px;
+  height: 80px;
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1.5rem;
   color: white;
-  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 8px 25px rgba(25, 118, 210, 0.3);
   transition: all 0.3s ease;
 }
 
 .contactMethodCard:hover .methodIcon {
-  transform: scale(1.05);
+  transform: scale(1.1) rotate(5deg);
 }
 
 .methodTitle {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 1.2rem;
-  color: #1e293b;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1a237e;
 }
 
 .methodDetails {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .methodDetail {
-  font-size: 1.1rem;
-  color: #475569;
-  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #37474f;
+  margin-bottom: 0.3rem;
   font-weight: 500;
 }
 
 .methodDescription {
-  font-size: 1rem;
-  color: #64748b;
+  font-size: 0.9rem;
+  color: #546e7a;
   font-weight: 500;
 }
 
 /* Main Contact Section */
 .mainContactSection {
-  padding: 5rem 2rem;
+  padding: 4rem 2rem;
   background: #f8fbff;
   position: relative;
 }
 
 .contactGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 3rem;
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
@@ -180,10 +182,10 @@
 /* Form Section */
 .formSection {
   background: white;
-  padding: 3.5rem;
+  padding: 3rem;
   border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.1);
-  border: 2px solid #e0f2fe;
+  box-shadow: 0 12px 30px rgba(25, 118, 210, 0.1);
+  border: 2px solid #e3f2fd;
   position: relative;
   overflow: hidden;
 }
@@ -195,33 +197,34 @@
   left: 0;
   right: 0;
   height: 6px;
-  background: linear-gradient(45deg, #2563eb, #1d4ed8);
+  background: linear-gradient(45deg, #1976d2, #1565c0);
 }
 
 .contactFormBadge {
-  background: linear-gradient(45deg, #2563eb, #1d4ed8);
+  background: linear-gradient(45deg, #1976d2, #1565c0);
   color: white;
-  padding: 0.8rem 2rem;
+  padding: 0.7rem 1.5rem;
   border-radius: 25px;
   font-weight: 700;
-  font-size: 1rem;
-  display: inline-block;
-  margin-bottom: 2rem;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 6px 15px rgba(25, 118, 210, 0.3);
 }
 
 .contactFormTitle {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   font-weight: 800;
   margin-bottom: 1rem;
-  color: #1e293b;
+  color: #1a237e;
 }
 
 .contactFormDescription {
-  font-size: 1.2rem;
-  color: #475569;
-  margin-bottom: 3rem;
-  line-height: 1.7;
+  font-size: 1.1rem;
+  color: #455a64;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
   font-weight: 500;
 }
 
@@ -229,13 +232,13 @@
 .contactForm {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .formGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 1.2rem;
 }
 
 .formGroup {
@@ -245,57 +248,64 @@
 }
 
 .formLabel {
-  font-weight: 700;
-  margin-bottom: 0.8rem;
-  color: #1e293b;
-  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+  color: #1a237e;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
 }
 
 .formInput {
-  padding: 1.2rem 1.5rem;
-  border: 2px solid #e0f2fe;
-  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  border: 2px solid #e3f2fd;
+  border-radius: 10px;
   font-size: 1rem;
   transition: all 0.3s ease;
   background: #f8fbff;
   font-family: inherit;
+  color: #37474f;
 }
 
 .formInput:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: #1976d2;
   background: white;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
 }
 
 .formInput::placeholder {
-  color: #94a3b8;
+  color: #90a4ae;
 }
 
 .formTextarea {
   resize: vertical;
-  min-height: 140px;
+  min-height: 120px;
   font-family: inherit;
   line-height: 1.5;
 }
 
 .submitButton {
-  background: linear-gradient(45deg, #2563eb, #1d4ed8);
+  background: linear-gradient(45deg, #1976d2, #1565c0);
   color: white;
-  padding: 1.4rem 2.5rem;
+  padding: 1.2rem 2rem;
   border: none;
-  border-radius: 12px;
-  font-size: 1.2rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 1rem;
-  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+  margin-top: 0.5rem;
+  box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .submitButton:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 8px 25px rgba(25, 118, 210, 0.5);
 }
 
 .submitButton:disabled {
@@ -307,73 +317,101 @@
 /* Team Section */
 .teamSection {
   margin-top: 3rem;
-  padding-top: 3rem;
-  border-top: 2px solid #e0f2fe;
+  padding-top: 2.5rem;
+  border-top: 2px solid #e3f2fd;
 }
 
 .teamTitle {
-  font-size: 1.8rem;
-  font-weight: 800;
-  margin-bottom: 2rem;
-  color: #1e293b;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1a237e;
+  display: flex;
+  align-items: center;
 }
 
 .teamGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.2rem;
 }
 
 .teamCard {
   background: #f8fbff;
-  padding: 2rem;
-  border-radius: 15px;
-  border-left: 5px solid #2563eb;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid #1976d2;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
 
 .teamCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.teamMemberHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 12px;
+}
+
+.teamMemberIcon {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  background: linear-gradient(45deg, #1976d2, #1565c0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
 }
 
 .teamMemberName {
-  font-weight: 800;
-  color: #1e293b;
-  margin-bottom: 0.5rem;
-  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a237e;
+  margin-bottom: 0.3rem;
+  font-size: 1.1rem;
 }
 
 .teamMemberRole {
-  font-size: 1rem;
-  color: #2563eb;
-  margin-bottom: 1rem;
-  font-weight: 700;
+  font-size: 0.85rem;
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.teamMemberContacts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .teamMemberContact {
-  font-size: 0.9rem;
-  color: #475569;
-  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+  color: #455a64;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* Contact Info Section */
 .contactInfoSection {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 2rem;
 }
 
 /* Office Card */
 .officeCard {
-  background: linear-gradient(135deg, #1e293b, #334155);
+  background: linear-gradient(135deg, #1a237e, #283593);
   color: white;
-  padding: 3rem;
-  border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -385,72 +423,76 @@
   left: 0;
   right: 0;
   height: 6px;
-  background: linear-gradient(45deg, #2563eb, #1d4ed8);
+  background: linear-gradient(45deg, #1976d2, #1565c0);
 }
 
 .officeTitle {
-  font-size: 2rem;
-  font-weight: 800;
-  margin-bottom: 2.5rem;
-  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
   color: white;
+  display: flex;
+  align-items: center;
 }
 
 .officeInfo {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .officeItem {
   display: flex;
   align-items: flex-start;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  border-radius: 12px;
+  gap: 1.2rem;
+  padding: 1.2rem;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .officeItem:hover {
-  transform: translateX(8px);
+  transform: translateX(5px);
   background: rgba(255, 255, 255, 0.15);
 }
 
 .officeIcon {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
   flex-shrink: 0;
-  background: linear-gradient(45deg, #2563eb, #1d4ed8);
+  background: linear-gradient(45deg, #1976d2, #1565c0);
   color: white;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 6px 15px rgba(25, 118, 210, 0.4);
 }
 
 .officeItemTitle {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
   color: white;
 }
 
 .officeItemDetail {
-  font-size: 1rem;
-  color: #e0f2fe;
-  line-height: 1.6;
+  font-size: 0.9rem;
+  color: #e3f2fd;
+  line-height: 1.5;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* Map Container */
 .mapContainer {
   background: white;
-  border-radius: 20px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   position: relative;
 }
 
@@ -461,11 +503,11 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(45deg, #2563eb, #1d4ed8);
+  background: linear-gradient(45deg, #1976d2, #1565c0);
 }
 
 .mapFrame {
-  height: 320px;
+  height: 250px;
   background: #f8f9fa;
   position: relative;
 }
@@ -477,54 +519,63 @@
 }
 
 .mapFooter {
-  padding: 2rem;
+  padding: 1.5rem;
   background: white;
-  border-top: 1px solid #e0f2fe;
+  border-top: 1px solid #e3f2fd;
 }
 
 .mapFooterContent {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .mapFooterText h4 {
-  font-weight: 800;
-  margin-bottom: 0.5rem;
-  color: #1e293b;
-  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: #1a237e;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .mapFooterText p {
-  color: #475569;
-  font-size: 1rem;
+  color: #455a64;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
 .directionsButton {
-  background: linear-gradient(45deg, #2563eb, #1d4ed8);
+  background: linear-gradient(45deg, #1976d2, #1565c0);
   color: white;
-  padding: 1rem 2rem;
-  border-radius: 12px;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
   text-decoration: none;
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .directionsButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 6px 15px rgba(25, 118, 210, 0.5);
 }
 
 /* Info Cards */
 .infoCard {
-  padding: 2.5rem;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   position: relative;
   overflow: hidden;
+  background: white;
 }
 
 .infoCard::before {
@@ -534,77 +585,68 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(45deg, #2563eb, #1d4ed8);
-}
-
-.responseCard {
-  background: white;
-  border-left: 5px solid #2563eb;
-}
-
-.landmarksCard {
-  background: white;
-  border-left: 5px solid #2563eb;
+  background: linear-gradient(45deg, #1976d2, #1565c0);
 }
 
 .infoCardHeader {
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  gap: 12px;
 }
 
 .infoCardIcon {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
-  margin-right: 1.5rem;
-  background: linear-gradient(45deg, #2563eb, #1d4ed8);
+  background: linear-gradient(45deg, #1976d2, #1565c0);
   color: white;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
 }
 
 .infoCardTitle {
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: #1e293b;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a237e;
 }
 
 .infoList {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .infoItem {
   display: flex;
   align-items: center;
-  font-size: 1.05rem;
-  color: #475569;
+  font-size: 0.95rem;
+  color: #455a64;
   font-weight: 500;
+  gap: 10px;
 }
 
 .statusDot {
-  width: 10px;
-  height: 10px;
-  background: #2563eb;
+  width: 8px;
+  height: 8px;
+  background: #1976d2;
   border-radius: 50%;
-  margin-right: 1rem;
   animation: pulse 2s infinite;
+  flex-shrink: 0;
 }
 
 .landmarkItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 1.05rem;
-  color: #475569;
+  font-size: 0.95rem;
+  color: #455a64;
   font-weight: 500;
   padding: 0.5rem 0;
-  border-bottom: 1px solid #e0f2fe;
+  border-bottom: 1px solid #e3f2fd;
+  gap: 10px;
 }
 
 .landmarkItem:last-child {
@@ -612,40 +654,42 @@
 }
 
 .landmarkDistance {
-  color: #2563eb;
+  color: #1976d2;
   font-weight: 700;
-  background: rgba(37, 99, 235, 0.1);
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
+  background: rgba(25, 118, 210, 0.1);
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 /* FAQ Section */
 .faqSection {
-  padding: 6rem 2rem;
+  padding: 5rem 2rem;
   background: white;
   position: relative;
 }
 
 .faqTitle {
-  font-size: 3rem;
-  font-weight: 900;
+  font-size: 2.5rem;
+  font-weight: 800;
   margin-bottom: 1.5rem;
   text-align: center;
-  color: #1e293b;
+  color: #1a237e;
 }
 
 .faqDivider {
-  width: 100px;
+  width: 80px;
   height: 4px;
-  background: linear-gradient(45deg, #2563eb, #1d4ed8);
-  margin: 0 auto 4rem;
+  background: linear-gradient(45deg, #1976d2, #1565c0);
+  margin: 0 auto 3rem;
   border-radius: 2px;
 }
 
 .faqGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
@@ -654,41 +698,41 @@
 
 .faqCard {
   background: white;
-  padding: 2.5rem;
-  border-radius: 15px;
-  border-left: 5px solid #2563eb;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  border-radius: 12px;
+  border-left: 4px solid #1976d2;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
-  border: 2px solid #e0f2fe;
+  border: 2px solid #e3f2fd;
   position: relative;
   overflow: hidden;
 }
 
 .faqCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 .faqQuestion {
-  font-size: 1.3rem;
-  font-weight: 800;
-  margin-bottom: 1.2rem;
-  color: #1e293b;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1a237e;
   line-height: 1.4;
 }
 
 .faqAnswer {
-  color: #475569;
-  line-height: 1.7;
-  font-size: 1.05rem;
+  color: #455a64;
+  line-height: 1.6;
+  font-size: 1rem;
   font-weight: 500;
 }
 
 /* Status Message */
 .statusMessage {
-  padding: 2rem;
-  border-radius: 12px;
-  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
   border: 2px solid;
   position: relative;
   overflow: hidden;
@@ -701,56 +745,60 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(45deg, #2563eb, #1d4ed8);
+  background: linear-gradient(45deg, #1976d2, #1565c0);
 }
 
 .statusSuccess {
-  background: rgba(239, 246, 255, 0.95);
-  border-color: #2563eb;
-  color: #1e40af;
+  background: rgba(232, 245, 255, 0.95);
+  border-color: #1976d2;
+  color: #1565c0;
 }
 
 .statusError {
-  background: rgba(254, 242, 242, 0.95);
-  border-color: #dc2626;
-  color: #b91c1c;
+  background: rgba(255, 235, 238, 0.95);
+  border-color: #d32f2f;
+  color: #c62828;
 }
 
 .statusContent {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1rem;
 }
 
 .statusIcon {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .statusSuccess .statusIcon {
-  background: #2563eb;
+  background: #1976d2;
 }
 
 .statusError .statusIcon {
-  background: #dc2626;
+  background: #d32f2f;
 }
 
 .statusText {
-  font-weight: 700;
+  font-weight: 600;
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 /* Spinner */
 .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-right: 0.8rem;
 }
 
 @keyframes spin {
@@ -764,14 +812,32 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .contactHeroTitle {
-    font-size: 2.8rem;
-  }
-  
+@media (max-width: 1024px) {
   .contactGrid {
     grid-template-columns: 1fr;
     gap: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contactHeroTitle {
+    font-size: 2.5rem;
+  }
+  
+  .contactHeroDescription {
+    font-size: 1.1rem;
+  }
+  
+  .sectionTitle {
+    font-size: 2.2rem;
+  }
+  
+  .contactFormTitle {
+    font-size: 1.8rem;
+  }
+  
+  .faqTitle {
+    font-size: 2rem;
   }
   
   .formGrid {
@@ -780,7 +846,7 @@
   
   .mapFooterContent {
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
     text-align: center;
   }
   
@@ -792,16 +858,36 @@
     grid-template-columns: 1fr;
   }
   
-  .sectionTitle {
-    font-size: 2.2rem;
+  .contactMethodsGrid {
+    grid-template-columns: 1fr;
   }
   
-  .contactFormTitle {
+  .formSection {
+    padding: 2rem;
+  }
+  
+  .officeCard {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contactHeroSection {
+    padding: 4rem 1rem;
+  }
+  
+  .contactMethodsSection,
+  .mainContactSection,
+  .faqSection {
+    padding: 3rem 1rem;
+  }
+  
+  .contactHeroTitle {
     font-size: 2rem;
   }
   
-  .faqTitle {
-    font-size: 2.2rem;
+  .sectionTitle {
+    font-size: 1.8rem;
   }
 }
 
