@@ -1,11 +1,15 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 import connectDB from "./config/database.js";
 import hostelRoute from './routes/hostelRoute.js'
 import roomRoute from "./routes/roomRoute.js";
 import authRoutes from "./routes/authRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import HostelSearchRoute from './routes/searchRoute.js'
 
 // Load environment variables
 dotenv.config();
@@ -15,15 +19,41 @@ connectDB();
 
 const app = express();
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
+// Security middleware
+app.use(helmet());
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(limiter);
+
+// CORS configuration
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Body parser middleware
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/hostels', hostelRoute)
+app.use('/api/hostels/', HostelSearchRoute)
 app.use("/api/rooms", roomRoute);
 app.use("/api/auth", authRoutes);
+app.use("/api/contact", contactRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/premium", hostelRoute), 
  
@@ -33,7 +63,8 @@ app.get("/api/health", (req, res) => {
     res.json({ 
         success: true, 
         message: "Hostel Booking API is running!",
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development'
     });
 });
 
@@ -42,6 +73,22 @@ app.get("/api/notes", (req, res) => {
     res.json({ 
         success: true, 
         message: "You are in the Uganda Hostel Booking API!" 
+    });
+});
+
+// Root endpoint
+app.get("/", (req, res) => {
+    res.json({
+        success: true,
+        message: "Welcome to Muk-Book Hostel Booking API",
+        version: "1.0.0",
+        endpoints: {
+            health: "/api/health",
+            hostels: "/api/hostels",
+            rooms: "/api/rooms",
+            auth: "/api/auth",
+            contact: "/api/contact"
+        }
     });
 });
 
@@ -55,18 +102,34 @@ app.use((err, req, res, next) => {
     });
 });
 
-// 404 handler
-app.use((req, res) => {
+// 404 handler for API routes
+app.use('/api', (req, res) => {
     res.status(404).json({
         success: false,
-        message: `Route ${req.originalUrl} not found`
+        message: "API endpoint not found"
     });
 });
+
+// 404 handler for all other routes
+// app.use('*', (req, res) => {
+// // 404 handler
+// app.use((req, res) => {
+//     res.status(404).json({
+//         success: false,
+//         message: `Route ${req.originalUrl} not found`
+//     });
+// });
 
 const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
-    console.log(` Hostel Booking API started on port ${PORT}!!`);
-    console.log(` Health check: http://localhost:${PORT}/api/health`);
-    console.log(` Hostels API: http://localhost:${PORT}/api/hostels`);
-});
+    console.log(`Hostel Booking API started on port ${PORT}!!`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log(`Hostels API: http://localhost:${PORT}/api/hostels`);
+    console.log(`Contact API: http://localhost:${PORT}/api/contact`);
+    console.log(`Auth API: http://localhost:${PORT}/api/auth`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Hostel Booking API started on port ${PORT}!!`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log(`Hostels API: http://localhost:${PORT}/api/hostels`);
+})
