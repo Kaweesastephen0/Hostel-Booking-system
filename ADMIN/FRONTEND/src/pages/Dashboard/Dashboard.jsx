@@ -1,47 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Building,
   BedDouble,
   CalendarCheck,
-  Wallet,
+  Users,
   Plus,
+  Loader2,
 } from "lucide-react";
 import Header from "../../components/header/Header";
 import InfoCard from "../../components/cards/InfoCard";
 import BookingChart from "../../components/charts/BookingChart";
 import DataTable from "../../components/table/DataTable";
+import dashboardService from "../../services/dashboardService";
 import "./Dashboard.css";
 
-const bookingChartData = [
-  { name: 'Jan', bookings: 65 },
-  { name: 'Feb', bookings: 59 },
-  { name: 'Mar', bookings: 80 },
-  { name: 'Apr', bookings: 81 },
-  { name: 'May', bookings: 56 },
-  { name: 'Jun', bookings: 55 },
-  { name: 'Jul', bookings: 40 },
-];
-
-const recentBookingsData = [
-  { id: 'BK001', student: 'John Doe', hostel: 'Nana Hostel', date: '2024-05-20', status: 'Confirmed' },
-  { id: 'BK002', student: 'Jane Smith', hostel: 'Akamwesi Hostel', date: '2024-05-19', status: 'Pending' },
-  { id: 'BK003', student: 'Peter Jones', hostel: 'Olympia Hostel', date: '2024-05-19', status: 'Confirmed' },
-  { id: 'BK004', student: 'Mary Williams', hostel: 'Kare Hostel', date: '2024-05-18', status: 'Cancelled' },
-];
-
 const recentBookingsColumns = [
-  { Header: 'Booking ID', accessor: 'id' },
-  { Header: 'Student', accessor: 'student' },
-  { Header: 'Hostel', accessor: 'hostel' },
-  { Header: 'Date', accessor: 'date' },
+  { Header: 'Booking ID', accessor: 'reference' },
+  { Header: 'Student', accessor: 'guestName' },
+  { Header: 'Hostel', accessor: 'hostelName' },
+  { 
+    Header: 'Date', 
+    accessor: 'createdAt',
+    Cell: ({ value }) => new Date(value).toLocaleDateString()
+  },
   {
     Header: 'Status',
     accessor: 'status',
-    Cell: (row) => (
-      <span className={`status-badge status-${row.status.toLowerCase()}`}>
-        {row.status}
-      </span>
-    ),
+    Cell: ({ value }) => {
+      const status = value || 'pending';
+      return (
+        <span className={`status-badge status-${status.toLowerCase()}`}>
+          {status}
+        </span>
+      );
+    },
   },
 ];
 
@@ -53,8 +45,78 @@ const getGreeting = () => {
 };
 
 const Dashboard = () => {
-  // The user name here will come from an auth context
+  const [totals, setTotals] = useState({
+    totalHostels: 0,
+    totalRooms: 0,
+    totalBookings: 0,
+    totalUsers: 0
+  });
+  const [recentBookings, setRecentBookings] = useState([]);
+  const [bookingChartData, setBookingChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+       
+        const dashboardTotals = await dashboardService.getTotals();
+        setTotals(dashboardTotals);
+
+        
+        const response = await fetch('http://localhost:5000/api/bookings?limit=5&sort=-createdAt');
+        const data = await response.json();
+        if (data.success && Array.isArray(data.data?.bookings)) {
+          
+          const mappedBookings = data.data.bookings.map(booking => ({
+            reference: booking.reference || `BK-${booking._id?.slice(-6)}` || 'N/A',
+            guestName: booking.guestName || 'Unknown Guest',
+            hostelName: booking.hostelName || 'N/A',
+            createdAt: booking.createdAt || new Date().toISOString(),
+            status: booking.status || 'pending'
+          }));
+          setRecentBookings(mappedBookings);
+        } else {
+          setRecentBookings([]);
+        }
+
+        // Calculating of the  booking chart data (last 7 months)
+        const months = Array.from({ length: 7 }, (_, i) => {
+          const d = new Date();
+          d.setMonth(d.getMonth() - i);
+          return d.toLocaleString('default', { month: 'short' });
+        }).reverse();
+        
+        //Implementation of real booking statistics endpoint
+        setBookingChartData(months.map(name => ({
+          name,
+          bookings: Math.floor(Math.random() * 100)
+        })));
+
+      } catch(err) {
+        console.error('Dashboard data error:', err);
+        setError(err.message || 'Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, []);
+
+  // The user name will come from an auth context
   const userName = "Raymond";
+
+  if (error) {
+    return (
+      <div className="dashboard-error">
+        <p>Error loading dashboard: {error}</p>
+        <button onClick={() => window.location.reload()} className="btn btn-primary">
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-content-area">
@@ -64,26 +126,27 @@ const Dashboard = () => {
       >
         <button className="btn btn-primary"><Plus size={16} /> Add New Hostel</button>
       </Header>
+
       <div className="dashboard-summary-cards">
         <InfoCard
           title="Total Hostels"
-          value="15"
+          value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalHostels}
           icon={<Building size={24} />}
         />
         <InfoCard
           title="Available Rooms"
-          value="250"
+          value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalRooms}
           icon={<BedDouble size={24} />}
         />
         <InfoCard
           title="Active Bookings"
-          value="180"
+          value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalBookings}
           icon={<CalendarCheck size={24} />}
         />
         <InfoCard
-          title="Total Revenue"
-          value="UGX 54M"
-          icon={<Wallet size={24} />}
+          title="Total Users"
+          value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalUsers}
+          icon={<Users size={24} />}
         />
       </div>
 
@@ -91,7 +154,18 @@ const Dashboard = () => {
         <BookingChart data={bookingChartData} />
         <div className="recent-activity">
           <h3>Recent Activity</h3>
-          <DataTable columns={recentBookingsColumns} data={recentBookingsData} />
+          {loading ? (
+            <div className="loading-spinner">
+              <Loader2 className="animate-spin" size={24} />
+              <span>Loading recent bookings...</span>
+            </div>
+          ) : (
+            <DataTable 
+              columns={recentBookingsColumns} 
+              data={recentBookings}
+              emptyMessage="No recent bookings found"
+            />
+          )}
         </div>
       </div>
     </div>

@@ -1,4 +1,3 @@
-@import "tailwindcss";
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,40 +5,16 @@
 }
 
 body {
-<<<<<<< HEAD
-=======
   background-color: #f8fafc;
->>>>>>> origin/stephen
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-<<<<<<< HEAD
-  background-color: #f8fafc; 
-=======
->>>>>>> origin/stephen
 }
 
 .app-layout {
   display: flex;
-<<<<<<< HEAD
-}
-
-.main-content {
-  flex-grow: 1;
-  margin-left: var(--sidebar-width); 
-  transition: margin-left var(--transition-speed) ease;
-}
-
-
-.sidebar.collapsed + .main-content {
-  margin-left: var(--sidebar-collapsed-width);
-}
-
-.page-content {
-  padding: 24px;
-=======
   width: 100%;
   min-height: 100vh;
 }
@@ -74,5 +49,4 @@ body {
     margin-left: 0;
     width: 100%;
   }
->>>>>>> origin/stephen
 }
