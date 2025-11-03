@@ -4,7 +4,7 @@ import { FaHome, FaUsers, FaHandshake, FaGlobe } from "react-icons/fa";
 
 const AboutUs = () => {
   const bgImage =
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1400&q=80";
+    "https://images.unsplash.com/photo-1560448071-9a37f1c3c2c6?auto=format&fit=crop&w=1400&q=80"; // modern hostel background
 
   const features = [
     {
@@ -38,9 +38,9 @@ const AboutUs = () => {
         <div className={styles.content}>
           <h1 className={styles.title}>About StayEase</h1>
           <p className={styles.description}>
-            <strong>StayEase</strong> makes hostel booking simple, secure, and
-            stress-free. Whether you're a student seeking long-term stays or a
-            traveler looking for short-term comfort — we connect you to the best
+            At <strong>StayEase</strong>, we make hostel booking simple, secure,
+            and stress-free. Whether you're a student finding long-term stays or
+            a traveler seeking short-term comfort — we connect you to the best
             options with transparent pricing and verified listings.
           </p>
 
