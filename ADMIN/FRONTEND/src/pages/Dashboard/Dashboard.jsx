@@ -14,6 +14,10 @@ import dashboardService from "../../services/dashboardService";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
+import HostelForm from "../../components/hostels/HostelForm";
+import RoomForm from "../Rooms/RoomForm";
+import Modal from "../../components/modal/Modal";
+
 const recentBookingsColumns = [
   { Header: 'Booking ID', accessor: 'reference' },
   { Header: 'Student', accessor: 'guestName' },
@@ -46,6 +50,8 @@ const getGreeting = () => {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [isHostelModalOpen, setIsHostelModalOpen] = useState(false);
+  const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
   const [totals, setTotals] = useState({
     totalHostels: 0,
     totalRooms: 0,
@@ -149,9 +155,21 @@ const Dashboard = () => {
       <Header
         title="Dashboard"
         subtitle="Here's what's happening with your hostels today."
-        showActions={true}
-        onAction={handleAction}
-      />
+        showGreeting={true}
+      >
+        <button 
+          className="btn btn-primary" 
+          onClick={() => setIsHostelModalOpen(true)}
+        >
+          <Building size={16} /> Add Hostel
+        </button>
+        <button 
+          className="btn btn-primary" 
+          onClick={() => setIsRoomModalOpen(true)}
+        >
+          <BedDouble size={16} /> Add Room
+        </button>
+      </Header>
 
       <div className="dashboard-summary-cards">
         <InfoCard
@@ -177,7 +195,7 @@ const Dashboard = () => {
       </div>
 
       <div className="dashboard-analytics-section">
-        <BookingChart data={bookingChartData} />
+        <BookingChart />
         <div className="recent-activity">
           <h3>Recent Activity</h3>
           {loading ? (
@@ -194,6 +212,44 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      <Modal
+        isOpen={isHostelModalOpen}
+        onClose={() => setIsHostelModalOpen(false)}
+        title="Add New Hostel"
+      >
+        <HostelForm
+          onSubmit={async (data) => {
+            try {
+              await dashboardService.createHostel(data);
+              setIsHostelModalOpen(false);
+              fetchDashboardData(); // Refresh data
+            } catch (error) {
+              console.error('Failed to create hostel:', error);
+            }
+          }}
+          onCancel={() => setIsHostelModalOpen(false)}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={isRoomModalOpen}
+        onClose={() => setIsRoomModalOpen(false)}
+        title="Add New Room"
+      >
+        <RoomForm
+          onSubmit={async (data) => {
+            try {
+              await dashboardService.createRoom(data);
+              setIsRoomModalOpen(false);
+              fetchDashboardData(); // Refresh data
+            } catch (error) {
+              console.error('Failed to create room:', error);
+            }
+          }}
+          onCancel={() => setIsRoomModalOpen(false)}
+        />
+      </Modal>
     </div>
   );
 };

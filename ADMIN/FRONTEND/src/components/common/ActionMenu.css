@@ -27,11 +27,11 @@
   margin-top: 4px;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--shadow-color);
   min-width: 200px;
-  z-index: 1000;
+  z-index: 1500;
   padding: 8px 0;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color);
 }
 
 .action-menu-item {

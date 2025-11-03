@@ -48,6 +48,57 @@ const dashboardService = {
       throw new Error(message);
     }
   },
+
+  // Fetch monthly booking statistics
+  getMonthlyBookings: async () => {
+    try {
+      // First ensure we have the auth token in headers
+      const token = localStorage.getItem('token');
+      if (token) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await axios.get(`${API_BASE_URL}/bookings/stats/monthly`);
+      
+      // Transform the data for the chart
+      const monthNames = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ];
+
+      const currentYear = new Date().getFullYear();
+      const currentMonth = new Date().getMonth();
+
+      // Create last 12 months of data
+      const monthlyData = Array.from({ length: 12 }, (_, i) => {
+        const monthIndex = (currentMonth - 11 + i + 12) % 12;
+        return {
+          name: monthNames[monthIndex],
+          bookings: 0,
+          year: monthIndex > currentMonth ? currentYear - 1 : currentYear
+        };
+      });
+
+      // Fill in actual booking counts
+      if (response.data?.data) {
+        response.data.data.forEach(stat => {
+          const monthIndex = monthlyData.findIndex(m => 
+            m.name === monthNames[stat._id.month - 1] && 
+            m.year === stat._id.year
+          );
+          if (monthIndex !== -1) {
+            monthlyData[monthIndex].bookings = stat.count;
+          }
+        });
+      }
+
+      return monthlyData;
+    } catch (err) {
+      console.error('Booking stats error:', err.response || err);
+      const message = err.response?.data?.message || err.message || 'Failed to fetch monthly booking statistics';
+      throw new Error(message);
+    }
+  },
 };
 
 export default dashboardService;

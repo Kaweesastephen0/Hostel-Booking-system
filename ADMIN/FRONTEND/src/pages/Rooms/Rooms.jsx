@@ -1,14 +1,29 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, Search, Filter, BedDouble, Tag, DollarSign } from 'lucide-react';
+import { Plus, BedDouble, Tag, DollarSign } from 'lucide-react';
+import {
+  Box,
+  Button,
+  Typography,
+  TextField,
+  InputAdornment,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+  Alert,
+} from '@mui/material';
+import { Search } from '@mui/icons-material';
 
-import Header from '../../components/header/Header';
 import RoomTable from './RoomTable';
 import RoomForm from './RoomForm';
-import Modal from '../../components/modal/Modal';
 import InfoCard from '../../components/cards/InfoCard';
 import * as roomService from '../../services/roomService';
 import * as hostelService from '../../services/hostelService';
-import ConfirmationModal from '../Profile/ConfirmationModal';
 import Pagination from '../../components/pagination.jsx/Pagination';
 
 import './Rooms.css';
@@ -27,7 +42,8 @@ const RoomsPage = () => {
     hostelId: 'all',
     roomType: 'all',
   });
-  const [allHostels, setAllHostels] = useState([]); 
+  const [allHostels, setAllHostels] = useState([]);
+  const [formError, setFormError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -61,11 +77,13 @@ const RoomsPage = () => {
 
   const handleAddNew = () => {
     setSelectedRoom(null);
+    setFormError(null);
     setIsFormModalOpen(true);
   };
 
   const handleEdit = (room) => {
     setSelectedRoom(room);
+    setFormError(null);
     setIsFormModalOpen(true);
   };
 
@@ -88,17 +106,19 @@ const RoomsPage = () => {
   };
 
   const handleFormSubmit = async (formData) => {
+    setFormError(null);
     try {
       if (selectedRoom) {
         const updatedRoom = await roomService.updateRoom(selectedRoom._id, formData);
         setRooms(prev => prev.map(r => r._id === selectedRoom._id ? updatedRoom : r));
       } else {
         const newRoom = await roomService.createRoom(formData);
-        setRooms(prev => [newRoom, ...prev]);
+        const updatedRooms = await roomService.getAllRooms();
+        setRooms(updatedRooms);
       }
       setIsFormModalOpen(false);
     } catch (err) {
-      setError(err.message); // You might want to show this error on the form instead
+      setFormError(err.response?.data?.message || err.message || 'Failed to save room');
     }
   };
 
@@ -141,42 +161,45 @@ const RoomsPage = () => {
     return allHostels.map(h => ({ _id: h._id, name: h.name }));
   }, [allHostels]);
 
-  const headerCenterContent = (
-    <div className="rooms-filter-bar">
-      <div className="search-input-container">
-        <Search size={18} className="search-icon" />
-        <input
-          type="text"
-          placeholder="Search by room number or hostel..."
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1); // Reset to first page on search
-          }}
-        />
-      </div>
-      <div className="filter-controls">
-        <Filter size={16} />
-        <select name="hostelId" value={filters.hostelId} onChange={handleFilterChange}>
-          <option value="all">All Hostels</option>
-          {uniqueHostelsForFilter.map(h => <option key={h._id} value={h._id}>{h.name}</option>)}
-        </select>
-        <select name="roomType" value={filters.roomType} onChange={handleFilterChange}>
-          <option value="all">All Types</option>
-          <option value="single">Single</option>
-          <option value="double">Double</option>
-          <option value="shared">Shared</option> {/* Corrected from triple */}
-          <option value="suite">Suite</option>   {/* Corrected from quad */}
-        </select>
-      </div>
-    </div>
-  );
-
   return (
     <div className="rooms-page-container">
-      <Header title="Room Management" subtitle="Manage all rooms across hostels" centerContent={headerCenterContent}>
-        <button className="btn btn-primary" onClick={handleAddNew}><Plus size={16} /> Add New Room</button>
-      </Header>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Typography variant="h5" component="h1">
+          Room Management
+        </Typography>
+        <Button variant="contained" color="primary" onClick={handleAddNew} startIcon={<Plus size={16} />}>
+          Add New Room
+        </Button>
+      </Box>
+
+      <Box display="flex" gap={2} mb={3} flexWrap="wrap">
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="Search by room number or hostel..."
+          value={searchTerm}
+          onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+          InputProps={{ startAdornment: (<InputAdornment position="start"><Search /></InputAdornment>) }}
+          sx={{ minWidth: 300 }}
+        />
+        <FormControl variant="outlined" size="small" sx={{ minWidth: 200 }}>
+          <InputLabel>Hostel</InputLabel>
+          <Select name="hostelId" value={filters.hostelId} onChange={handleFilterChange} label="Hostel">
+            <MenuItem value="all">All Hostels</MenuItem>
+            {uniqueHostelsForFilter.map(h => <MenuItem key={h._id} value={h._id}>{h.name}</MenuItem>)}
+          </Select>
+        </FormControl>
+        <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
+          <InputLabel>Room Type</InputLabel>
+          <Select name="roomType" value={filters.roomType} onChange={handleFilterChange} label="Room Type">
+            <MenuItem value="all">All Types</MenuItem>
+            <MenuItem value="single">Single</MenuItem>
+            <MenuItem value="double">Double</MenuItem>
+            <MenuItem value="shared">Shared</MenuItem>
+            <MenuItem value="suite">Suite</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
 
       <div className="rooms-summary-cards">
         <InfoCard title="Total Rooms" value={filteredRooms.length} icon={<BedDouble />} />
@@ -199,26 +222,36 @@ const RoomsPage = () => {
         itemsPerPage={ITEMS_PER_PAGE}
       />
 
-      <Modal
-        isOpen={isFormModalOpen}
+      <Dialog
+        open={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}
-        title={selectedRoom ? 'Edit Room' : 'Add New Room'}
+        fullWidth
+        maxWidth="md"
       >
-        <RoomForm
-          room={selectedRoom}
-          onSubmit={handleFormSubmit}
-          onCancel={() => setIsFormModalOpen(false)}
-        />
-      </Modal>
+        <DialogTitle>{selectedRoom ? 'Edit Room' : 'Add New Room'}</DialogTitle>
+        <DialogContent>
+          {formError && <Alert severity="error" sx={{ mb: 2 }}>{formError}</Alert>}
+          <RoomForm
+            room={selectedRoom}
+            onSubmit={handleFormSubmit}
+            onCancel={() => setIsFormModalOpen(false)}
+            allHostels={allHostels}
+          />
+        </DialogContent>
+      </Dialog>
 
-      <ConfirmationModal
-        isOpen={isDeleteModalOpen}
-        title="Delete Room"
-        message={`Are you sure you want to delete room "${roomToDelete?.roomNumber}" from "${roomToDelete?.hostel?.name}"? This action cannot be undone.`}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setIsDeleteModalOpen(false)}
-        confirmText="Delete"
-      />
+      <Dialog open={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>
+        <DialogTitle>Delete Room</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete room "{roomToDelete?.roomNumber}" from "{roomToDelete?.hostel?.name}"? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>
+          <Button onClick={handleConfirmDelete} color="error">Delete</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
