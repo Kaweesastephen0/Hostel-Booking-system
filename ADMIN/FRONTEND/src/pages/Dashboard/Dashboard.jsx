@@ -1,4 +1,4 @@
-import React from "react";
+
 import {
   Building,
   BedDouble,
@@ -11,6 +11,7 @@ import InfoCard from "../../components/cards/InfoCard";
 import BookingChart from "../../components/charts/BookingChart";
 import DataTable from "../../components/table/DataTable";
 import "./Dashboard.css";
+import { Navigate } from "react-router-dom";
 
 const bookingChartData = [
   { name: 'Jan', bookings: 65 },
@@ -53,8 +54,16 @@ const getGreeting = () => {
 };
 
 const Dashboard = () => {
+
   // The user name here will come from an auth context
-  const userName = "Raymond";
+  const currentUser = JSON.parse(localStorage.getItem("user"));
+
+  if(!currentUser){
+    return <Navigate to="/login" />
+  }
+
+
+  const userName = currentUser.fullName;
 
   return (
     <div className="dashboard-content-area">

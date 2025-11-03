@@ -46,6 +46,7 @@ const Login = () => {
 
             if (data.success && data.user) {
                 localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem("token", data.token);
                 navigate('/dashboard');
             } else {
                 throw new Error('Invalid response from server');
