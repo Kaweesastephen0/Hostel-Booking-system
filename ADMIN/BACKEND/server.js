@@ -71,11 +71,13 @@ app.get("/api/notes", (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({
+    // Prefer explicit status codes from thrown errors (err.statusCode or err.status)
+    const statusCode = err.statusCode || err.status || 500;
+    console.error(err.stack || err);
+    res.status(statusCode).json({
         success: false,
-        message: "Something went wrong!",
-        error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+        message: err.message || 'Something went wrong!',
+        error: process.env.NODE_ENV === 'development' ? err.stack || err.message : undefined
     });
 });
 

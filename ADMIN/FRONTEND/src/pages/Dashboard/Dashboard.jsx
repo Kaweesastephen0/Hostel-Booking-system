@@ -4,7 +4,6 @@ import {
   BedDouble,
   CalendarCheck,
   Users,
-  Plus,
   Loader2,
 } from "lucide-react";
 import Header from "../../components/header/Header";
@@ -12,6 +11,7 @@ import InfoCard from "../../components/cards/InfoCard";
 import BookingChart from "../../components/charts/BookingChart";
 import DataTable from "../../components/table/DataTable";
 import dashboardService from "../../services/dashboardService";
+import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
 const recentBookingsColumns = [
@@ -45,6 +45,7 @@ const getGreeting = () => {
 };
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [totals, setTotals] = useState({
     totalHostels: 0,
     totalRooms: 0,
@@ -55,6 +56,31 @@ const Dashboard = () => {
   const [bookingChartData, setBookingChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const handleAction = (action) => {
+    switch (action) {
+      case 'add-hostel':
+        navigate('/hostels/new');
+        break;
+      case 'add-room':
+        navigate('/rooms/new');
+        break;
+      case 'add-user':
+        navigate('/users/new');
+        break;
+      case 'settings':
+        navigate('/settings');
+        break;
+      case 'create-report':
+        navigate('/reports/new');
+        break;
+      case 'view-reports':
+        navigate('/reports');
+        break;
+      default:
+        console.log('Unknown action:', action);
+    }
+  };
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -121,11 +147,11 @@ const Dashboard = () => {
   return (
     <div className="dashboard-content-area">
       <Header
-        title={`${getGreeting()}, ${userName}!`}
+        title="Dashboard"
         subtitle="Here's what's happening with your hostels today."
-      >
-        <button className="btn btn-primary"><Plus size={16} /> Add New Hostel</button>
-      </Header>
+        showActions={true}
+        onAction={handleAction}
+      />
 
       <div className="dashboard-summary-cards">
         <InfoCard

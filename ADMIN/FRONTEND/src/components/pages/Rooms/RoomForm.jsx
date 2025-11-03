@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import * as hostelService from '../../services/hostelService';
+import * as hostelService from '../../../services/hostelService';
 import './RoomForm.css';
 
 const RoomForm = ({ room, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
+    hostel: '',
     roomNumber: '',
-    price: '',
-    hostel: '', // This will be the hostel's ID
+    roomType: 'single',
+    roomGender: 'mixed',
+    roomPrice: '',
+    bookingPrice: '',
+    roomDescription: '',
+    maxOccupancy: 1,
+    isAvailable: true,
   });
   const [hostels, setHostels] = useState([]);
 
@@ -23,19 +29,35 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
 
     if (room) {
       setFormData({
-        roomNumber: room.roomNumber,
-        price: room.price || '',
         hostel: room.hostel?._id || '',
+        roomNumber: room.roomNumber,
+        roomType: room.roomType,
+        roomGender: room.roomGender,
+        roomPrice: room.roomPrice,
+        bookingPrice: room.bookingPrice,
+        roomDescription: room.roomDescription,
+        maxOccupancy: room.maxOccupancy,
+        isAvailable: room.isAvailable,
       });
     } else {
       // Reset form for new entry
-      setFormData({ roomNumber: '', price: '', hostel: '' });
+      setFormData({
+        hostel: '',
+        roomNumber: '',
+        roomType: 'single',
+        roomGender: 'mixed',
+        roomPrice: '',
+        bookingPrice: '',
+        roomDescription: '',
+        maxOccupancy: 1,
+        isAvailable: true,
+      });
     }
   }, [room]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleSubmit = (e) => {
@@ -57,8 +79,41 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
         <input type="text" id="roomNumber" name="roomNumber" value={formData.roomNumber} onChange={handleChange} required />
       </div>
       <div className="form-group">
-        <label htmlFor="price">Price (UGX)</label>
-        <input type="number" id="price" name="price" value={formData.price} onChange={handleChange} required min="0" />
+        <label htmlFor="roomType">Room Type</label>
+        <select id="roomType" name="roomType" value={formData.roomType} onChange={handleChange} required>
+          <option value="single">Single</option>
+          <option value="double">Double</option>
+          <option value="shared">Shared</option>
+          <option value="suite">Suite</option>
+        </select>
+      </div>
+      <div className="form-group">
+        <label htmlFor="roomGender">Room Gender</label>
+        <select id="roomGender" name="roomGender" value={formData.roomGender} onChange={handleChange} required>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="mixed">Mixed</option>
+        </select>
+      </div>
+      <div className="form-group">
+        <label htmlFor="roomPrice">Room Price (UGX)</label>
+        <input type="number" id="roomPrice" name="roomPrice" value={formData.roomPrice} onChange={handleChange} required min="0" />
+      </div>
+      <div className="form-group">
+        <label htmlFor="bookingPrice">Booking Price (UGX)</label>
+        <input type="number" id="bookingPrice" name="bookingPrice" value={formData.bookingPrice} onChange={handleChange} required min="0" />
+      </div>
+      <div className="form-group">
+        <label htmlFor="roomDescription">Room Description</label>
+        <textarea id="roomDescription" name="roomDescription" value={formData.roomDescription} onChange={handleChange} maxLength="1000" />
+      </div>
+      <div className="form-group">
+        <label htmlFor="maxOccupancy">Max Occupancy</label>
+        <input type="number" id="maxOccupancy" name="maxOccupancy" value={formData.maxOccupancy} onChange={handleChange} required min="1" />
+      </div>
+      <div className="form-group">
+        <label htmlFor="isAvailable">Is Available</label>
+        <input type="checkbox" id="isAvailable" name="isAvailable" checked={formData.isAvailable} onChange={handleChange} />
       </div>
       <div className="form-actions">
         <button type="button" className="btn btn-secondary" onClick={onCancel}>Cancel</button>

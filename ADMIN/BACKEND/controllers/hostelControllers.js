@@ -1,4 +1,64 @@
 import HostelModel from "../models/HostelModel.js";
+import ErrorResponse from '../utils/errorResponse.js';
+import asyncHandler from '../middleware/async.js';
+
+export const createHostel = asyncHandler(async (req, res) => {
+  const hostel = await HostelModel.create(req.body);
+  
+  res.status(201).json({
+    success: true,
+    data: hostel,
+    message: 'Hostel created successfully'
+  });
+});
+
+export const getHostel = asyncHandler(async (req, res) => {
+  const hostel = await HostelModel.findById(req.params.id).populate('rooms');
+  
+  if (!hostel) {
+    throw new ErrorResponse(`Hostel not found with id of ${req.params.id}`, 404);
+  }
+
+  res.status(200).json({
+    success: true,
+    data: hostel
+  });
+});
+
+export const updateHostel = asyncHandler(async (req, res) => {
+  let hostel = await HostelModel.findById(req.params.id);
+
+  if (!hostel) {
+    throw new ErrorResponse(`Hostel not found with id of ${req.params.id}`, 404);
+  }
+
+  hostel = await HostelModel.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true
+  });
+
+  res.status(200).json({
+    success: true,
+    data: hostel,
+    message: 'Hostel updated successfully'
+  });
+});
+
+export const deleteHostel = asyncHandler(async (req, res) => {
+  const hostel = await HostelModel.findById(req.params.id);
+
+  if (!hostel) {
+    throw new ErrorResponse(`Hostel not found with id of ${req.params.id}`, 404);
+  }
+
+  await hostel.deleteOne();
+
+  res.status(200).json({
+    success: true,
+    data: {},
+    message: 'Hostel deleted successfully'
+  });
+});
 
 export const getAllHostels = async(req, res) => {
     try {
