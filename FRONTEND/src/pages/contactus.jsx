@@ -28,14 +28,15 @@ export default function ContactUs() {
         </div>
       </section>
 
-      {/* Main Content */}
+      {/* Main Section */}
       <section className={styles.main}>
-        {/* Left: Contact Info */}
-        <div className={styles.infoSection}>
+        {/* Left Section: Info */}
+        <div className={styles.infoCard}>
           <h2 className={styles.heading}>Get in Touch</h2>
           <p className={styles.text}>
-            Have a question or need help with your booking? We’re happy to assist
-            you! Reach out via WhatsApp, phone, or email.
+            Have a question or need help with your booking? Our support team is
+            ready to assist you. Get in touch through any of the following
+            channels.
           </p>
 
           <div className={styles.contactList}>
@@ -52,49 +53,65 @@ export default function ContactUs() {
 
             <div className={styles.contactItem}>
               <FaEnvelope className={styles.iconBlue} />
-              <p>support@mukbook.com</p>
+              <a href="mailto:support@mukbook.com">support@mukbook.com</a>
             </div>
 
             <div className={styles.contactItem}>
               <FaPhoneAlt className={styles.iconBlue} />
-              <p>+256 759 546 308</p>
+              <a href="tel:+256759546308">+256 759 546 308</a>
             </div>
 
             <div className={styles.contactItem}>
               <FaMapMarkerAlt className={styles.iconRed} />
-              <p>Kampala, Uganda</p>
+              <p>Kikoni, Makerere — Kampala, Uganda</p>
             </div>
           </div>
 
-          {/* Social Media */}
           <div className={styles.socials}>
-            <a href="#" className={`${styles.socialIcon} ${styles.facebook}`}>
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${styles.socialIcon} ${styles.facebook}`}
+            >
               <FaFacebook />
             </a>
-            <a href="#" className={`${styles.socialIcon} ${styles.instagram}`}>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${styles.socialIcon} ${styles.instagram}`}
+            >
               <FaInstagram />
             </a>
-            <a href="#" className={`${styles.socialIcon} ${styles.twitter}`}>
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${styles.socialIcon} ${styles.twitter}`}
+            >
               <FaTwitter />
             </a>
           </div>
         </div>
 
-        {/* Right: Google Street View */}
-        <div className={styles.mapContainer}>
-          <iframe
-            title="Muk Book Street View"
-            src="https://www.google.com/maps/embed?pb=!4v1700000000000!6m8!1m7!1sCAoSLEFGMVFpcE5Pb2Mtb2Fta2pDNE5QNUlaeFRvTGdXSkdXeUJ1S3ZfZVNmSG1k!2m2!1d0.347596664047084!2d32.58252087454503!3f160!4f0!5f0.7820865974627469"
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            allowFullScreen=""
-            loading="lazy"
-          ></iframe>
+        {/* Right Section: Google Map */}
+        <div className={styles.mapCard}>
+          <h3 className={styles.mapHeading}>Find Us on the Map</h3>
+          <div className={styles.mapContainer}>
+            <iframe
+              title="Muk Book Location"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.859209663169!2d32.57254317574396!3d0.332845964069035!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177dbc77554e5bb3%3A0x123456789abcd!2sMakerere%20University!5e0!3m2!1sen!2sug!4v1700000000000"
+              allowFullScreen
+              loading="lazy"
+              style={{ border: 0 }}
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
         </div>
       </section>
 
-      {/* Bottom Image Section */}
+      {/* Bottom Section */}
       <section className={styles.bottom}>
         <img
           src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"

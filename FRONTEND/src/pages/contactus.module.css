@@ -8,7 +8,7 @@
   align-items: center;
 }
 
-/* ---------- Header Section ---------- */
+/* ---------- Header ---------- */
 .header {
   position: relative;
   width: 100%;
@@ -20,7 +20,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(80%);
+  filter: brightness(75%);
   transition: transform 0.5s ease;
 }
 
@@ -30,10 +30,7 @@
 
 .overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
+  inset: 0;
   background: rgba(0, 64, 128, 0.5);
   display: flex;
   flex-direction: column;
@@ -55,28 +52,35 @@
   margin-top: 10px;
 }
 
-/* ---------- Main Section ---------- */
+/* ---------- Main ---------- */
 .main {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 50px;
-  padding: 70px 10%;
+  gap: 60px;
+  padding: 80px 10%;
   background: #f9faff;
   width: 100%;
+  align-items: center;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .main {
     grid-template-columns: 1fr;
-    padding: 40px 6%;
+    padding: 50px 7%;
   }
 }
 
-/* Left Info */
-.infoSection {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+/* ---------- Info Card ---------- */
+.infoCard {
+  background: white;
+  border-radius: 16px;
+  padding: 40px 35px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.4s ease;
+}
+
+.infoCard:hover {
+  transform: translateY(-6px);
 }
 
 .heading {
@@ -118,7 +122,7 @@
   color: #007bff;
 }
 
-/* Icons */
+/* ---------- Icons ---------- */
 .iconGreen {
   color: #25d366;
   font-size: 1.5rem;
@@ -132,17 +136,39 @@
   font-size: 1.5rem;
 }
 
-/* ---------- Map Section ---------- */
-.mapContainer {
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  height: 400px;
+/* ---------- Map Card ---------- */
+.mapCard {
+  background: white;
+  border-radius: 16px;
+  padding: 25px 25px 35px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   transition: transform 0.4s ease;
 }
 
-.mapContainer:hover {
-  transform: scale(1.02);
+.mapCard:hover {
+  transform: translateY(-6px);
+}
+
+.mapHeading {
+  color: #0056b3;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.mapContainer {
+  width: 100%;
+  height: 450px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.mapContainer iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
 /* ---------- Socials ---------- */
@@ -157,8 +183,8 @@
   align-items: center;
   justify-content: center;
   color: white;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   font-size: 1.3rem;
   transition: all 0.3s ease;
@@ -179,11 +205,11 @@
   background-color: #1da1f2;
 }
 
-/* ---------- Bottom Section ---------- */
+/* ---------- Bottom ---------- */
 .bottom {
   background-color: #f3f8ff;
   text-align: center;
-  padding: 50px 0;
+  padding: 60px 0;
   width: 100%;
 }
 
@@ -196,7 +222,7 @@
 }
 
 .bottomImage:hover {
-  transform: scale(1.06);
+  transform: scale(1.05);
 }
 
 .footerText {
