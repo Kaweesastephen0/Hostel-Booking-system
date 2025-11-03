@@ -1232,7 +1232,7 @@ const BookingDetails = () => {
             <Button onClick={handleCloseAddPaymentDialog} disabled={creatingPayment}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary" disabled={creatingPayment}>
+            <Button type="submit" variant="contained" color="primary" onClick={handleCreatePayment} disabled={creatingPayment}>
               {creatingPayment ? 'Saving...' : 'Save Payment'}
             </Button>
           </DialogActions>
@@ -1288,7 +1288,7 @@ const BookingDetails = () => {
             <Button onClick={handleCloseEditPaymentDialog} disabled={savingPaymentUpdate}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary" disabled={savingPaymentUpdate}>
+            <Button type="submit" variant="contained" color="primary" onClick={handleSubmitEditPayment} disabled={savingPaymentUpdate}>
               {savingPaymentUpdate ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogActions>
@@ -1391,7 +1391,7 @@ const BookingDetails = () => {
             <Button onClick={handleCloseEditDialog} disabled={savingEdit}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary" disabled={savingEdit}>
+            <Button type="submit" variant="contained" onClick={handleSubmitEdit} color="primary" disabled={savingEdit}>
               {savingEdit ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogActions>
