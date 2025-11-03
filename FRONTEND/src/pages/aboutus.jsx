@@ -1,31 +1,38 @@
 import React from "react";
 import styles from "./aboutus.module.css";
-import { FaHome, FaUsers, FaHandshake, FaGlobe, FaBullseye, FaEye } from "react-icons/fa";
+import {
+  FaHome,
+  FaUsers,
+  FaHandshake,
+  FaGlobe,
+  FaBullseye,
+  FaEye,
+} from "react-icons/fa";
 
 const AboutUs = () => {
   const bgImage =
-    "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1400&q=80"; // Modern hostel image
+    "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1400&q=80"; // Hostel background
 
   const features = [
     {
       icon: <FaHome />,
       title: "Verified Hostels",
-      text: "We list only verified hostels with genuine reviews and reliable facilities — ensuring your peace of mind.",
+      text: "Muk Book lists only verified hostels with trusted reviews and genuine facilities — ensuring your comfort and safety.",
     },
     {
       icon: <FaUsers />,
       title: "Community Focused",
-      text: "Connect with fellow students and travelers — Muk Book helps you find friendly, social environments.",
+      text: "We connect students and travelers to friendly hostel communities where you can feel at home.",
     },
     {
       icon: <FaHandshake />,
       title: "Reliable Support",
-      text: "Our team is available 24/7 to assist you with bookings, payments, and any issues you may encounter.",
+      text: "Our support team is available 24/7 to help with your bookings, payments, and inquiries.",
     },
     {
       icon: <FaGlobe />,
-      title: "Global Reach",
-      text: "Muk Book partners with hostels and accommodation services to provide affordable, quality stays everywhere.",
+      title: "Expanding Reach",
+      text: "Muk Book aims to expand across campuses and cities — offering a network of affordable, verified hostels.",
     },
   ];
 
@@ -38,11 +45,10 @@ const AboutUs = () => {
         <div className={styles.content}>
           <h1 className={styles.title}>About Muk Book</h1>
           <p className={styles.description}>
-            <strong>Muk Book</strong> is your trusted hostel booking platform —
-            designed to make finding, booking, and managing your stay simple and
-            secure. Whether you’re a student at Makerere or a traveler exploring
-            new cities, Muk Book connects you to verified, affordable, and
-            comfortable hostels.
+            <strong>Muk Book</strong> is a modern digital platform that helps
+            students and travelers easily find, book, and manage hostel
+            accommodation. Designed for convenience, affordability, and trust,
+            we bring every comfort closer to you.
           </p>
 
           <div className={styles.cards}>
@@ -55,15 +61,15 @@ const AboutUs = () => {
             ))}
           </div>
 
-          {/* Mission and Vision Section */}
+          {/* Mission & Vision Section */}
           <div className={styles.missionVision}>
             <div className={styles.missionCard}>
               <FaBullseye className={styles.mvIcon} />
               <h2>Our Mission</h2>
               <p>
-                To simplify hostel booking through digital innovation and create
-                a trustworthy platform where students and travelers can find
-                safe, affordable accommodation effortlessly.
+                To simplify hostel booking for students and travelers through
+                reliable digital tools that connect people with safe,
+                affordable, and quality hostels.
               </p>
             </div>
 
@@ -71,11 +77,21 @@ const AboutUs = () => {
               <FaEye className={styles.mvIcon} />
               <h2>Our Vision</h2>
               <p>
-                To become the leading digital hostel booking system in Africa —
-                connecting millions to comfortable, reliable, and affordable
-                accommodation with just one click.
+                To become Africa’s most trusted hostel booking system — where
+                every student and traveler can find a comfortable place with one
+                click.
               </p>
             </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className={styles.ctaSection}>
+            <h2>Join the Muk Book Community</h2>
+            <p>
+              Discover verified hostels, connect with others, and enjoy
+              hassle-free booking anytime, anywhere.
+            </p>
+            <button className={styles.ctaButton}>Get Started</button>
           </div>
         </div>
       </div>
