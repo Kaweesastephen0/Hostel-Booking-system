@@ -4,7 +4,7 @@ import ErrorResponse from '../utils/errorResponse.js';
 
 // Protected routes
 const protect = async (req, res, next) => {
-    let token;
+    const token = req.cookies.token;
 
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         token = req.headers.authorization.split(' ')[1];
@@ -15,8 +15,6 @@ const protect = async (req, res, next) => {
     }
 
     try {
-        // Debug log to check JWT secret
-        console.log('JWT Secret:', process.env.JWT_SECRET ? 'Secret is set' : 'Secret is NOT set');
         
         if (!process.env.JWT_SECRET) {
             console.error('Error: JWT_SECRET is not defined in environment variables');

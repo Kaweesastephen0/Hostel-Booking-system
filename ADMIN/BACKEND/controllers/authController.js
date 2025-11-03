@@ -67,7 +67,13 @@ export const login = asyncHandler(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
 
-  res.status(200).json({
+  res
+     .cookie("token", token, {
+      httpOnly:true,
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 *1000,
+     })
+    .status(200).json({
     success: true,
     msg: "Login Successfull",
     token,

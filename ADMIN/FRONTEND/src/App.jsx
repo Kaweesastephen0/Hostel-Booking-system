@@ -12,6 +12,8 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Hostels from './pages/Hostels/Hostels';
 import RoomsPage from './pages/Rooms/Rooms.jsx';
 import Profile from './pages/Profile/Profile';
+import BookingDetails from './pages/Bookings/BookingDetails';
+import UserProfile from './pages/Users/UserProfile';
 
 
 
@@ -50,7 +52,9 @@ function App() {
           <Route path="hostels" element={<Hostels />} />
           <Route path="rooms" element={<RoomsPage />} />
           <Route path="bookings" element={<BookingsPage />} />
+          <Route path="bookings/:id" element={<BookingDetails />} />
           <Route path="users" element={<UsersPage />} />
+          <Route path="users/:id" element={<UserProfile />} />
           <Route path="payments" element={<PaymentsPage />} />
           <Route path="profile" element={<Profile />} />
         </Route>

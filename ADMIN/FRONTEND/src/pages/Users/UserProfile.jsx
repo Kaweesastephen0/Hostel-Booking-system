@@ -222,7 +222,7 @@ const UserProfile = () => {
 
   if (fetchError) {
     return (
-      <Box marginLeft="290px" p={4}>
+      <Box p={4}>
         <Paper sx={{ p: 4 }}>
           <Typography variant="h5" gutterBottom>
             User Details
@@ -239,7 +239,7 @@ const UserProfile = () => {
   }
 
   return (
-    <Box marginLeft="290px" p={4}>
+    <Box p={4}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h5" component="h1">
           User Profile
