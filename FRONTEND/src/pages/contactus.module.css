@@ -1,6 +1,6 @@
 .contactPage {
   font-family: "Inter", sans-serif;
-  background: url("https://images.unsplash.com/photo-1600585154161-1c1b0b09f0d5?auto=format&fit=crop&w=1920&q=80")
+  background: url("https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0b/4d/24/24/night-view.jpg?h=500&s=1&w=900")
     no-repeat center center fixed;
   background-size: cover;
   color: #1a1a1a;
@@ -10,26 +10,19 @@
   overflow-x: hidden;
 }
 
-/* ---------- Header Section ---------- */
+/* Header Section */
 .header {
   position: relative;
   width: 100%;
   height: 420px;
   overflow: hidden;
 }
-
 .headerImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
   filter: brightness(65%) saturate(110%);
-  transition: transform 0.8s ease;
 }
-
-.headerImage:hover {
-  transform: scale(1.05);
-}
-
 .overlay {
   position: absolute;
   top: 0;
@@ -45,34 +38,28 @@
   text-align: center;
   padding: 0 20px;
 }
-
 .title {
   font-size: 3rem;
   font-weight: 800;
-  letter-spacing: 1px;
-  animation: fadeIn 1.3s ease-in-out;
 }
-
 .subtitle {
   font-size: 1.25rem;
   opacity: 0.9;
   margin-top: 12px;
 }
 
-/* ---------- Main Section ---------- */
+/* Main Section */
 .main {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  gap: 50px;
   padding: 80px 10%;
-  width: 100%;
-  background: rgba(255,255,255,0.90);
-  border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 16px;
   margin-top: -60px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   z-index: 2;
 }
-
 @media (max-width: 900px) {
   .main {
     grid-template-columns: 1fr;
@@ -80,52 +67,37 @@
   }
 }
 
-/* Left Info */
+/* Info Section */
 .infoSection {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-
 .heading {
   font-size: 2rem;
   color: #004aad;
-  border-left: 5px solid #007bff;
-  padding-left: 16px;
   margin-bottom: 25px;
 }
-
 .text {
   color: #333;
   margin-bottom: 25px;
   line-height: 1.8;
 }
-
 .contactList {
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
-
 .contactItem {
   display: flex;
   align-items: center;
   gap: 14px;
   transition: transform 0.3s ease, color 0.3s ease;
 }
-
-.contactItem a,
-.contactItem p {
-  color: #111;
-  text-decoration: none;
-  font-size: 1.05rem;
-}
-
 .contactItem:hover {
   transform: translateX(8px);
   color: #007bff;
 }
-
 .iconGreen {
   color: #25d366;
   font-size: 1.5rem;
@@ -139,40 +111,31 @@
   font-size: 1.5rem;
 }
 
-/* ---------- Map Section ---------- */
+/* Map */
 .mapWrapper {
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
-
 .mapHeading {
   font-size: 1.4rem;
   font-weight: 600;
   color: #004aad;
-  margin-bottom: 12px;
   text-align: center;
 }
-
 .mapContainer {
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-  height: 480px;
-  transition: transform 0.4s ease;
+  height: 420px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
-.mapContainer:hover {
-  transform: scale(1.02);
-}
-
-/* ---------- Socials ---------- */
+/* Socials */
 .socials {
   display: flex;
   gap: 15px;
   margin-top: 28px;
 }
-
 .socialIcon {
   display: inline-flex;
   align-items: center;
@@ -184,53 +147,34 @@
   font-size: 1.3rem;
   transition: all 0.3s ease;
 }
-
 .socialIcon:hover {
   transform: translateY(-5px) scale(1.1);
-  filter: brightness(1.1);
+}
+.facebook {
+  background-color: #1877f2;
+}
+.instagram {
+  background-color: #e1306c;
+}
+.twitter {
+  background-color: #1da1f2;
 }
 
-.facebook { background-color: #1877f2; }
-.instagram { background-color: #e1306c; }
-.twitter { background-color: #1da1f2; }
-
-/* ---------- Bottom Section ---------- */
+/* Bottom Section */
 .bottom {
-  background-color: rgba(255,255,255,0.92);
   text-align: center;
   padding: 70px 0;
   width: 100%;
-  margin-top: 60px;
-  backdrop-filter: blur(5px);
 }
-
 .bottomImage {
   width: 85%;
   max-width: 600px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  transition: transform 0.5s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
-
-.bottomImage:hover {
-  transform: scale(1.06);
-}
-
 .footerText {
   margin-top: 26px;
   color: #004aad;
   font-weight: 600;
   font-size: 1.15rem;
-}
-
-/* ---------- Animations ---------- */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(25px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
