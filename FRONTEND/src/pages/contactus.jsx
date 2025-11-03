@@ -94,7 +94,7 @@ export default function ContactUs() {
           </div>
         </div>
 
-        {/* Map */}
+        {/* Map Section */}
         <div className={styles.mapWrapper}>
           <h3 className={styles.mapHeading}>Find Us on Google Map</h3>
           <div className={styles.mapContainer}>
