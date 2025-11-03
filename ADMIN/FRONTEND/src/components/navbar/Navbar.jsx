@@ -64,7 +64,7 @@ const Navbar = () => {
           </button>
 
           {isProfileOpen && (
-            <div className="navbar-profile-dropdown">
+            <div className="navbar-profile-dropdown z-50">
               <a href="/settings" className="dropdown-item">
                 <Settings size={18} />
                 <span>Settings</span>
