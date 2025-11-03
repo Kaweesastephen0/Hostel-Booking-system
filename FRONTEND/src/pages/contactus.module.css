@@ -1,6 +1,6 @@
 .contactPage {
   font-family: "Inter", sans-serif;
-  background: url("https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0b/4d/24/24/night-view.jpg?h=500&s=1&w=900")
+  background: url("https://images.unsplash.com/photo-1600585154161-1c1b0b09f0d5?auto=format&fit=crop&w=1920&q=80")
     no-repeat center center fixed;
   background-size: cover;
   color: #1a1a1a;
@@ -10,33 +10,26 @@
   overflow-x: hidden;
 }
 
-/* ---------- HEADER ---------- */
+/* Header Section */
 .header {
   position: relative;
   width: 100%;
   height: 420px;
   overflow: hidden;
 }
-
 .headerImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(65%) contrast(110%);
-  transition: transform 0.5s ease;
+  filter: brightness(60%) saturate(110%);
 }
-
-.headerImage:hover {
-  transform: scale(1.04);
-}
-
 .overlay {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
   width: 100%;
-  background: rgba(0, 30, 70, 0.55);
+  background: rgba(0, 60, 120, 0.55);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -44,84 +37,71 @@
   color: #fff;
   text-align: center;
   padding: 0 20px;
-  animation: fadeIn 1s ease;
 }
-
 .title {
   font-size: 3rem;
   font-weight: 800;
 }
-
 .subtitle {
   font-size: 1.25rem;
-  opacity: 0.9;
+  opacity: 0.95;
   margin-top: 12px;
 }
 
-/* ---------- MAIN ---------- */
+/* Main Section */
 .main {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  gap: 50px;
   padding: 80px 10%;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.93)
+    url("https://images.unsplash.com/photo-1600585154312-73d73f4e7c0c?auto=format&fit=crop&w=1200&q=80")
+    no-repeat center center;
+  background-size: cover;
   border-radius: 20px;
-  margin-top: -50px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  margin-top: -60px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
   z-index: 2;
 }
-
 @media (max-width: 900px) {
   .main {
     grid-template-columns: 1fr;
-    padding: 50px 8%;
+    padding: 60px 7%;
   }
 }
 
-/* LEFT INFO SECTION */
+/* Info Section */
 .infoSection {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
-
 .heading {
   font-size: 2rem;
   color: #004aad;
-  border-left: 4px solid #007bff;
-  padding-left: 12px;
   margin-bottom: 25px;
 }
-
 .text {
-  color: #333;
+  color: #222;
   margin-bottom: 25px;
   line-height: 1.8;
 }
-
 .contactList {
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
-
 .contactItem {
   display: flex;
   align-items: center;
   gap: 14px;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
-
-.contactItem a {
-  color: #222;
-  text-decoration: none;
-}
-
 .contactItem:hover {
   transform: translateX(8px);
   color: #007bff;
 }
-
 .iconGreen {
   color: #25d366;
   font-size: 1.5rem;
@@ -135,39 +115,35 @@
   font-size: 1.5rem;
 }
 
-/* ---------- MAP ---------- */
+/* Map */
 .mapWrapper {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 25px;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
-
 .mapHeading {
-  text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 600;
   color: #004aad;
+  text-align: center;
 }
-
 .mapContainer {
-  height: 420px;
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  transition: transform 0.4s ease;
+  height: 420px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
-.mapContainer:hover {
-  transform: scale(1.02);
-}
-
-/* ---------- SOCIALS ---------- */
+/* Socials */
 .socials {
   display: flex;
   gap: 15px;
   margin-top: 28px;
 }
-
 .socialIcon {
   display: inline-flex;
   align-items: center;
@@ -179,11 +155,9 @@
   font-size: 1.3rem;
   transition: all 0.3s ease;
 }
-
 .socialIcon:hover {
   transform: translateY(-5px) scale(1.1);
 }
-
 .facebook {
   background-color: #1877f2;
 }
@@ -194,43 +168,35 @@
   background-color: #1da1f2;
 }
 
-/* ---------- FOOTER ---------- */
+/* Bottom Section */
 .bottom {
   text-align: center;
   padding: 70px 0;
   width: 100%;
-  background: rgba(255, 255, 255, 0.85);
-  margin-top: 40px;
-  border-radius: 16px 16px 0 0;
+  background: url("https://images.unsplash.com/photo-1600585154363-5ccf9afc2b61?auto=format&fit=crop&w=1600&q=80")
+    no-repeat center center;
+  background-size: cover;
+  position: relative;
 }
-
+.bottom::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 60, 120, 0.55);
+}
 .bottomImage {
+  position: relative;
   width: 85%;
   max-width: 600px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  z-index: 2;
 }
-
-.bottomImage:hover {
-  transform: scale(1.04);
-}
-
 .footerText {
-  margin-top: 25px;
-  color: #004aad;
+  position: relative;
+  z-index: 2;
+  margin-top: 26px;
+  color: #fff;
   font-weight: 600;
-  font-size: 1.15rem;
-}
-
-/* ---------- ANIMATIONS ---------- */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(25px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  font-size: 1.2rem;
 }
