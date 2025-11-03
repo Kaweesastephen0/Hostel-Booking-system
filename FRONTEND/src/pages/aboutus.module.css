@@ -4,7 +4,6 @@
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  color: #0a0a0a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,7 +12,7 @@
 .overlay {
   width: 100%;
   height: 100%;
-  background: rgba(0, 37, 89, 0.75); /* soft blue overlay */
+  background: rgba(0, 37, 89, 0.7); /* blue overlay */
   padding: 80px 20px;
   display: flex;
   align-items: center;
@@ -23,6 +22,7 @@
   max-width: 1100px;
   margin: 0 auto;
   text-align: center;
+  color: #fff;
   animation: fadeIn 1.2s ease;
 }
 
@@ -30,9 +30,10 @@
   font-size: 3rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: #ffffff;
   margin-bottom: 25px;
-  letter-spacing: 1.2px;
+  color: #ffffff;
+  letter-spacing: 1.5px;
+  text-shadow: 1px 2px 5px rgba(0, 0, 0, 0.4);
 }
 
 .description {
@@ -52,13 +53,13 @@
   background: #ffffff;
   border-radius: 16px;
   padding: 30px 25px;
-  transition: all 0.4s ease;
   border: 1px solid #e3ecff;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s ease;
 }
 
 .card:hover {
-  transform: translateY(-8px) scale(1.02);
+  transform: translateY(-8px);
   border-color: #0077ff;
   box-shadow: 0 10px 25px rgba(0, 119, 255, 0.2);
 }
@@ -87,6 +88,50 @@ p {
   line-height: 1.6;
 }
 
+/* Mission & Vision Section */
+.missionVision {
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+}
+
+.missionCard,
+.visionCard {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 40px 25px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.missionCard:hover,
+.visionCard:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-5px);
+}
+
+.mvIcon {
+  font-size: 2.8rem;
+  color: #00b4ff;
+  margin-bottom: 15px;
+}
+
+.missionCard h2,
+.visionCard h2 {
+  color: #fff;
+  margin-bottom: 15px;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.missionCard p,
+.visionCard p {
+  color: #e9f2ff;
+  line-height: 1.7;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {
@@ -99,7 +144,7 @@ p {
   }
 }
 
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 768px) {
   .title {
     font-size: 2.2rem;
@@ -115,5 +160,10 @@ p {
 
   .card {
     padding: 25px 20px;
+  }
+
+  .missionCard,
+  .visionCard {
+    padding: 30px 20px;
   }
 }

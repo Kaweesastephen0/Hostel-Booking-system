@@ -1,10 +1,10 @@
 import React from "react";
 import styles from "./aboutus.module.css";
-import { FaHome, FaUsers, FaHandshake, FaGlobe } from "react-icons/fa";
+import { FaHome, FaUsers, FaHandshake, FaGlobe, FaBullseye, FaEye } from "react-icons/fa";
 
 const AboutUs = () => {
   const bgImage =
-    "https://images.unsplash.com/photo-1560448071-9a37f1c3c2c6?auto=format&fit=crop&w=1400&q=80"; // modern hostel background
+    "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1400&q=80"; // Modern hostel image
 
   const features = [
     {
@@ -15,7 +15,7 @@ const AboutUs = () => {
     {
       icon: <FaUsers />,
       title: "Community Focused",
-      text: "Connect with fellow travelers and students — StayEase helps you find friendly, social environments.",
+      text: "Connect with fellow students and travelers — Muk Book helps you find friendly, social environments.",
     },
     {
       icon: <FaHandshake />,
@@ -25,7 +25,7 @@ const AboutUs = () => {
     {
       icon: <FaGlobe />,
       title: "Global Reach",
-      text: "StayEase partners with hostels worldwide to give you diverse, budget-friendly options wherever you go.",
+      text: "Muk Book partners with hostels and accommodation services to provide affordable, quality stays everywhere.",
     },
   ];
 
@@ -36,12 +36,13 @@ const AboutUs = () => {
     >
       <div className={styles.overlay}>
         <div className={styles.content}>
-          <h1 className={styles.title}>About StayEase</h1>
+          <h1 className={styles.title}>About Muk Book</h1>
           <p className={styles.description}>
-            At <strong>StayEase</strong>, we make hostel booking simple, secure,
-            and stress-free. Whether you're a student finding long-term stays or
-            a traveler seeking short-term comfort — we connect you to the best
-            options with transparent pricing and verified listings.
+            <strong>Muk Book</strong> is your trusted hostel booking platform —
+            designed to make finding, booking, and managing your stay simple and
+            secure. Whether you’re a student at Makerere or a traveler exploring
+            new cities, Muk Book connects you to verified, affordable, and
+            comfortable hostels.
           </p>
 
           <div className={styles.cards}>
@@ -52,6 +53,29 @@ const AboutUs = () => {
                 <p>{item.text}</p>
               </div>
             ))}
+          </div>
+
+          {/* Mission and Vision Section */}
+          <div className={styles.missionVision}>
+            <div className={styles.missionCard}>
+              <FaBullseye className={styles.mvIcon} />
+              <h2>Our Mission</h2>
+              <p>
+                To simplify hostel booking through digital innovation and create
+                a trustworthy platform where students and travelers can find
+                safe, affordable accommodation effortlessly.
+              </p>
+            </div>
+
+            <div className={styles.visionCard}>
+              <FaEye className={styles.mvIcon} />
+              <h2>Our Vision</h2>
+              <p>
+                To become the leading digital hostel booking system in Africa —
+                connecting millions to comfortable, reliable, and affordable
+                accommodation with just one click.
+              </p>
+            </div>
           </div>
         </div>
       </div>
