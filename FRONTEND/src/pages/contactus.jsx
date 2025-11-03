@@ -16,14 +16,14 @@ export default function ContactUs() {
       {/* Header Section */}
       <section className={styles.header}>
         <img
-          src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
-          alt="Muk Book Hostel"
+          src="https://images.unsplash.com/photo-1592595896616-c37162298686?auto=format&fit=crop&w=1920&q=80"
+          alt="Hostel exterior background"
           className={styles.headerImage}
         />
         <div className={styles.overlay}>
-          <h1 className={styles.title}>Contact Muk Book</h1>
+          <h1 className={styles.title}>Contact Muk Book Hostel</h1>
           <p className={styles.subtitle}>
-            Your trusted hostel booking system in Kampala
+            Reach us for booking inquiries or support anytime.
           </p>
         </div>
       </section>
@@ -31,12 +31,12 @@ export default function ContactUs() {
       {/* Main Section */}
       <section className={styles.main}>
         {/* Left Section: Info */}
-        <div className={styles.infoCard}>
+        <div className={styles.infoSection}>
           <h2 className={styles.heading}>Get in Touch</h2>
           <p className={styles.text}>
-            Have a question or need help with your booking? Our support team is
-            ready to assist you. Get in touch through any of the following
-            channels.
+            Have a question or need help with your booking? Our team is ready to
+            assist you 24/7. Contact us through WhatsApp, call, or visit us in
+            person.
           </p>
 
           <div className={styles.contactList}>
@@ -95,17 +95,18 @@ export default function ContactUs() {
           </div>
         </div>
 
-        {/* Right Section: Google Map */}
-        <div className={styles.mapCard}>
-          <h3 className={styles.mapHeading}>Find Us on the Map</h3>
+        {/* Right Section: Map */}
+        <div className={styles.mapWrapper}>
+          <h3 className={styles.mapHeading}>Find Us on Google Map</h3>
           <div className={styles.mapContainer}>
             <iframe
-              title="Muk Book Location"
+              title="Muk Book Hostel Location"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.859209663169!2d32.57254317574396!3d0.332845964069035!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177dbc77554e5bb3%3A0x123456789abcd!2sMakerere%20University!5e0!3m2!1sen!2sug!4v1700000000000"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
-              style={{ border: 0 }}
-              referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
           </div>
         </div>
@@ -114,12 +115,12 @@ export default function ContactUs() {
       {/* Bottom Section */}
       <section className={styles.bottom}>
         <img
-          src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"
-          alt="Hostel exterior"
+          src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80"
+          alt="Hostel view"
           className={styles.bottomImage}
         />
         <p className={styles.footerText}>
-          Muk Book — Find your perfect hostel stay in Kampala.
+          Muk Book — Simplifying hostel booking in Kampala.
         </p>
       </section>
     </div>
