@@ -14,12 +14,8 @@ import {
 import './Sidebar.css';
 
 const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const navigate = useNavigate();
-
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
 
   const navItems = [
     { to: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
@@ -37,9 +33,16 @@ const Sidebar = () => {
     navigate('/login');
   };
 
+  const handleMouseEnter = () => setIsCollapsed(false);
+  const handleMouseLeave = () => setIsCollapsed(true);
+
   return (
-    <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-      <div className="sidebar-header" onDoubleClick={toggleSidebar} title="Double-click to toggle sidebar">
+    <aside 
+      className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="sidebar-header">
         <UserCog className="sidebar-logo" size={32} />
         <h1 className="sidebar-title">Admin Panel</h1>
       </div>
