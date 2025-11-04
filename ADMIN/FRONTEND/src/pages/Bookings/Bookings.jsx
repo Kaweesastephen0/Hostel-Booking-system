@@ -346,7 +346,7 @@ const Bookings = () => {
     navigate(`/bookings/${booking.id}`);
   }, [navigate]);
 
-  const handleDeleteBooking = useCallbac(async (booking) => {
+  const handleDeleteBooking = useCallback(async (booking) => {
     const displayName = booking.reference || booking.guestName || booking.roomNumber || 'this booking';
 
     const result = await Swal.fire({
@@ -368,13 +368,17 @@ const Bookings = () => {
 
     try {
       const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
       const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        headers: headers,
         credentials: 'include',
       });
 
@@ -392,7 +396,7 @@ const Bookings = () => {
     } finally {
       updateRowActionState(booking.id, 'deleting', false);
     }
-  };
+  }, [updateRowActionState, showSnackbar, fetchBookings, API_BASE_URL]);
 
   const handleUpdateStatus = useCallback(async (booking, targetStatus) => {
     if (!targetStatus || targetStatus === booking.status) return;
@@ -401,11 +405,12 @@ const Bookings = () => {
 
     try {
       const token = localStorage.getItem('token');
-
-      const headers = new Headers();
-      headers.append('Content-Type', 'application/json');
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
       if (token) {
-        headers.append('Authorization', `Bearer ${token}`);
+        headers['Authorization'] = `Bearer ${token}`;
       }
 
       const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id}`, {
