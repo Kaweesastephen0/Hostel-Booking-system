@@ -524,6 +524,7 @@ const Users = () => {
               type="submit"
               variant="contained"
               color="primary"
+              onClick={handleCreateUser}
               disabled={creatingUser || passwordMismatch}
             >
               {creatingUser ? 'Adding...' : 'Add User'}

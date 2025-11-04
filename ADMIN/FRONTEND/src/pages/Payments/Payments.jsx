@@ -1017,7 +1017,7 @@ const Payments = () => {
             <Button onClick={closeAddDialog} disabled={creatingPayment}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary" disabled={creatingPayment}>
+            <Button type="submit" variant="contained" color="primary" onClick={handleCreatePayment} disabled={creatingPayment}>
               {creatingPayment ? 'Saving...' : 'Save Payment'}
             </Button>
           </DialogActions>
@@ -1210,7 +1210,7 @@ const Payments = () => {
             <Button onClick={handleCloseEditDialog} disabled={savingEdit}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary" disabled={savingEdit}>
+            <Button type="submit" variant="contained" onClick={handleSubmitEdit} color="primary" disabled={savingEdit}>
               {savingEdit ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogActions>

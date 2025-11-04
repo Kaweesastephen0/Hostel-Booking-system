@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
-
+import Register from './components/Auth/Register'
 import Sidebar from './components/sidebar/Sidebar';
 import Navbar from './components/navbar/Navbar';
 import UsersPage from './pages/Users/Users'
@@ -12,6 +12,8 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Hostels from './pages/Hostels/Hostels';
 import RoomsPage from './pages/Rooms/Rooms.jsx';
 import Profile from './pages/Profile/Profile';
+import BookingDetails from './pages/Bookings/BookingDetails';
+import UserProfile from './pages/Users/UserProfile';
 
 
 
@@ -41,7 +43,7 @@ function App() {
       <Routes>
         
         <Route path="/login" element={<Login />} />
-
+         <Route path="/register" element={<Register />} />
         
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
@@ -49,7 +51,9 @@ function App() {
           <Route path="hostels" element={<Hostels />} />
           <Route path="rooms" element={<RoomsPage />} />
           <Route path="bookings" element={<BookingsPage />} />
+          <Route path="bookings/:id" element={<BookingDetails />} />
           <Route path="users" element={<UsersPage />} />
+          <Route path="users/:id" element={<UserProfile />} />
           <Route path="payments" element={<PaymentsPage />} />
           <Route path="profile" element={<Profile />} />
         </Route>

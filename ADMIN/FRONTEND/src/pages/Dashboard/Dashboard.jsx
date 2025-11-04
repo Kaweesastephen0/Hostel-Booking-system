@@ -22,8 +22,8 @@ const recentBookingsColumns = [
   { Header: 'Booking ID', accessor: 'reference' },
   { Header: 'Student', accessor: 'guestName' },
   { Header: 'Hostel', accessor: 'hostelName' },
-  { 
-    Header: 'Date', 
+  {
+    Header: 'Date',
     accessor: 'createdAt',
     Cell: ({ value }) => new Date(value).toLocaleDateString()
   },
@@ -91,15 +91,15 @@ const Dashboard = () => {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-       
+
         const dashboardTotals = await dashboardService.getTotals();
         setTotals(dashboardTotals);
 
-        
+
         const response = await fetch('http://localhost:5000/api/bookings?limit=5&sort=-createdAt');
         const data = await response.json();
         if (data.success && Array.isArray(data.data?.bookings)) {
-          
+
           const mappedBookings = data.data.bookings.map(booking => ({
             reference: booking.reference || `BK-${booking._id?.slice(-6)}` || 'N/A',
             guestName: booking.guestName || 'Unknown Guest',
@@ -118,14 +118,14 @@ const Dashboard = () => {
           d.setMonth(d.getMonth() - i);
           return d.toLocaleString('default', { month: 'short' });
         }).reverse();
-        
+
         //Implementation of real booking statistics endpoint
         setBookingChartData(months.map(name => ({
           name,
           bookings: Math.floor(Math.random() * 100)
         })));
 
-      } catch(err) {
+      } catch (err) {
         console.error('Dashboard data error:', err);
         setError(err.message || 'Failed to load dashboard data');
       } finally {
@@ -157,14 +157,14 @@ const Dashboard = () => {
         subtitle="Here's what's happening with your hostels today."
         showGreeting={true}
       >
-        <button 
-          className="btn btn-primary" 
+        <button
+          className="btn btn-primary"
           onClick={() => setIsHostelModalOpen(true)}
         >
           <Building size={16} /> Add Hostel
         </button>
-        <button 
-          className="btn btn-primary" 
+        <button
+          className="btn btn-primary"
           onClick={() => setIsRoomModalOpen(true)}
         >
           <BedDouble size={16} /> Add Room
@@ -204,8 +204,8 @@ const Dashboard = () => {
               <span>Loading recent bookings...</span>
             </div>
           ) : (
-            <DataTable 
-              columns={recentBookingsColumns} 
+            <DataTable
+              columns={recentBookingsColumns}
               data={recentBookings}
               emptyMessage="No recent bookings found"
             />

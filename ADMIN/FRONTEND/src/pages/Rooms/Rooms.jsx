@@ -202,7 +202,7 @@ const RoomsPage = () => {
       </Box>
 
       <div className="rooms-summary-cards">
-        <InfoCard title="Total Rooms" value={filteredRooms.length} icon={<BedDouble />} />
+        <InfoCard title="Total Rooms" value={rooms.length} icon={<BedDouble />} />
         <InfoCard title="Unique Hostels" value={uniqueHostelsForFilter.length} icon={<Tag />} /> {/* Changed to uniqueHostelsForFilter */}
         <InfoCard title="Average Price" value={`UGX ${filteredRooms.length > 0 ? (filteredRooms.reduce((acc, r) => acc + r.roomPrice, 0) / filteredRooms.length).toLocaleString() : 0}`} icon={<DollarSign />} /> {/* Changed r.price to r.roomPrice */}
       </div>

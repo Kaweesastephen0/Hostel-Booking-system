@@ -27,6 +27,7 @@ export const createRoom = async (roomData) => {
  * Updates an existing room.
  * @param {string} id - The ID of the room to update.
  * @param {object} roomData - The new data for the room.
+ * @param {object} roomData - The new data for the room.
  * @returns {Promise<object>} - A promise that resolves to the updated room.
  */
 export const updateRoom = async (id, roomData) => {
