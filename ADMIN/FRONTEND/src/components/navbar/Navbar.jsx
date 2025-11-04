@@ -30,7 +30,8 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    console.log('Logging out...');
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
     navigate('/login');
   };
 
