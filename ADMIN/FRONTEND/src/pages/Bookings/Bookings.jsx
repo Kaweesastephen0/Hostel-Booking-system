@@ -109,7 +109,7 @@ const Bookings = () => {
     paymentStatus: 'all',
   });
 
-
+  const [statusFilter, setStatusFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [rowActionState, setRowActionState] = useState({});
@@ -165,6 +165,10 @@ const Bookings = () => {
     setPage(0);
   };
 
+  const handleStatusFilterChange = (event) => {
+    setStatusFilter(event.target.value);
+    setPage(0);
+  };
   const fetchBookings = useCallback(async () => {
     setLoading(true);
     setFetchError(null);
@@ -183,7 +187,7 @@ const Bookings = () => {
       }
 
       // Add filters to the request
-      const { status, dateRange, roomType, paymentStatus } = filters;
+      const { status, dateRange, roomType } = filters;
 
       // Add status filter
       if (status && status !== 'all') {
@@ -201,21 +205,25 @@ const Bookings = () => {
             params.append('endDate', new Date(now.setHours(23, 59, 59, 999)).toISOString());
             break;
           case 'thisWeek':
-            { const startOfWeek = new Date(startOfDay);
-            startOfWeek.setDate(startOfDay.getDate() - startOfDay.getDay()); // Start of current week (Sunday)
-            const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 6); // End of current week (Saturday)
+            {
+              const startOfWeek = new Date(startOfDay);
+              startOfWeek.setDate(startOfDay.getDate() - startOfDay.getDay()); // Start of current week (Sunday)
+              const endOfWeek = new Date(startOfWeek);
+              endOfWeek.setDate(startOfWeek.getDate() + 6); // End of current week (Saturday)
 
-            params.append('startDate', startOfWeek.toISOString());
-            params.append('endDate', new Date(endOfWeek.setHours(23, 59, 59, 999)).toISOString());
-            break; }
+              params.append('startDate', startOfWeek.toISOString());
+              params.append('endDate', new Date(endOfWeek.setHours(23, 59, 59, 999)).toISOString());
+              break;
+            }
           case 'thisMonth':
-           { const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            {
+              const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+              const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-            params.append('startDate', startOfMonth.toISOString());
-            params.append('endDate', new Date(endOfMonth.setHours(23, 59, 59, 999)).toISOString());
-            break;}
+              params.append('startDate', startOfMonth.toISOString());
+              params.append('endDate', new Date(endOfMonth.setHours(23, 59, 59, 999)).toISOString());
+              break;
+            }
           case 'upcoming':
             params.append('startDate', new Date().toISOString());
             break;
@@ -230,8 +238,8 @@ const Bookings = () => {
       }
 
       // Add payment status filter
-      if (paymentStatus && paymentStatus !== 'all') {
-        params.append('paymentStatus', paymentStatus);
+      if (statusFilter !== 'all') {
+        params.append('status', statusFilter);
       }
 
       const token = localStorage.getItem('token');
@@ -423,7 +431,7 @@ const Bookings = () => {
     } finally {
       updateRowActionState(booking.id, 'updating', false);
     }
-  }, [ showSnackbar, updateRowActionState]);
+  }, [showSnackbar, updateRowActionState]);
 
   const handleOpenDetails = useCallback(async (booking) => {
     setSelectedBooking(booking);
@@ -802,8 +810,8 @@ const Bookings = () => {
                   <FormControl variant="outlined" size="small" fullWidth>
                     <InputLabel>Status</InputLabel>
                     <Select
-                      value={filters.status}
-                      onChange={handleFilterChange('status')}
+                      value={statusFilter}
+                      onChange={handleStatusFilterChange}
                       label="Status"
                     >
                       <MenuItem value="all">All Statuses</MenuItem>

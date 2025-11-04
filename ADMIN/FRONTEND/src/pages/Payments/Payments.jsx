@@ -542,7 +542,7 @@ const Payments = () => {
     } finally {
       updateRowActionState(payment.id, 'updating', false);
     }
-  });
+  }, []);
 
   const handleDeletePayment = useCallback(async (payment) => {
     const displayName = payment.reference || payment.bookingGuestName || payment.bookingRoomNumber || 'this payment';
