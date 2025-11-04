@@ -371,7 +371,7 @@ const Bookings = () => {
       const headers = {
         'Content-Type': 'application/json'
       };
-      
+
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
@@ -408,7 +408,7 @@ const Bookings = () => {
       const headers = {
         'Content-Type': 'application/json'
       };
-      
+
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }

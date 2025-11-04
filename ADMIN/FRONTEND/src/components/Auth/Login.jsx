@@ -163,7 +163,7 @@ const Login = () => {
                         <button
                             type="submit"
 
-                            className={`w-full flex items-center justify-center gap-2 bg-[#9B5DE0] hover:bg-[#D78FEE] cursor-pointer text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                            className={`w-full flex items-center justify-center gap-2 bg-[#3b82f6] hover:bg-[#2563eb] cursor-pointer text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
                             disabled={isLoading}
                         >
                             {isLoading ? (

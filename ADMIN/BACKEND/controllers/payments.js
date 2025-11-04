@@ -1,4 +1,4 @@
-import Payment from '../Models/Payment.js';
+import Payment from '../models/Payment.js';
 import Booking from '../models/Booking.js';
 import asyncHandler from '../middleware/async.js';
 

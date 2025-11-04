@@ -19,7 +19,6 @@ import UserProfile from './pages/Users/UserProfile';
 
 import './App.css';
 
-
 /**
  * MainLayout component to wrap authenticated pages
  * It includes the Sidebar, Navbar, and a content area for the pages.

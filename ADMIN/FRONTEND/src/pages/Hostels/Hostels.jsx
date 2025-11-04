@@ -1,12 +1,29 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, LayoutGrid, List, Search, Filter, Building, BedDouble, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Plus, LayoutGrid, List, Building, BedDouble, CheckCircle, AlertTriangle } from 'lucide-react';
+import {
+  Box,
+  Button,
+  Typography,
+  TextField,
+  InputAdornment,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  ToggleButtonGroup,
+  ToggleButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+  Alert,
+} from '@mui/material';
+import { Search } from '@mui/icons-material';
 
-import Header from '../../components/header/Header';
 import HostelTable from '../../components/hostels/HostelTable';
 import HostelCard from '../../components/hostels/HostelCard';
 import HostelForm from '../../components/hostels/HostelForm';
-import Modal from '../../components/modal/Modal';
-import ConfirmationModal from '../Profile/ConfirmationModal'; 
 import InfoCard from '../../components/cards/InfoCard';
 import Pagination from '../../components/pagination.jsx/Pagination';
 import * as hostelService from '../../services/hostelService';
@@ -19,7 +36,7 @@ const Hostels = () => {
   const [hostels, setHostels] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [viewMode, setViewMode] = useState('grid'); 
+  const [viewMode, setViewMode] = useState('grid');
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedHostel, setSelectedHostel] = useState(null);
@@ -30,6 +47,7 @@ const Hostels = () => {
     gender: 'all',
     availability: 'all',
   });
+  const [formError, setFormError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -50,11 +68,13 @@ const Hostels = () => {
 
   const handleAddNew = () => {
     setSelectedHostel(null);
+    setFormError(null);
     setIsFormModalOpen(true);
   };
 
   const handleEdit = (hostel) => {
     setSelectedHostel(hostel);
+    setFormError(null);
     setIsFormModalOpen(true);
   };
 
@@ -77,17 +97,20 @@ const Hostels = () => {
   };
 
   const handleFormSubmit = async (formData) => {
+    setFormError(null);
     try {
       if (selectedHostel) {
         const updatedHostel = await hostelService.updateHostel(selectedHostel._id, formData);
         setHostels(prev => prev.map(h => (h._id === selectedHostel._id ? updatedHostel : h)));
       } else {
         const newHostel = await hostelService.createHostel(formData);
-        setHostels(prev => [newHostel, ...prev]);
+        const data = await hostelService.getAllHostels();
+        setHostels(data);
       }
       setIsFormModalOpen(false);
     } catch (err) {
-      setError(err.message);
+      console.error('Error submitting hostel:', err);
+      setFormError(err.response?.data?.message || err.message || 'Failed to save hostel');
     }
   };
 
@@ -121,50 +144,69 @@ const Hostels = () => {
 
   const uniqueLocations = useMemo(() => [...new Set(hostels.map(h => h.location))], [hostels]);
 
-  const headerCenterContent = (
-    <div className="hostels-filter-bar">
-      <div className="search-input-container">
-        <Search size={18} className="search-icon" />
-        <input 
-          type="text" 
-          placeholder="Search by name or location..." 
-          value={searchTerm} 
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1); // Reset to first page on search
-          }} 
-        />
-      </div>
-      <div className="filter-controls">
-        <Filter size={16} />
-        <select name="location" value={filters.location} onChange={handleFilterChange}>
-          <option value="all">All Locations</option>
-          {uniqueLocations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
-        </select>
-        <select name="gender" value={filters.gender} onChange={handleFilterChange}>
-          <option value="all">All Genders</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="mixed">Mixed</option>
-        </select>
-        <select name="availability" value={filters.availability} onChange={handleFilterChange}>
-          <option value="all">All Availabilities</option>
-          <option value="true">Available</option>
-          <option value="false">Not Available</option>
-        </select>
-      </div>
-    </div>
-  );
-
   return (
     <div className="hostels-page-container">
-      <Header title="Hostel Management" subtitle="Manage all hostels in the system" centerContent={headerCenterContent}>
-        <div className="view-toggle">
-          <button onClick={() => setViewMode('grid')} className={`toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}><LayoutGrid size={18} /></button>
-          <button onClick={() => setViewMode('table')} className={`toggle-btn ${viewMode === 'table' ? 'active' : ''}`}><List size={18} /></button>
-        </div>
-        <button className="btn btn-primary" onClick={handleAddNew}><Plus size={16} /> Add New Hostel</button>
-      </Header>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Typography variant="h5" component="h1">
+          Hostel Management
+        </Typography>
+        <Box>
+          <ToggleButtonGroup
+            value={viewMode}
+            exclusive
+            onChange={(e, newView) => newView && setViewMode(newView)}
+            aria-label="view mode"
+            size="small"
+            sx={{ marginRight: 2 }}
+          >
+            <ToggleButton value="grid" aria-label="grid view">
+              <LayoutGrid size={18} />
+            </ToggleButton>
+            <ToggleButton value="table" aria-label="table view">
+              <List size={18} />
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <Button variant="contained" color="primary" onClick={handleAddNew} startIcon={<Plus size={16} />}>
+            Add New Hostel
+          </Button>
+        </Box>
+      </Box>
+
+      <Box display="flex" gap={2} mb={3} flexWrap="wrap">
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="Search by name or location..."
+          value={searchTerm}
+          onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+          InputProps={{ startAdornment: (<InputAdornment position="start"><Search /></InputAdornment>) }}
+          sx={{ minWidth: 250 }}
+        />
+        <FormControl variant="outlined" size="small" sx={{ minWidth: 200 }}>
+          <InputLabel>Location</InputLabel>
+          <Select name="location" value={filters.location} onChange={handleFilterChange} label="Location">
+            <MenuItem value="all">All Locations</MenuItem>
+            {uniqueLocations.map(loc => <MenuItem key={loc} value={loc}>{loc}</MenuItem>)}
+          </Select>
+        </FormControl>
+        <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
+          <InputLabel>Gender</InputLabel>
+          <Select name="gender" value={filters.gender} onChange={handleFilterChange} label="Gender">
+            <MenuItem value="all">All Genders</MenuItem>
+            <MenuItem value="male">Male</MenuItem>
+            <MenuItem value="female">Female</MenuItem>
+            <MenuItem value="mixed">Mixed</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
+          <InputLabel>Availability</InputLabel>
+          <Select name="availability" value={filters.availability} onChange={handleFilterChange} label="Availability">
+            <MenuItem value="all">All Availabilities</MenuItem>
+            <MenuItem value="true">Available</MenuItem>
+            <MenuItem value="false">Not Available</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
 
       <div className="hostels-summary-cards">
         <InfoCard title="Total Hostels" value={filteredHostels.length} icon={<Building />} />
@@ -204,26 +246,37 @@ const Hostels = () => {
         itemsPerPage={ITEMS_PER_PAGE}
       />
 
-      <Modal
-        isOpen={isFormModalOpen}
+      <Dialog
+        open={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}
-        title={selectedHostel ? 'Edit Hostel' : 'Add New Hostel'}
+        fullWidth
+        maxWidth="md"
       >
-        <HostelForm
-          hostel={selectedHostel}
-          onSubmit={handleFormSubmit}
-          onCancel={() => setIsFormModalOpen(false)}
-        />
-      </Modal>
+        <DialogTitle>{selectedHostel ? 'Edit Hostel' : 'Add New Hostel'}</DialogTitle>
+        <DialogContent>
+          {formError && <Alert severity="error" sx={{ mb: 2 }}>{formError}</Alert>}
+          <HostelForm
+            hostel={selectedHostel}
+            onSubmit={handleFormSubmit}
+            onCancel={() => setIsFormModalOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
 
-      <ConfirmationModal
-        isOpen={isDeleteModalOpen}
-        title="Delete Hostel"
-        message={`Are you sure you want to delete the hostel "${hostelToDelete?.name}"? This action cannot be undone.`}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setIsDeleteModalOpen(false)}
-        confirmText="Delete"
-      />
+      <Dialog open={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>
+        <DialogTitle>Delete Hostel</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete the hostel "{hostelToDelete?.name}"? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>
+          <Button onClick={handleConfirmDelete} color="error">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

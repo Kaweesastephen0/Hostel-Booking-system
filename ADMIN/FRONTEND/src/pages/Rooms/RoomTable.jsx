@@ -15,6 +15,7 @@ const RoomTable = ({ rooms, onEdit, onDelete }) => {
             <th>Gender</th>
             <th>Occupancy</th>
             <th>Price (UGX)</th>
+            <th>Booking Price (UGX)</th>
             <th>Availability</th>
             <th>Actions</th>
           </tr>
@@ -28,6 +29,7 @@ const RoomTable = ({ rooms, onEdit, onDelete }) => {
               <td>{room.roomGender ? capitalize(room.roomGender) : 'N/A'}</td>
               <td>{room.maxOccupancy || 0}</td>
               <td className="room-price">{room.roomPrice?.toLocaleString() || 0}</td>
+              <td className="room-price">{room.bookingPrice?.toLocaleString() || 0}</td>
               <td>
                 <span className={`status-badge status-${room.isAvailable ? 'available' : 'occupied'}`}>
                   {room.isAvailable ? 'Available' : 'Occupied'}

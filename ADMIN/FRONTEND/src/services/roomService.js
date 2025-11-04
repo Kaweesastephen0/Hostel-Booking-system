@@ -1,47 +1,15 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+import axios from './axios';
 
-/**
- * Gets the authorization header with JWT token
- * @returns {Object} Headers object with authorization
- */
-const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
-  return {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` })
-  };
-};
+const API_URL = '/rooms'; // Base URL is handled by axios instance
 
-/**
- * A helper function to handle API responses.
- * @param {Response} response - The response from the fetch call.
- * @returns {Promise<any>} - The JSON data from the response.
- * @throws {Error} - Throws an error if the response is not ok.
- */
-const handleResponse = async (response) => {
-  // If response is 401 Unauthorized, redirect to login
-  if (response.status === 401) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '/login';
-    throw new Error('Session expired. Please log in again.');
-  }
-
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.message || `HTTP error! status: ${response.status}`);
-  }
-  return data.data || data;
-};
+const handleResponse = (response) => response.data.data;
 
 /**
  * Fetches all rooms from the backend.
  * @returns {Promise<Array>} - A promise that resolves to an array of rooms.
  */
 export const getAllRooms = async () => {
-  const response = await fetch(`${API_BASE_URL}/rooms`, {
-    headers: getAuthHeader()
-  });
+  const response = await axios.get(API_URL);
   return handleResponse(response);
 };
 
@@ -51,11 +19,7 @@ export const getAllRooms = async () => {
  * @returns {Promise<object>} - A promise that resolves to the newly created room.
  */
 export const createRoom = async (roomData) => {
-  const response = await fetch(`${API_BASE_URL}/rooms`, {
-    method: 'POST',
-    headers: getAuthHeader(),
-    body: JSON.stringify(roomData),
-  });
+  const response = await axios.post(API_URL, roomData);
   return handleResponse(response);
 };
 
@@ -63,14 +27,11 @@ export const createRoom = async (roomData) => {
  * Updates an existing room.
  * @param {string} id - The ID of the room to update.
  * @param {object} roomData - The new data for the room.
+ * @param {object} roomData - The new data for the room.
  * @returns {Promise<object>} - A promise that resolves to the updated room.
  */
 export const updateRoom = async (id, roomData) => {
-  const response = await fetch(`${API_BASE_URL}/rooms/${id}`, {
-    method: 'PUT',
-    headers: getAuthHeader(),
-    body: JSON.stringify(roomData),
-  });
+  const response = await axios.put(`${API_URL}/${id}`, roomData);
   return handleResponse(response);
 };
 
@@ -79,9 +40,5 @@ export const updateRoom = async (id, roomData) => {
  * @param {string} id - The ID of the room to delete.
  */
 export const deleteRoom = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/rooms/${id}`, {
-    method: 'DELETE',
-    headers: getAuthHeader()
-  });
-  return handleResponse(response);
+  await axios.delete(`${API_URL}/${id}`);
 };
