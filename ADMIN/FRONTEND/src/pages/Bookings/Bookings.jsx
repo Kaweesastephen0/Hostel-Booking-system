@@ -13,7 +13,7 @@ import { format } from 'date-fns';
 import DataTable from '../../components/common/DataTable';
 import Swal from 'sweetalert2';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+let API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'cancelled', 'completed'];
 
@@ -84,12 +84,12 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(value);
 };
 
-const toDateInputValue = (value) => {
-  if (!value) return '';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  return date.toISOString().slice(0, 10);
-};
+// const toDateInputValue = (value) => {
+//   if (!value) return '';
+//   const date = new Date(value);
+//   if (Number.isNaN(date.getTime())) return '';
+//   return date.toISOString().slice(0, 10);
+// };
 
 const Bookings = () => {
   const navigate = useNavigate();
@@ -125,15 +125,15 @@ const Bookings = () => {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [detailsError, setDetailsError] = useState(null);
 
-  const showSnackbar = (message, severity = 'success') => {
+  const showSnackbar = useCallback((message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
-  };
+  }, []);
 
   const handleCloseSnackbar = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
-  const updateRowActionState = (id, key, value) => {
+  const updateRowActionState = useCallback((id, key, value) => {
     setRowActionState((prev) => ({
       ...prev,
       [id]: {
@@ -141,7 +141,7 @@ const Bookings = () => {
         [key]: value,
       },
     }));
-  };
+  }, []);
 
   // Handle filter changes for all filter types
   const handleFilterChange = (filterName) => (event) => {
@@ -201,21 +201,21 @@ const Bookings = () => {
             params.append('endDate', new Date(now.setHours(23, 59, 59, 999)).toISOString());
             break;
           case 'thisWeek':
-            const startOfWeek = new Date(startOfDay);
+            { const startOfWeek = new Date(startOfDay);
             startOfWeek.setDate(startOfDay.getDate() - startOfDay.getDay()); // Start of current week (Sunday)
             const endOfWeek = new Date(startOfWeek);
             endOfWeek.setDate(startOfWeek.getDate() + 6); // End of current week (Saturday)
 
             params.append('startDate', startOfWeek.toISOString());
             params.append('endDate', new Date(endOfWeek.setHours(23, 59, 59, 999)).toISOString());
-            break;
+            break; }
           case 'thisMonth':
-            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+           { const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
             const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
             params.append('startDate', startOfMonth.toISOString());
             params.append('endDate', new Date(endOfMonth.setHours(23, 59, 59, 999)).toISOString());
-            break;
+            break;}
           case 'upcoming':
             params.append('startDate', new Date().toISOString());
             break;
@@ -372,7 +372,7 @@ const Bookings = () => {
     } finally {
       updateRowActionState(booking.id, 'deleting', false);
     }
-  }, [updateRowActionState, showSnackbar, fetchBookings, API_BASE_URL]);
+  }, [updateRowActionState, showSnackbar, fetchBookings]);
 
   const handleUpdateStatus = useCallback(async (booking, targetStatus) => {
     if (!targetStatus || targetStatus === booking.status) return;
@@ -423,9 +423,9 @@ const Bookings = () => {
     } finally {
       updateRowActionState(booking.id, 'updating', false);
     }
-  }, [API_BASE_URL, showSnackbar, updateRowActionState]);
+  }, [ showSnackbar, updateRowActionState]);
 
-  const handleOpenDetails = async (booking) => {
+  const handleOpenDetails = useCallback(async (booking) => {
     setSelectedBooking(booking);
     setBookingDetails(null);
     setDetailsError(null);
@@ -456,7 +456,7 @@ const Bookings = () => {
     } finally {
       setLoadingDetails(false);
     }
-  };
+  }, []);
 
   const handleCloseDetails = () => {
     setSelectedBooking(null);

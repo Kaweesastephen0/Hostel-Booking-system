@@ -41,7 +41,7 @@ import DataTable from '../../components/common/DataTable';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const PAYMENT_STATUS_OPTIONS = ['pending', 'completed', 'failed', 'refunded'];
-const PAYMENT_METHOD_OPTIONS = ['cash', 'card', 'mobile', 'bank_transfer'];
+const PAYMENT_METHOD_OPTIONS = ['cash', 'card', 'mobile_money', 'bank_transfer'];
 
 const statusColorMap = {
   pending: 'warning',
@@ -67,7 +67,7 @@ const statusActionTarget = {
 const methodLabelMap = {
   cash: 'Cash',
   card: 'Card',
-  mobile: 'Mobile Money',
+  mobile_money: 'Mobile Money',
   bank_transfer: 'Bank Transfer',
 };
 
@@ -424,7 +424,7 @@ const Payments = () => {
     }
   };
 
-  const handleOpenDetails = async (payment) => {
+  const handleOpenDetails = useCallback(async (payment) => {
     setSelectedPayment(payment);
     setPaymentDetails(null);
     setDetailsError(null);
@@ -476,7 +476,7 @@ const Payments = () => {
     } finally {
       setLoadingDetails(false);
     }
-  };
+  });
 
   const handleCloseDetails = () => {
     setSelectedPayment(null);
@@ -484,7 +484,7 @@ const Payments = () => {
     setDetailsError(null);
   };
 
-  const handleUpdateStatus = async (payment, targetStatus) => {
+  const handleUpdateStatus = useCallback(async (payment, targetStatus) => {
     if (!targetStatus || targetStatus === payment.status) return;
 
     updateRowActionState(payment.id, 'updating', true);
@@ -542,9 +542,9 @@ const Payments = () => {
     } finally {
       updateRowActionState(payment.id, 'updating', false);
     }
-  };
+  });
 
-  const handleDeletePayment = async (payment) => {
+  const handleDeletePayment = useCallback(async (payment) => {
     const displayName = payment.reference || payment.bookingGuestName || payment.bookingRoomNumber || 'this payment';
 
     if (!window.confirm(`Are you sure you want to delete ${displayName}? This action cannot be undone.`)) {
@@ -582,7 +582,7 @@ const Payments = () => {
     } finally {
       updateRowActionState(payment.id, 'deleting', false);
     }
-  };
+  });
 
   const handleOpenEditDialog = () => {
     const source = paymentDetails || selectedPayment;
