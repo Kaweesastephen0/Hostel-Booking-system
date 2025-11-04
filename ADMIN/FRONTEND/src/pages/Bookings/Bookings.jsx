@@ -109,7 +109,6 @@ const Bookings = () => {
     paymentStatus: 'all',
   });
 
-  const [statusFilter, setStatusFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [rowActionState, setRowActionState] = useState({});
@@ -165,10 +164,7 @@ const Bookings = () => {
     setPage(0);
   };
 
-  const handleStatusFilterChange = (event) => {
-    setStatusFilter(event.target.value);
-    setPage(0);
-  };
+  // Status filter is now handled by the handleFilterChange function
   const fetchBookings = useCallback(async () => {
     setLoading(true);
     setFetchError(null);
@@ -187,11 +183,16 @@ const Bookings = () => {
       }
 
       // Add filters to the request
-      const { status, dateRange, roomType } = filters;
+      const { status, dateRange, roomType, paymentStatus } = filters;
 
       // Add status filter
       if (status && status !== 'all') {
         params.append('status', status);
+      }
+
+      // Add payment status filter
+      if (paymentStatus && paymentStatus !== 'all') {
+        params.append('paymentStatus', paymentStatus);
       }
 
       // Add date range filter
@@ -237,10 +238,7 @@ const Bookings = () => {
         params.append('roomType', roomType);
       }
 
-      // Add payment status filter
-      if (statusFilter !== 'all') {
-        params.append('status', statusFilter);
-      }
+      // This is now handled by the filters.paymentStatus above
 
       const token = localStorage.getItem('token');
 
@@ -807,12 +805,12 @@ const Bookings = () => {
                   />
                 </Grid>
                 <Grid item xs={12} md={2}>
-                  <FormControl variant="outlined" size="small" fullWidth>
-                    <InputLabel>Status</InputLabel>
+                  <FormControl fullWidth variant="outlined" size="small">
+                    <InputLabel>Booking Status</InputLabel>
                     <Select
-                      value={statusFilter}
-                      onChange={handleStatusFilterChange}
-                      label="Status"
+                      value={filters.status}
+                      onChange={handleFilterChange('status')}
+                      label="Booking Status"
                     >
                       <MenuItem value="all">All Statuses</MenuItem>
                       <MenuItem value="pending">Pending</MenuItem>
