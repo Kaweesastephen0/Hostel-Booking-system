@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Heart, MapPin, ChevronRight, X, Users, Bed, DoorOpen 
-} from 'lucide-react';
-import styles from  './RoomList.module.css';
+import { Heart, MapPin, ChevronRight, X, Users, Bed, DoorOpen } from 'lucide-react';
+import styles from './RoomList.module.css';
 
 export default function RoomsList() {
   const { hostelId } = useParams();
   const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
+  const [sortedRooms, setSortedRooms] = useState([]);
+  const [sortOption, setSortOption] = useState("Recommended");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
@@ -20,23 +20,19 @@ export default function RoomsList() {
     const fetchRooms = async () => {
       try {
         setLoading(true);
-        
         const response = await fetch(`http://localhost:5000/api/rooms/hostel/${hostelId}`);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const result = await response.json();
-        
         if (result.success && Array.isArray(result.data)) {
           setRooms(result.data);
-          
+          setSortedRooms(result.data);
           if (result.data.length > 0 && result.data[0].hostelId) {
             setHostelInfo(result.data[0].hostelId);
           }
         } else {
           setRooms([]);
+          setSortedRooms([]);
         }
       } catch (error) {
         console.error('Error fetching rooms:', error);
@@ -46,23 +42,44 @@ export default function RoomsList() {
       }
     };
 
-    if (hostelId) {
-      fetchRooms();
-    } else {
+    if (hostelId) fetchRooms();
+    else {
       setError('No hostel ID provided');
       setLoading(false);
     }
   }, [hostelId]);
 
+  // ✅ Sorting logic
+  const handleSortChange = (e) => {
+    const value = e.target.value;
+    setSortOption(value);
+
+    let sorted = [...rooms];
+
+    if (value === "Price: Low to High") {
+      sorted.sort((a, b) => (a.roomPrice || 0) - (b.roomPrice || 0));
+    } else if (value === "Price: High to Low") {
+      sorted.sort((a, b) => (b.roomPrice || 0) - (a.roomPrice || 0));
+    } else if (value === "Distance: Nearest to Farthest") {
+      sorted.sort((a, b) => (a.distanceFromCampus || 0) - (b.distanceFromCampus || 0));
+    } else if (value === "Amenities: Most to Least") {
+      sorted.sort(
+        (a, b) =>
+          (b.hostelId?.amenities?.length || 0) -
+          (a.hostelId?.amenities?.length || 0)
+      );
+    } else {
+      sorted = [...rooms];
+    }
+
+    setSortedRooms(sorted);
+  };
+
   const toggleFavorite = (id, e) => {
     e.stopPropagation();
     setFavorites(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
+      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
       return newSet;
     });
   };
@@ -75,20 +92,13 @@ export default function RoomsList() {
     return (
       <div className={styles.container}>
         <div className={styles.mainContent}>
-          {/* Sidebar Skeleton */}
           <aside className={styles.sidebar}>
             <div className={styles.filterHeaderSkeleton}></div>
-            {[1, 2, 3].map(i => (
-              <div key={i} className={styles.filterSectionSkeleton}></div>
-            ))}
+            {[1, 2, 3].map(i => <div key={i} className={styles.filterSectionSkeleton}></div>)}
           </aside>
-
-          {/* Results Skeleton */}
           <div className={styles.results}>
             <div className={styles.resultsHeaderSkeleton}></div>
-            {[1, 2, 3].map(i => (
-              <div key={i} className={styles.roomCardSkeleton}></div>
-            ))}
+            {[1, 2, 3].map(i => <div key={i} className={styles.roomCardSkeleton}></div>)}
           </div>
         </div>
       </div>
@@ -96,11 +106,7 @@ export default function RoomsList() {
   }
 
   if (error) {
-    return (
-      <div className={styles.container}>
-        <div className="error">{error}</div>
-      </div>
-    );
+    return <div className={styles.container}><div className="error">{error}</div></div>;
   }
 
   return (
@@ -110,7 +116,7 @@ export default function RoomsList() {
         <aside className={styles.sidebar}>
           <div className={styles.filterHeader}>
             Filters
-            <X size={16} style={{cursor: 'pointer', opacity: 0.5}} />
+            <X size={16} style={{ cursor: 'pointer', opacity: 0.5 }} />
           </div>
 
           {/* Room Type Filter */}
@@ -151,18 +157,24 @@ export default function RoomsList() {
           <div className={styles.resultsHeader}>
             <div className={styles.sortBy}>
               Sort by:
-              <select className={styles.select}>
+              <select 
+                className={styles.select} 
+                value={sortOption} 
+                onChange={handleSortChange}
+              >
                 <option>Recommended</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
+                <option>Distance: Nearest to Farthest</option>
+                <option>Amenities: Most to Least</option>
               </select>
             </div>
             <div className={styles.resultsCount}>
-              {rooms.length} {rooms.length === 1 ? 'Room' : 'Rooms'} Found
+              {sortedRooms.length} {sortedRooms.length === 1 ? 'Room' : 'Rooms'} Found
             </div>
           </div>
 
-          {rooms.length === 0 ? (
+          {sortedRooms.length === 0 ? (
             <div className={styles.emptyState}>
               <div className={styles.emptyStateTitle}>No Rooms Available</div>
               <div className={styles.emptyStateText}>
@@ -170,21 +182,20 @@ export default function RoomsList() {
               </div>
             </div>
           ) : (
-            rooms.map(room => (
+            sortedRooms.map(room => (
               <div
-               key={room._id} 
-               className={`${styles.roomCard} ${hoveredCard === room._id ? styles.hovered : ''}`} 
-               onMouseEnter={() => setHoveredCard(room._id)} 
-               onMouseLeave={() => setHoveredCard(null)} >
+                key={room._id}
+                className={`${styles.roomCard} ${hoveredCard === room._id ? styles.hovered : ''}`}
+                onMouseEnter={() => setHoveredCard(room._id)}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
                 <div className={styles.roomCardInner}>
-                  {/* Image Section */}
+                  {/* Image */}
                   <div className={styles.imageSection}>
-                    {!imagesLoaded[room._id] && (
-                      <div className={styles.imageSkeleton}></div>
-                    )}
-                    <img 
-                      src={room.roomImage || 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg'} 
-                      alt={room.roomNumber || 'Room'} 
+                    {!imagesLoaded[room._id] && <div className={styles.imageSkeleton}></div>}
+                    <img
+                      src={room.roomImage || 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg'}
+                      alt={room.roomNumber || 'Room'}
                       className={styles.roomImage}
                       loading="lazy"
                       onLoad={() => handleImageLoad(room._id)}
@@ -204,27 +215,23 @@ export default function RoomsList() {
                       />
                     </button>
                   </div>
-                  
-                  {/* Content Section */}
+
+                  {/* Content */}
                   <div className={styles.contentSection}>
                     <div>
                       <div className={styles.roomHeader}>
                         <div className={styles.roomInfo}>
-                          <h3 className={styles.roomName}>
-                            {room.roomNumber || 'Room N/A'}
-                          </h3>
+                          <h3 className={styles.roomName}>{room.roomNumber || 'Room N/A'}</h3>
                           <div className={styles.hostelName}>
                             <MapPin size={14} />
                             {room.hostelId?.name || hostelInfo?.name || 'Hostel'}
                           </div>
                           {room.roomDescription && (
-                            <div className={styles.roomDescription}>
-                              {room.roomDescription}
-                            </div>
+                            <div className={styles.roomDescription}>{room.roomDescription}</div>
                           )}
                         </div>
                       </div>
-                      
+
                       <div className={styles.features}>
                         <div className={styles.featureTag}>
                           <Users size={12} />
@@ -232,14 +239,18 @@ export default function RoomsList() {
                         </div>
                         <div className={styles.featureTag}>
                           <Bed size={12} />
-                          {room.roomType ? room.roomType.charAt(0).toUpperCase() + room.roomType.slice(1) : 'Standard'}
+                          {room.roomType
+                            ? room.roomType.charAt(0).toUpperCase() + room.roomType.slice(1)
+                            : 'Standard'}
                         </div>
                       </div>
-                      
+
                       <div className={styles.badges}>
                         <span className={styles.availabilityBadge}>Available</span>
                         <span className={styles.badge}>
-                          {room.roomGender ? room.roomGender.charAt(0).toUpperCase() + room.roomGender.slice(1) : 'Mixed'}
+                          {room.roomGender
+                            ? room.roomGender.charAt(0).toUpperCase() + room.roomGender.slice(1)
+                            : 'Mixed'}
                         </span>
                       </div>
                     </div>
@@ -251,7 +262,7 @@ export default function RoomsList() {
                           {room.roomNumber}
                         </div>
                       </div>
-                      
+
                       <div className={styles.priceSection}>
                         <div className={styles.price}>
                           UGX {room.roomPrice ? room.roomPrice.toLocaleString() : '0'}
