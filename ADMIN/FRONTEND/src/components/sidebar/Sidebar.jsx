@@ -17,12 +17,6 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Stephan I think this is you to Implement the logout logic here
-    console.log('Logging out...');
-    navigate('/login');
-  };
-
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
@@ -36,6 +30,12 @@ const Sidebar = () => {
     { to: '/users', icon: <Users size={20} />, label: 'Users' },
     { to: '/settings', icon: <Settings size={20} />, label: 'Settings' },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
   return (
     <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
@@ -67,7 +67,9 @@ const Sidebar = () => {
           tabIndex={0}
         >
           <div className="sidebar-link-icon">
-            <LogOut size={20} />
+            <button onClick={handleLogout}>
+              <LogOut size={20} />
+            </button>
           </div>
           <span className="sidebar-link-label">Logout</span>
         </div>

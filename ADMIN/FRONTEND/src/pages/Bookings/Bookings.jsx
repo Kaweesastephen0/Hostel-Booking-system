@@ -1,37 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import {
-  Box,
-  Button,
-  Typography,
-  Chip,
-  TextField,
-  InputAdornment,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Alert,
-  Snackbar,
-  Grid,
-  Paper
+  Box, Button, Typography, Chip, TextField, InputAdornment, MenuItem, FormControl, InputLabel,
+  Select, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar, Grid, Paper
 } from '@mui/material';
-import {
-  Add,
-  FilterList,
-  Search,
-  Edit,
-  Delete,
-  Cancel,
-  CheckCircle,
-  Close,
-  Info,
-  Replay
-} from '@mui/icons-material';
+import { Add, FilterList, Search, Edit, Delete, Cancel, CheckCircle, Close, Info, Replay } from '@mui/icons-material';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
@@ -59,6 +32,11 @@ const DATE_RANGE_OPTIONS = [
   { value: 'upcoming', label: 'Upcoming' },
 ];
 
+const User = localStorage.getItem('user');
+
+if (User === null) {
+  <Navigate to="/login" />
+}
 const defaultBookingForm = {
   // Guest Information
   fullName: '',
@@ -131,9 +109,7 @@ const Bookings = () => {
     paymentStatus: 'all',
   });
 
-  // Remove duplicate state declarations
-  // const [statusFilter, setStatusFilter] = useState('all');
-  // const [dateRange, setDateRange] = useState('all');
+
   const [showFilters, setShowFilters] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [rowActionState, setRowActionState] = useState({});
