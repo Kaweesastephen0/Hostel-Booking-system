@@ -130,8 +130,10 @@ const Bookings = () => {
     roomType: 'all',
     paymentStatus: 'all',
   });
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [dateRange, setDateRange] = useState('all');
+
+  // Remove duplicate state declarations
+  // const [statusFilter, setStatusFilter] = useState('all');
+  // const [dateRange, setDateRange] = useState('all');
   const [showFilters, setShowFilters] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [rowActionState, setRowActionState] = useState({});
@@ -165,6 +167,28 @@ const Bookings = () => {
     }));
   };
 
+  // Handle filter changes for all filter types
+  const handleFilterChange = (filterName) => (event) => {
+    const value = event.target.value;
+    setFilters(prev => ({
+      ...prev,
+      [filterName]: value
+    }));
+    setPage(0);
+  };
+
+  // Clear all filters
+  const clearFilters = () => {
+    setFilters({
+      status: 'all',
+      dateRange: 'all',
+      roomType: 'all',
+      paymentStatus: 'all',
+    });
+    setSearchTerm('');
+    setPage(0);
+  };
+
   const fetchBookings = useCallback(async () => {
     setLoading(true);
     setFetchError(null);
@@ -182,12 +206,57 @@ const Bookings = () => {
         params.append('search', searchTerm.trim());
       }
 
-      // Add filters
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value && value !== 'all') {
-          params.append(key, value);
+      // Add filters to the request
+      const { status, dateRange, roomType, paymentStatus } = filters;
+
+      // Add status filter
+      if (status && status !== 'all') {
+        params.append('status', status);
+      }
+
+      // Add date range filter
+      if (dateRange && dateRange !== 'all') {
+        const now = new Date();
+        const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+
+        switch (dateRange) {
+          case 'today':
+            params.append('startDate', startOfDay.toISOString());
+            params.append('endDate', new Date(now.setHours(23, 59, 59, 999)).toISOString());
+            break;
+          case 'thisWeek':
+            const startOfWeek = new Date(startOfDay);
+            startOfWeek.setDate(startOfDay.getDate() - startOfDay.getDay()); // Start of current week (Sunday)
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6); // End of current week (Saturday)
+
+            params.append('startDate', startOfWeek.toISOString());
+            params.append('endDate', new Date(endOfWeek.setHours(23, 59, 59, 999)).toISOString());
+            break;
+          case 'thisMonth':
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+            params.append('startDate', startOfMonth.toISOString());
+            params.append('endDate', new Date(endOfMonth.setHours(23, 59, 59, 999)).toISOString());
+            break;
+          case 'upcoming':
+            params.append('startDate', new Date().toISOString());
+            break;
+          default:
+            break;
         }
-      });
+      }
+
+      // Add room type filter
+      if (roomType && roomType !== 'all') {
+        params.append('roomType', roomType);
+      }
+
+      // Add payment status filter
+      if (paymentStatus && paymentStatus !== 'all') {
+        params.append('paymentStatus', paymentStatus);
+      }
 
       const token = localStorage.getItem('token');
 
@@ -252,7 +321,7 @@ const Bookings = () => {
 
   useEffect(() => {
     fetchBookings();
-  }, [fetchBookings]);
+  }, [fetchBookings, filters]);
 
   const handlePageChange = (_event, newPage) => {
     setPage(newPage);
@@ -273,52 +342,11 @@ const Bookings = () => {
     setPage(0);
   };
 
-  const handleStatusFilterChange = (event) => {
-    const value = event.target.value;
-    setStatusFilter(value);
-    setFilters((prev) => ({
-      ...prev,
-      status: value,
-    }));
-    setPage(0);
-  };
-
-  const handleDateRangeChange = (event) => {
-    const value = event.target.value;
-    setDateRange(value);
-    setFilters((prev) => ({
-      ...prev,
-      dateRange: value,
-    }));
-    setPage(0);
-  };
-
-  const handleFilterChange = (filterName) => (event) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterName]: event.target.value
-    }));
-    setPage(0);
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      status: 'all',
-      dateRange: 'all',
-      roomType: 'all',
-      paymentStatus: 'all',
-    });
-    setSearchTerm('');
-    setStatusFilter('all');
-    setDateRange('all');
-    setPage(0);
-  };
-
-  const handleEditBooking = (booking) => {
+  const handleEditBooking = useCallback((booking) => {
     navigate(`/bookings/${booking.id}`);
-  };
+  }, [navigate]);
 
-  const handleDeleteBooking = async (booking) => {
+  const handleDeleteBooking = useCallback(async (booking) => {
     const displayName = booking.reference || booking.guestName || booking.roomNumber || 'this booking';
 
     const result = await Swal.fire({
@@ -340,13 +368,17 @@ const Bookings = () => {
 
     try {
       const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
       const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        headers: headers,
         credentials: 'include',
       });
 
@@ -364,22 +396,26 @@ const Bookings = () => {
     } finally {
       updateRowActionState(booking.id, 'deleting', false);
     }
-  };
+  }, [updateRowActionState, showSnackbar, fetchBookings, API_BASE_URL]);
 
-  const handleUpdateStatus = async (booking, targetStatus) => {
+  const handleUpdateStatus = useCallback(async (booking, targetStatus) => {
     if (!targetStatus || targetStatus === booking.status) return;
 
     updateRowActionState(booking.id, 'updating', true);
 
     try {
       const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
       const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        headers: headers,
         credentials: 'include',
         body: JSON.stringify({ status: targetStatus }),
       });
@@ -411,7 +447,7 @@ const Bookings = () => {
     } finally {
       updateRowActionState(booking.id, 'updating', false);
     }
-  };
+  }, [API_BASE_URL, showSnackbar, updateRowActionState]);
 
   const handleOpenDetails = async (booking) => {
     setSelectedBooking(booking);
@@ -720,7 +756,7 @@ const Bookings = () => {
       get color() {
         return 'primary';
       },
-      disabled: (row) => Boolean(rowActionState[row.id]?.updating || rowActionState[row.id]?.deleting),
+      disabled: (row) => Boolean(rowActionState[row.id]?.updating || rowActionState[row.id]?.deleting)
     },
     {
       icon: <Delete fontSize="small" />,
