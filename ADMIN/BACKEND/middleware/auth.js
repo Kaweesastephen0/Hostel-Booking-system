@@ -4,7 +4,7 @@ import ErrorResponse from "../utils/errorResponse.js";
 
 // Protected routes
 const protect = async (req, res, next) => {
-  const token = req.cookies.token;
+  let token = req.cookies.token;
 
   if (
     req.headers.authorization &&
