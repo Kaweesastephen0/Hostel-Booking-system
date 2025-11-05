@@ -1,9 +1,9 @@
-import User from '../models/User.js';
+import frontUser from '../models/User.js';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser'; // Import cookie-parser
-
+//token creation
 const generateToken = (id) => {
   if (!process.env.JWT_SECRET) {
     throw new Error('JWT_SECRET is not configured');
@@ -12,31 +12,31 @@ const generateToken = (id) => {
     expiresIn: process.env.JWT_EXPIRE
   });
 };
-
+//user registration checking if email, studentnumber and nin if already exists
 export const register = async (req, res) => {
   try {
     const { firstName, surname, email, gender, userType, studentNumber, nin, password } = req.body;
 
-    const userExists = await User.findOne({ email });
+    const userExists = await frontUser.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
     if (userType === 'student' && studentNumber) {
-      const studentExists = await User.findOne({ studentNumber });
+      const studentExists = await frontUser.findOne({ studentNumber });
       if (studentExists) {
         return res.status(400).json({ message: 'Student number already registered' });
       }
     }
 
     if (userType === 'non-student' && nin) {
-      const ninExists = await User.findOne({ nin });
+      const ninExists = await frontUser.findOne({ nin });
       if (ninExists) {
         return res.status(400).json({ message: 'NIN already registered' });
       }
     }
 
-    const user = await User.create({
+    const user = await frontUser.create({
       firstName,
       surname,
       email,
@@ -159,7 +159,7 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await frontUser.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
       user.lastLogin = Date.now();
@@ -198,7 +198,7 @@ export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await frontUser.findOne({ email });
 
     if (!user) {
       return res.status(404).json({ message: 'No user found with this email' });
@@ -319,7 +319,7 @@ export const resetPassword = async (req, res) => {
       .update(resetCode)
       .digest('hex');
 
-    const user = await User.findOne({
+    const user = await frontUser.findOne({
       email,
       resetPasswordToken,
       resetPasswordExpire: { $gt: Date.now() }
@@ -354,7 +354,7 @@ export const updateProfile = async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    const user = await frontUser.findById(decoded.id);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -364,7 +364,7 @@ export const updateProfile = async (req, res) => {
 
     if (userType !== user.userType) {
       if (userType === 'student' && studentNumber) {
-        const existingStudent = await User.findOne({
+        const existingStudent = await frontUser.findOne({
           studentNumber,
           _id: { $ne: user._id }
         });
@@ -374,7 +374,7 @@ export const updateProfile = async (req, res) => {
       }
 
       if (userType === 'non-student' && nin) {
-        const existingNin = await User.findOne({
+        const existingNin = await frontUser.findOne({
           nin,
           _id: { $ne: user._id }
         });
@@ -384,7 +384,7 @@ export const updateProfile = async (req, res) => {
       }
     } else {
       if (userType === 'student' && studentNumber && studentNumber !== user.studentNumber) {
-        const existingStudent = await User.findOne({
+        const existingStudent = await frontUser.findOne({
           studentNumber,
           _id: { $ne: user._id }
         });
@@ -394,7 +394,7 @@ export const updateProfile = async (req, res) => {
       }
 
       if (userType === 'non-student' && nin && nin !== user.nin) {
-        const existingNin = await User.findOne({
+        const existingNin = await frontUser.findOne({
           nin,
           _id: { $ne: user._id }
         });
@@ -448,7 +448,7 @@ export const changePassword = async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    const user = await frontUser.findById(decoded.id);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
