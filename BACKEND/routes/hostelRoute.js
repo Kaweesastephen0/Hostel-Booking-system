@@ -8,11 +8,11 @@ const router = express.Router();
 
 
 // getting all hostels
-router.get('/hostel', getAllHostels);
+router.get('/', getAllHostels);
 router.get('/featured', getFeaturedHostels)
-router.get('/premiumHostel', getPremiumHostels)
+router.get('/premium', getPremiumHostels)
 router.get('/affordable', getAffordableHostels); 
-router.get('/midRangeHostels', getMidRangeHostels);
+router.get('/midrange', getMidRangeHostels);
 
 
 

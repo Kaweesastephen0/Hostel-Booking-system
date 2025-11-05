@@ -5,6 +5,20 @@ import { useNavigate } from 'react-router-dom';
 import SearchBar from '../searchbar/searchBar';
 import { useHostels } from '../../../hooks/useHostels';
 
+// Helper function to get hostel image
+const getHostelImage = (hostel) => {
+  if (!hostel?.images || !Array.isArray(hostel.images) || hostel.images.length === 0) {
+    return 'https://images.pexels.com/photos/20237982/pexels-photo-20237982.jpeg'; // Fallback image
+  }
+  
+  // Get the primary image or first image
+  const primaryImage = hostel.images.find(img => img.isPrimary);
+  const firstImage = hostel.images[0];
+  const targetImage = primaryImage || firstImage;
+  
+  return targetImage?.url || 'https://images.pexels.com/photos/20237982/pexels-photo-20237982.jpeg';
+};
+
 export default function Hero({ onSearch }) {
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -12,6 +26,11 @@ export default function Hero({ onSearch }) {
   const [imagesLoaded, setImagesLoaded] = useState({});
   
   const { hostels: featuredHostels, loading, error } = useHostels('featured');
+
+  // Debug log to see what data we're getting
+  useEffect(() => {
+    console.log('Featured Hostels:', featuredHostels);
+  }, [featuredHostels]);
 
   // Get the latest 4 hostels for the carousel
   const carouselHostels = featuredHostels
@@ -97,7 +116,10 @@ export default function Hero({ onSearch }) {
       <div className={styles.heroContainer}>
         <div className={styles.errorBackground} />
         <div className={styles.blueOverlay} />
-        <div className={styles.errorMessage}>{error}</div>
+        <div className={styles.errorMessage}>
+          <p>Error loading featured hostels</p>
+          <p style={{ fontSize: '14px', opacity: 0.8 }}>{error}</p>
+        </div>
         <div className={styles.searchBarWrapper}>
           <SearchBar onSearch={onSearch} />
         </div>
@@ -108,9 +130,11 @@ export default function Hero({ onSearch }) {
   if (carouselHostels.length === 0) {
     return (
       <div className={styles.heroContainer}>
-        <div className={styles.errorBackground} />
+        <div className={styles.noDataBackground} />
         <div className={styles.blueOverlay} />
-        <div className={styles.errorMessage}>No featured hostels available</div>
+        <div className={styles.errorMessage}>
+          No featured hostels available. Please check if your backend is running and seeded.
+        </div>
         <div className={styles.searchBarWrapper}>
           <SearchBar onSearch={onSearch} />
         </div>
@@ -130,9 +154,12 @@ export default function Hero({ onSearch }) {
             }`}
           >
             <img
-              src={hostel.image}
+              src={getHostelImage(hostel)}
               alt={hostel.name}
               className={styles.bgImage}
+              onError={(e) => {
+                e.target.src = 'https://images.pexels.com/photos/20237982/pexels-photo-20237982.jpeg';
+              }}
             />
           </div>
         ))}
@@ -182,10 +209,14 @@ export default function Hero({ onSearch }) {
                       <div className={styles.imageSkeleton} />
                     )}
                     <img
-                      src={hostel.image}
+                      src={getHostelImage(hostel)}
                       alt={hostel.name}
                       loading="lazy"
                       onLoad={() => handleImageLoad(index)}
+                      onError={(e) => {
+                        e.target.src = 'https://images.pexels.com/photos/20237982/pexels-photo-20237982.jpeg';
+                        handleImageLoad(index);
+                      }}
                       style={{
                         opacity: imagesLoaded[index] ? 1 : 0,
                         transition: 'opacity 0.3s ease-in'

@@ -1,8 +1,7 @@
-// controllers/hostelSearchController.js (CLEAN & DRY VERSION)
 import HostelModel from "../models/HostelModel.js";
 import roomModel from "../models/roomModel.js";
 
-// Helper function to get price range (DRY)
+// Helper: Get price range from rooms
 const getPriceRange = (rooms) => {
   if (!rooms || rooms.length === 0) return { min: 0, max: 0 };
   const prices = rooms.map(r => r.roomPrice);
@@ -12,28 +11,28 @@ const getPriceRange = (rooms) => {
   };
 };
 
-// Search hostels by location and room type
+// FLEXIBLE SEARCH - Search by any combination of location, roomType, and price
 export const searchHostels = async (req, res) => {
   try {
-    const { location, roomType } = req.query;
+    const { location, roomType, minPrice, maxPrice } = req.query;
 
-    // Validate inputs
-    if (!location?.trim()) {
+    // Check if at least one search parameter is provided
+    if (!location?.trim() && !roomType?.trim() && !minPrice && !maxPrice) {
       return res.status(400).json({
         success: false,
-        message: 'Location is required'
+        message: 'Please provide at least one search parameter (location, room type, or price range)'
       });
     }
 
-    // Build hostel query (case-insensitive, partial match)
-    const hostelQuery = {
-      $or: [
+    // Step 1: Build hostel query (only if location is provided)
+    let hostelQuery = { availability: true };
+    
+    if (location?.trim()) {
+      hostelQuery.$or = [
         { location: { $regex: location, $options: 'i' } },
-        { address: { $regex: location, $options: 'i' } },
         { name: { $regex: location, $options: 'i' } }
-      ],
-      availability: true
-    };
+      ];
+    }
 
     // Find matching hostels
     const hostels = await HostelModel.find(hostelQuery).lean();
@@ -41,13 +40,13 @@ export const searchHostels = async (req, res) => {
     if (!hostels || hostels.length === 0) {
       return res.status(200).json({
         success: false,
-        message: `No hostels found in ${location}`,
+        message: location ? `No hostels found in ${location}` : 'No hostels found',
         data: [],
         count: 0
       });
     }
 
-    // Build room query
+    // Step 2: Build room query
     const hostelIds = hostels.map(h => h._id);
     const roomQuery = {
       hostelId: { $in: hostelIds }
@@ -58,21 +57,26 @@ export const searchHostels = async (req, res) => {
       roomQuery.roomType = { $regex: roomType, $options: 'i' };
     }
 
+    // Add price range filter if provided
+    if (minPrice || maxPrice) {
+      roomQuery.roomPrice = {};
+      if (minPrice) roomQuery.roomPrice.$gte = Number(minPrice);
+      if (maxPrice) roomQuery.roomPrice.$lte = Number(maxPrice);
+    }
+
     // Find matching rooms
     const availableRooms = await roomModel.find(roomQuery).lean();
 
     if (!availableRooms || availableRooms.length === 0) {
       return res.status(200).json({
         success: false,
-        message: roomType 
-          ? `No ${roomType} rooms available in ${location}`
-          : `No rooms available in ${location}`,
+        message: 'No rooms match your search criteria',
         data: [],
         count: 0
       });
     }
 
-    // Group rooms by hostel
+    // Step 3: Group rooms by hostel
     const roomsByHostel = availableRooms.reduce((acc, room) => {
       const id = room.hostelId.toString();
       if (!acc[id]) acc[id] = [];
@@ -80,13 +84,24 @@ export const searchHostels = async (req, res) => {
       return acc;
     }, {});
 
-    // Combine results and calculate price ranges
+    // Step 4: Combine results
     const results = hostels
       .filter(h => roomsByHostel[h._id.toString()])
       .map(hostel => {
         const rooms = roomsByHostel[hostel._id.toString()];
+        const primaryImage = hostel.images?.find(img => img.isPrimary)?.url || hostel.images?.[0]?.url;
+        
         return {
-          ...hostel,
+          _id: hostel._id,
+          name: hostel.name,
+          description: hostel.description,
+          image: primaryImage,
+          location: hostel.location,
+          distance: hostel.distance,
+          HostelGender: hostel.HostelGender,
+          amenities: hostel.amenities,
+          rating: hostel.rating,
+          featured: hostel.featured,
           availableRooms: rooms,
           matchingRoomsCount: rooms.length,
           priceRange: getPriceRange(rooms)
@@ -94,10 +109,16 @@ export const searchHostels = async (req, res) => {
       })
       .sort((a, b) => a.priceRange.min - b.priceRange.min);
 
+    // Step 5: Return results
     return res.status(200).json({
       success: true,
       count: results.length,
-      searchParams: { location, roomType: roomType || 'all' },
+      searchParams: { 
+        location: location || 'any', 
+        roomType: roomType || 'any',
+        minPrice: minPrice || 'any',
+        maxPrice: maxPrice || 'any'
+      },
       data: results
     });
 

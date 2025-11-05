@@ -1,20 +1,27 @@
+// HomePage.jsx
 import React, { useState } from 'react';
 import { useHostelSearch } from '../hooks/useHostelSearch';
 import FeaturedHostels from '../components/hostels/sections/FeaturedHostels';
 import AffordableHostels from '../components/hostels/sections/AffordableHostels';
 import MidRangeHostels from '../components/hostels/sections/MidRangeHostels';
 import Hero from '../components/layout/hero/Hero';
-import Gallery from '../components/hostels/sections/Gallery/gallery';
 import SearchResults from '../components/hostels/sections/searchResults/searchResults';
-import BelowSection from '../components/hostels/sections/belowSection/belowSection'
+import BelowSection from '../components/hostels/sections/belowSection/belowSection';
 
 function HomePage() {
   const { results, loading, error, searchHostels, clearResults } = useHostelSearch();
   const [hasSearched, setHasSearched] = useState(false);
 
-  const handleSearch = async (location, roomType) => {
+  const handleSearch = async (searchParams) => {
     setHasSearched(true);
-    await searchHostels(location, roomType);
+    
+    // Pass the flexible search parameters to your hook
+    await searchHostels(
+      searchParams.location || '',
+      searchParams.roomType || '',
+      searchParams.minPrice || '',
+      searchParams.maxPrice || ''
+    );
     
     // Scroll to results
     setTimeout(() => {
@@ -23,6 +30,11 @@ function HomePage() {
         resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }, 100);
+  };
+
+  const handleClearResults = () => {
+    setHasSearched(false);
+    clearResults();
   };
 
   return (
@@ -36,7 +48,8 @@ function HomePage() {
             results={results} 
             loading={loading} 
             error={error}
-            onClose={clearResults}
+            onClose={handleClearResults}
+            limit={3} // This will show only 3 results on homepage
           />
         </div>
       )}
