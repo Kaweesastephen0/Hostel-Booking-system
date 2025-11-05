@@ -6,6 +6,7 @@ import MidRangeHostels from '../components/hostels/sections/MidRangeHostels';
 import Hero from '../components/layout/hero/Hero';
 import Gallery from '../components/hostels/sections/Gallery/gallery';
 import SearchResults from '../components/hostels/sections/searchResults/searchResults';
+import BelowSection from '../components/hostels/sections/belowSection/belowSection'
 
 function HomePage() {
   const { results, loading, error, searchHostels, clearResults } = useHostelSearch();
@@ -43,7 +44,7 @@ function HomePage() {
       <FeaturedHostels />
       <MidRangeHostels />
       <AffordableHostels />
-      <Gallery />
+      <BelowSection />
     </div>
   );
 }
