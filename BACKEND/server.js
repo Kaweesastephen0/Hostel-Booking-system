@@ -40,7 +40,7 @@ app.use(limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -52,12 +52,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/hostels', hostelRoute)
-app.use('/api/hostels/', HostelSearchRoute)
 app.use("/api/rooms", roomRoute);
 app.use("/api/auth", authRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/bookings", bookingRoutes);
-app.use("/api/premium", hostelRoute), 
  
 
 // Health check endpoint

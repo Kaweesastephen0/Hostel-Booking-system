@@ -34,7 +34,6 @@
   border-radius: 50px;
   margin-bottom: 2rem;
   font-size: 0.9rem;
-  backdrop-filter: blur(10px);
 }
 
 .heroTitle {

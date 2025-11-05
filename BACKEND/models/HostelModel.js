@@ -1,4 +1,3 @@
-// Hostel Model
 import mongoose from 'mongoose';
 
 const hostelSchema = new mongoose.Schema({
@@ -67,6 +66,7 @@ const hostelSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
+    
 }, {
     timestamps: true
 });
@@ -90,6 +90,13 @@ hostelSchema.virtual('sortedImages').get(function() {
     const others = this.images.filter(img => !img.isPrimary);
     
     return [...primary, ...others];
+});
+
+// ✅ NEW: Virtual field to get rooms dynamically (no circular dependency!)
+hostelSchema.virtual('rooms', {
+    ref: 'Room',
+    localField: '_id',
+    foreignField: 'hostelId'
 });
 
 // Ensure virtuals are included in JSON
