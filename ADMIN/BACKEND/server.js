@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import connectDB from "./config/database.js";
 import hostelRoute from "./routes/hostelRoute.js";
 import roomRoute from "./routes/roomRoute.js";
@@ -39,6 +40,7 @@ app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Routes
 app.use('/api/hostels', hostelRoute);
@@ -71,11 +73,13 @@ app.get("/api/notes", (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({
+    // Prefer explicit status codes from thrown errors (err.statusCode or err.status)
+    const statusCode = err.statusCode || err.status || 500;
+    console.error(err.stack || err);
+    res.status(statusCode).json({
         success: false,
-        message: "Something went wrong!",
-        error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+        message: err.message || 'Something went wrong!',
+        error: process.env.NODE_ENV === 'development' ? err.stack || err.message : undefined
     });
 });
 

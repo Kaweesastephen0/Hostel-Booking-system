@@ -14,18 +14,8 @@ import {
 import './Sidebar.css';
 
 const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    // Stephan I think this is you to Implement the logout logic here
-    console.log('Logging out...');
-    navigate('/login');
-  };
-
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
 
   const navItems = [
     { to: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
@@ -37,9 +27,22 @@ const Sidebar = () => {
     { to: '/settings', icon: <Settings size={20} />, label: 'Settings' },
   ];
 
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  const handleMouseEnter = () => setIsCollapsed(false);
+  const handleMouseLeave = () => setIsCollapsed(true);
+
   return (
-    <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-      <div className="sidebar-header" onDoubleClick={toggleSidebar} title="Double-click to toggle sidebar">
+    <aside 
+      className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="sidebar-header">
         <UserCog className="sidebar-logo" size={32} />
         <h1 className="sidebar-title">Admin Panel</h1>
       </div>
@@ -67,7 +70,9 @@ const Sidebar = () => {
           tabIndex={0}
         >
           <div className="sidebar-link-icon">
-            <LogOut size={20} />
+            <button onClick={handleLogout}>
+              <LogOut size={20} />
+            </button>
           </div>
           <span className="sidebar-link-label">Logout</span>
         </div>

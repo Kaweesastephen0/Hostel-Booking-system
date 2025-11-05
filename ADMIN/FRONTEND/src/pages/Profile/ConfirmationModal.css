@@ -19,7 +19,7 @@
   box-shadow: var(--shadow-xl);
   width: 100%;
   max-width: 450px;
-  border: 1px solid rgba(79, 70, 229, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   animation: fadeIn 0.2s ease-out;
 }
 

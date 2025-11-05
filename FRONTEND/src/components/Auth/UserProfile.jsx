@@ -87,10 +87,9 @@ function UserProfile() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
     const storedUserData = localStorage.getItem('userData') || sessionStorage.getItem('userData');
 
-    if (!token || !storedUserData) {
+    if (!storedUserData) {
       navigate('/auth');
       return;
     }
@@ -127,14 +126,12 @@ function UserProfile() {
     setError('');
     setSuccess('');
 
-    const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
-
     try {
       const response = await fetch(`${API_URL}/api/auth/update-profile`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           firstName: editData.firstName,
@@ -148,7 +145,7 @@ function UserProfile() {
       const data = await response.json();
 
       if (response.ok) {
-        const storage = localStorage.getItem('userToken') ? localStorage : sessionStorage;
+        const storage = localStorage.getItem('userData') ? localStorage : sessionStorage;
         storage.setItem('userData', JSON.stringify(data));
         setUserData(data);
         setEditMode(false);
@@ -183,14 +180,12 @@ function UserProfile() {
       return;
     }
 
-    const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
-
     try {
       const response = await fetch(`${API_URL}/api/auth/change-password`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           oldPassword: passwordData.oldPassword,
@@ -218,14 +213,26 @@ function UserProfile() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('userData');
-    localStorage.removeItem('lastLoginTime');
-    sessionStorage.removeItem('userToken');
-    sessionStorage.removeItem('userData');
-    sessionStorage.removeItem('lastLoginTime');
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      localStorage.removeItem('userData');
+      localStorage.removeItem('lastLoginTime');
+      sessionStorage.removeItem('userData');
+      sessionStorage.removeItem('lastLoginTime');
+
+      // Dispatch custom event to update header
+      window.dispatchEvent(new Event('authStateChanged'));
+
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      navigate('/');
+    }
   };
 
   const handleBack = () => {

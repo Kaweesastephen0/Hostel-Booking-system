@@ -28,7 +28,7 @@
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(79, 70, 229, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   animation: slideIn 0.3s ease-out;
 }
 

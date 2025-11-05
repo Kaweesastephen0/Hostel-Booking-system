@@ -5,7 +5,7 @@
   --navbar-text-secondary: #64748b;
   --navbar-search-bg: #f8fafc;
   --navbar-search-border: #e2e8f0;
-  --navbar-search-focus-border: #4f46e5;
+  --navbar-search-focus-border: #3b82f6;
   --navbar-icon-color: #64748b;
   --navbar-icon-hover-bg: #f1f5f9;
   --navbar-dropdown-bg: #ffffff;
@@ -166,7 +166,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-}
+  z-index: 1100; 
 
 .dropdown-item {
   display: flex;
@@ -225,4 +225,4 @@
     justify-content: flex-end; 
   }
 }
-}
+}}

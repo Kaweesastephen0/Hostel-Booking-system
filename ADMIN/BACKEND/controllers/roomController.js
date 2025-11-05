@@ -1,21 +1,108 @@
 import Room from '../models/RoomModel.js';
+import ErrorResponse from '../utils/errorResponse.js';
+import asyncHandler from '../middleware/async.js';
 
 /**
  * @desc    Get all rooms, populated with hostel details
  * @route   GET /api/rooms
  * @access  Public
  */
-export const getAllRooms = async (req, res) => {
-  try {
-    // Find all rooms and populate the 'hostel' field to get hostel details
-    const rooms = await Room.find({}).populate('hostel', 'name');
+export const getAllRooms = asyncHandler(async (req, res) => {
+  const rooms = await Room.find({}).populate('hostel', 'name');
 
-    res.status(200).json({
-      success: true,
-      count: rooms.length,
-      data: rooms,
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+  res.status(200).json({
+    success: true,
+    count: rooms.length,
+    data: rooms,
+  });
+});
+
+/**
+ * @desc    Get single room
+ * @route   GET /api/rooms/:id
+ * @access  Public
+ */
+export const getRoom = asyncHandler(async (req, res) => {
+  const room = await Room.findById(req.params.id).populate('hostel', 'name');
+
+  if (!room) {
+    throw new ErrorResponse(`Room not found with id of ${req.params.id}`, 404);
   }
-};
+
+  res.status(200).json({
+    success: true,
+    data: room,
+  });
+});
+
+/**
+ * @desc    Create new room
+ * @route   POST /api/rooms
+ * @access  Private
+ */
+export const createRoom = asyncHandler(async (req, res) => {
+  const room = await Room.create(req.body);
+
+  res.status(201).json({
+    success: true,
+    data: room,
+  });
+});
+
+/**
+ * @desc    Update room
+ * @route   PUT /api/rooms/:id
+ * @access  Private
+ */
+export const updateRoom = asyncHandler(async (req, res) => {
+  let room = await Room.findById(req.params.id);
+
+  if (!room) {
+    throw new ErrorResponse(`Room not found with id of ${req.params.id}`, 404);
+  }
+
+  room = await Room.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  }).populate('hostel', 'name');
+
+  res.status(200).json({
+    success: true,
+    data: room,
+  });
+});
+
+/**
+ * @desc    Delete room
+ * @route   DELETE /api/rooms/:id
+ * @access  Private
+ */
+export const deleteRoom = asyncHandler(async (req, res) => {
+  const room = await Room.findById(req.params.id);
+
+  if (!room) {
+    throw new ErrorResponse(`Room not found with id of ${req.params.id}`, 404);
+  }
+
+  await room.deleteOne();
+
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
+
+/**
+ * @desc    Get rooms by hostel
+ * @route   GET /api/rooms/hostel/:hostelId
+ * @access  Public
+ */
+export const getRoomsByHostel = asyncHandler(async (req, res) => {
+  const rooms = await Room.find({ hostel: req.params.hostelId }).populate('hostel', 'name');
+
+  res.status(200).json({
+    success: true,
+    count: rooms.length,
+    data: rooms,
+  });
+});

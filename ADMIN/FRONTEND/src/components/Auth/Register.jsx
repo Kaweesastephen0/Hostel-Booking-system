@@ -55,7 +55,7 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#4F46E5] to-[#7C3AED] p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#2563eb] to-[#3b82f6] p-4">
             <div className="w-full max-w-md bg-white rounded-xl shadow-2xl p-8">
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-800">Create an Account</h1>

@@ -22,18 +22,22 @@ body {
 
 .main-content {
   flex: 1;
-  margin-left: var(--sidebar-width);
-  width: calc(100% - var(--sidebar-width));
+  margin-left: var(--sidebar-collapsed-width);
+  width: calc(100% - var(--sidebar-collapsed-width));
   min-height: 100vh;
   min-width: 0;
   display: flex;
   flex-direction: column;
   transition: margin-left var(--transition-speed) ease, width var(--transition-speed) ease;
+  position: relative;
+  z-index: 1;
+  background-color: #f8fafc;
 }
 
-.sidebar.collapsed + .main-content {
-  margin-left: var(--sidebar-collapsed-width);
-  width: calc(100% - var(--sidebar-collapsed-width));
+.sidebar:hover + .main-content,
+.sidebar.expanded + .main-content {
+  margin-left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
 }
 
 .page-content {
