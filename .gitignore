@@ -3,5 +3,5 @@ BACKEND/.env
 BACKEND/.env
 BACKEND/.env
 FRONTEND/.env
-
+.env
 node_modules
