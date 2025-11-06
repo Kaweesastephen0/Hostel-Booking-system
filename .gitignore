@@ -1,4 +1,6 @@
 
+ADMIN/BACKEND/.env
+BACKEND/.env
 BACKEND/.env
 FRONTEND/.env
 .env

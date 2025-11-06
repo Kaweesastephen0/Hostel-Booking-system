@@ -19,7 +19,7 @@ connectDB();
 const app = express();
 
 // Middlewares
-const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
+const allowedOrigins = (process.env.FRONTEND_URL || "https://hostel-booking-system-xnck.vercel.app")
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
