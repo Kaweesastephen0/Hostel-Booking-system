@@ -10,7 +10,6 @@ import roomRoute from "./routes/roomRoute.js";
 import authRoutes from "./routes/authRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
-import HostelSearchRoute from './routes/searchRoute.js'
 
 // Load environment variables
 dotenv.config();

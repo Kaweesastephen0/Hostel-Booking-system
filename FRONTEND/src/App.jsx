@@ -6,6 +6,7 @@ import Auth from "./components/Auth/AuthModal"
 // import ContactUs from './pages/ContactUs'
 import Header from "./components/layout/header/Header.jsx";
 // import Booking from "./components/booking/Booking"
+import SearchResultsPage from "./pages/SearchResultPage.jsx";
 import Footer from "./components/layout/footer/Footer.jsx"
 import RoomListingPage from "./pages/roomListings/RoomList.jsx"
 import RoomDetails from "./pages/RoomDetails/RoomDetails.jsx"
@@ -27,7 +28,8 @@ const App = () => {
         <Route path="/profile" element={<UserProfile />} />
         {/* <Route path="/about" element={<AboutUs />} /> */}
         {/* <Route path="/contact" element={<ContactUs />} /> */}
-        <Route path="/rooms/:hostelId" element={<RoomListingPage />} />
+                <Route path="/search-results" element={<SearchResultsPage />} />
+       <Route path="/rooms/:hostelId" element={<RoomListingPage />} />
         <Route path="/room/:roomId" element={<RoomDetails />} />
         {/* <Route path='/booking' element={<Booking/>}/> */}
         

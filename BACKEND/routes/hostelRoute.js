@@ -1,7 +1,5 @@
 import express from 'express';
-import {getAllHostels, getFeaturedHostels, getPremiumHostels, getAffordableHostels, getMidRangeHostels} from '../controllers/hostelController.js';
-import { searchHostels, getLocations, getRoomTypes } from '../controllers/hostelSearchController.js';
-
+import {getAllHostels, getFeaturedHostels, getPremiumHostels, getAffordableHostels, getMidRangeHostels, getSearchbarQuery } from '../controllers/hostelController.js';
 
 const router = express.Router();
 
@@ -13,6 +11,7 @@ router.get('/featured', getFeaturedHostels)
 router.get('/premium', getPremiumHostels)
 router.get('/affordable', getAffordableHostels); 
 router.get('/midrange', getMidRangeHostels);
+router.get('/search', getSearchbarQuery);  // ← Add this route
 
 
 
