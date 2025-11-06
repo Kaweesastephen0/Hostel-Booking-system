@@ -7,8 +7,8 @@
     "test": "mocha --exit tests/*",
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "seed": "node scripts/RoomSeed.js",
-    "seed:dev": "nodemon scripts/hostelSeed.js"
+    "seed": "node scripts/SeedHostels-SeedRooms.js",
+    "seed:dev": "nodemon scripts/SeedHostels-SeedRooms.js"
   },
   "type": "module",
   "license": "MIT",

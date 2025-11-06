@@ -1,5 +1,6 @@
 import { Query } from "mongoose";
 import HostelModel from "../models/HostelModel.js";
+import roomModel from "../models/roomModel.js";
 import { categorizeHostelsByPrice } from "../utils/hostelCategorization.js";
 
 
@@ -239,50 +240,140 @@ export const getMidRangeHostels = async (req, res) => {
     }
 };
 
-export const getSearchbarQuery= async (req, res)=>{
-    try{
-        const { location, semester, roomType }= req.Query;
-        if(!location || !semester || !roomType){
-            console.log("Invalid search")
-           return res.status(400).json({
+// Add this to your existing hostelController.js
+export const getSearchbarQuery = async (req, res) => {
+    try {
+        const { location, roomType, minPrice, maxPrice } = req.query;
+
+        console.log("🔍 SEARCH STARTED - Params:", { location, roomType, minPrice, maxPrice });
+
+        // At least ONE field required
+        if (!location && !roomType && !minPrice && !maxPrice) {
+            console.log("❌ No search criteria provided");
+            return res.status(400).json({
                 success: false,
-                error: error,
-            })
-            const query={};
-
-            if(location && location !=='Wandegeya'){
-                query.$or=[
-                    {location :{ $regex: location, $options: 'i'}},
-                    { address: { $regex: location, $options: 'i'}},
-                    { name: {$regex: location, $options: 'i'}}
-                ]
-
-            };
-            const hostels = await HostelModel.find(query).lean();
-
-            if(!hostels || hostels.length===0){
-                return res.status(200).json({
-                    success : true,
-                    data: [],
-                    message: 'No hostel matching your criteria',
-                    count: 0
-                })
-
-            }
-
-            
-
+                message: 'Please provide at least one search criteria',
+            });
         }
 
+        let hostels = [];
 
+        // LOCATION SEARCH
+        if (location && location.trim()) {
+            const searchTerm = location.trim().toLowerCase();
+            console.log(`📍 Searching for location: "${searchTerm}"`);
+            
+            const allHostels = await HostelModel.find({}).lean();
+            console.log(`📊 Total hostels in DB: ${allHostels.length}`);
+            
+            hostels = allHostels.filter(hostel => {
+                const hostelLocation = (hostel.location || '').toLowerCase();
+                const hostelName = (hostel.name || '').toLowerCase();
+                
+                const matches = hostelLocation.includes(searchTerm) || hostelName.includes(searchTerm);
+                if (matches) {
+                    console.log(`✅ Matched hostel: ${hostel.name} (${hostel.location})`);
+                }
+                return matches;
+            });
+            
+            console.log(`📍 Location search found: ${hostels.length} hostels`);
+        } else {
+            hostels = await HostelModel.find({}).lean();
+            console.log(`📊 No location filter, using all: ${hostels.length} hostels`);
+        }
 
+        if (hostels.length === 0) {
+            console.log("❌ No hostels found after location filter");
+            return res.status(200).json({
+                success: true,
+                data: [],
+                message: 'No hostels found',
+                count: 0
+            });
+        }
 
+        // Get rooms for these hostels
+        const hostelIds = hostels.map(h => h._id);
+        console.log(`🏨 Hostel IDs to search: ${hostelIds.length}`);
+        
+        const roomQuery = { hostelId: { $in: hostelIds } };
+        const allRooms = await roomModel.find(roomQuery).lean();
+        console.log(`🛏️ Found ${allRooms.length} rooms for these hostels`);
 
+        // Apply room type filter
+        let filteredRooms = allRooms;
+        if (roomType && roomType.trim()) {
+            const roomTypeLower = roomType.trim().toLowerCase();
+            console.log(`🔍 Filtering by room type: "${roomTypeLower}"`);
+            
+            filteredRooms = allRooms.filter(room => 
+                (room.roomType || '').toLowerCase().includes(roomTypeLower)
+            );
+            console.log(`🛏️ After room type filter: ${filteredRooms.length} rooms`);
+        }
+
+        // Apply price filter
+        if (minPrice || maxPrice) {
+            console.log(`💰 Price filter: ${minPrice || 'none'} - ${maxPrice || 'none'}`);
+            filteredRooms = filteredRooms.filter(room => {
+                const price = room.roomPrice;
+                if (minPrice && price < Number(minPrice)) return false;
+                if (maxPrice && room.roomPrice > Number(maxPrice)) return false;
+                return true;
+            });
+            console.log(`🛏️ After price filter: ${filteredRooms.length} rooms`);
+        }
+
+        // Build results
+        const hostelRoomMap = {};
+        filteredRooms.forEach(room => {
+            const hostelId = room.hostelId.toString();
+            if (!hostelRoomMap[hostelId]) {
+                hostelRoomMap[hostelId] = {
+                    rooms: [],
+                    minPrice: room.roomPrice,
+                    maxPrice: room.roomPrice
+                };
+            }
+            hostelRoomMap[hostelId].rooms.push(room);
+            hostelRoomMap[hostelId].minPrice = Math.min(hostelRoomMap[hostelId].minPrice, room.roomPrice);
+            hostelRoomMap[hostelId].maxPrice = Math.max(hostelRoomMap[hostelId].maxPrice, room.roomPrice);
+        });
+
+        const results = hostels
+            .filter(hostel => hostelRoomMap[hostel._id.toString()])
+            .map(hostel => {
+                const hostelId = hostel._id.toString();
+                const roomData = hostelRoomMap[hostelId];
+                return {
+                    ...hostel,
+                    matchingRoomsCount: roomData.rooms.length,
+                    priceRange: {
+                        min: roomData.minPrice,
+                        max: roomData.maxPrice
+                    }
+                };
+            });
+
+        console.log(`🎯 FINAL RESULTS: ${results.length} hostels`);
+        results.forEach(hostel => {
+            console.log(`   - ${hostel.name}: ${hostel.matchingRoomsCount} rooms, UGX ${hostel.priceRange.min.toLocaleString()} - UGX ${hostel.priceRange.max.toLocaleString()}`);
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: results,
+            message: `Found ${results.length} hostel(s)`,
+            count: results.length
+        });
+
+    } catch (error) {
+        console.error("❌ SEARCH ERROR:", error);
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.message
+        });
     }
-    catch(error){
-        console.log("server Error", error)
-
-    }
-
-}
-
+};

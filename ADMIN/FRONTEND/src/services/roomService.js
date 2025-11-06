@@ -2,7 +2,17 @@ import axios from './axios';
 
 const API_URL = '/rooms'; // Base URL is handled by axios instance
 
-const handleResponse = (response) => response.data.data;
+const handleResponse = (response) => {
+  const data = response.data;
+  
+  // Handle your backend response structure
+  if (data.success && Array.isArray(data.data)) {
+    return data.data; // Return the rooms array
+  } else {
+    console.warn('Unexpected API response structure:', data);
+    return [];
+  }
+};
 
 /**
  * Fetches all rooms from the backend.
@@ -36,7 +46,7 @@ export const updateRoom = async (id, roomData) => {
 };
 
 /**
- * Deletes a room.
+ * Dele
  * @param {string} id - The ID of the room to delete.
  */
 export const deleteRoom = async (id) => {

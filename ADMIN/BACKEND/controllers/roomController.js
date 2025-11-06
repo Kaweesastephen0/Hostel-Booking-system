@@ -1,4 +1,4 @@
-import Room from '../models/RoomModel.js';
+import Room from '../Models/RoomModel.js';
 import ErrorResponse from '../utils/errorResponse.js';
 import asyncHandler from '../middleware/async.js';
 
@@ -8,7 +8,7 @@ import asyncHandler from '../middleware/async.js';
  * @access  Public
  */
 export const getAllRooms = asyncHandler(async (req, res) => {
-  const rooms = await Room.find({}).populate('hostel', 'name');
+  const rooms = await Room.find({}).populate('hostelId', 'name');
 
   res.status(200).json({
     success: true,
@@ -23,7 +23,7 @@ export const getAllRooms = asyncHandler(async (req, res) => {
  * @access  Public
  */
 export const getRoom = asyncHandler(async (req, res) => {
-  const room = await Room.findById(req.params.id).populate('hostel', 'name');
+  const room = await Room.findById(req.params.id).populate('hostelId', 'name');
 
   if (!room) {
     throw new ErrorResponse(`Room not found with id of ${req.params.id}`, 404);
@@ -64,7 +64,7 @@ export const updateRoom = asyncHandler(async (req, res) => {
   room = await Room.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
-  }).populate('hostel', 'name');
+  }).populate('hostelId', 'name');
 
   res.status(200).json({
     success: true,
@@ -98,7 +98,7 @@ export const deleteRoom = asyncHandler(async (req, res) => {
  * @access  Public
  */
 export const getRoomsByHostel = asyncHandler(async (req, res) => {
-  const rooms = await Room.find({ hostel: req.params.hostelId }).populate('hostel', 'name');
+  const rooms = await Room.find({ hostelId: req.params.hostelId }).populate('hostelId', 'name');
 
   res.status(200).json({
     success: true,
