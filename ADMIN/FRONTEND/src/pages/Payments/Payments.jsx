@@ -262,7 +262,7 @@ const Payments = () => {
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings?${params.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -388,7 +388,7 @@ const Payments = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/payments`, {
+      const response = await fetch(`${API_BASE_URL}/payments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -432,7 +432,7 @@ const Payments = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${payment.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -492,7 +492,7 @@ const Payments = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${payment.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -555,7 +555,7 @@ const Payments = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${payment.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -629,7 +629,7 @@ const Payments = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/${source.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${source.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

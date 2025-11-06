@@ -84,12 +84,6 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(value);
 };
 
-// const toDateInputValue = (value) => {
-//   if (!value) return '';
-//   const date = new Date(value);
-//   if (Number.isNaN(date.getTime())) return '';
-//   return date.toISOString().slice(0, 10);
-// };
 
 const Bookings = () => {
   const navigate = useNavigate();
@@ -358,7 +352,7 @@ const Bookings = () => {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${booking.id}`, {
         method: 'DELETE',
         headers: headers,
         credentials: 'include',
@@ -395,7 +389,7 @@ const Bookings = () => {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${booking.id}`, {
         method: 'PUT',
         headers: headers,
         credentials: 'include',
@@ -439,7 +433,7 @@ const Bookings = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${booking.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -584,7 +578,7 @@ const Bookings = () => {
         status: newBooking.status,
       };
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
+      const response = await fetch(`${API_BASE_URL}/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -611,31 +605,9 @@ const Bookings = () => {
     }
   };
 
-  // const handleBookingUpdated = (updatedBooking) => {
-  //   fetchBookings();
-  //   setSnackbar({
-  //     open: true,
-  //     message: 'Booking updated successfully',
-  //     severity: 'success'
-  //   });
-  // };
-
-  // const handleError = (error) => {
-  //   console.error('Error:', error);
-  //   setSnackbar({
-  //     open: true,
-  //     message: error.message || 'An error occurred',
-  //     severity: 'error'
-  //   });
-  // };
 
   const columns = useMemo(() => [
-    // {
-    //   id: 'reference',
-    //   label: 'Reference',
-    //   minWidth: 50,
-    //   format: (value, row) => value || row.id || '—',
-    // },
+  
     {
       id: 'guestName',
       label: 'Guest',
