@@ -38,7 +38,7 @@ import {
 import { format } from 'date-fns';
 import DataTable from '../../components/common/DataTable';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
 const PAYMENT_STATUS_OPTIONS = ['pending', 'completed', 'failed', 'refunded'];
 const PAYMENT_METHOD_OPTIONS = ['cash', 'card', 'mobile_money', 'bank_transfer'];
@@ -182,7 +182,7 @@ const Payments = () => {
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/payments?${params.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}/payments?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

@@ -96,7 +96,7 @@ const Dashboard = () => {
         setTotals(dashboardTotals);
 
 
-        const response = await fetch('http://localhost:5000/api/bookings?limit=5&sort=-createdAt');
+        const response = await fetch('https://hostel-booking-system.onrender.com/api/bookings?limit=5&sort=-createdAt');
         const data = await response.json();
         if (data.success && Array.isArray(data.data?.bookings)) {
 

@@ -30,7 +30,7 @@ const Users = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [rowActionState, setRowActionState] = useState({});
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
   const passwordMismatch =
     Boolean(newUser.password) &&
     Boolean(newUser.confirmPassword) &&
@@ -76,7 +76,7 @@ const Users = () => {
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/users?${params.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}/users?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
