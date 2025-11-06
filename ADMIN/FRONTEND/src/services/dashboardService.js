@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Base API URL for admin backend (fallback to localhost:5000)
-const API_BASE_URL = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:5000/api';
+// Base API URL for admin backend 
+const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
 const dashboardService = {
   // Fetch counts for hostels, rooms, bookings and users

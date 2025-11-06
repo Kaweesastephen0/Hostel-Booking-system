@@ -13,7 +13,7 @@ import { format } from 'date-fns';
 import DataTable from '../../components/common/DataTable';
 import Swal from 'sweetalert2';
 
-let API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+let API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'cancelled', 'completed'];
 
@@ -242,7 +242,7 @@ const Bookings = () => {
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
+      const response = await fetch(`${API_BASE_URL}/bookings`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
