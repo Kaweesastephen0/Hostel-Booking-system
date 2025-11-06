@@ -19,7 +19,7 @@ connectDB();
 const app = express();
 
 // Middlewares
-const allowedOrigins = (process.env.FRONTEND_URL || "https://hostel-booking-system-xnck.vercel.app")
+const allowedOrigins = (process.env.FRONTEND_URL || process.env.FRONTEND_URI)
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
