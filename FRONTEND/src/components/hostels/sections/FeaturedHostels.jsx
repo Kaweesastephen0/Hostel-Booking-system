@@ -5,7 +5,7 @@ function FeaturedHostels() {
   return (
     <HostelSection 
       title="Premium Student Hostels"
-      endpoint="premiumHostel"
+      endpoint="premium"
       variant="premium"
       showDate={true}
     />

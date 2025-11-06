@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import Hostel from '../models/HostelModel.js';
-import Room from '../models/roomModel.js';
+import Hostel from '../Models/HostelModel.js';
+import Room from '../Models/RoomModel.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -195,7 +195,7 @@ const sampleHostels = [
 
 const seedAll = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGO_URL);
     console.log('✅ Connected to MongoDB and ready to seed');
 
     // Clear existing data

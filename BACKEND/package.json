@@ -5,9 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "mocha --exit tests/*",
-    "dev": "node server.js",
+    "dev": "nodemon server.js",
     "start": "node server.js",
-    "seed": "node scripts/SeedHostels-SeedRooms.js",
+    "seed": "nodemon scripts/SeedHostels-SeedRooms.js",
     "seed:dev": "nodemon scripts/SeedHostels-SeedRooms.js"
   },
   "type": "module",

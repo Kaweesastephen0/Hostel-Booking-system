@@ -1,17 +1,49 @@
-// components/hostels/sections/searchResults/searchResults.jsx
+// components/SearchResultsList.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Star, Heart, X } from 'lucide-react';
+import { MapPin, Star, Heart, Bookmark } from 'lucide-react';
 import styles from './SearchResult.module.css';
 
-export default function SearchResults({ results, loading, error, onClose }) {
+export default function SearchResultsList({ results, loading, searchParams, limit = null }) {
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState(new Set());
+  const [bookmarks, setBookmarks] = useState(new Set());
   const [imageLoaded, setImageLoaded] = useState({});
+
+  // Function to get hostel image
+  const getHostelImage = (hostel) => {
+    if (!hostel.images || hostel.images.length === 0) {
+      return 'https://via.placeholder.com/400x250';
+    }
+    const primaryImage = hostel.images.find(img => img.isPrimary);
+    return primaryImage?.url || hostel.images[0]?.url || 'https://via.placeholder.com/400x250';
+  };
+
+  // Limit results if specified (for homepage preview)
+  const displayResults = limit ? results.slice(0, limit) : results;
+  const hasMore = limit && results.length > limit;
 
   const toggleFavorite = (hostelId, event) => {
     event.stopPropagation();
     setFavorites(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(hostelId)) {
+        newSet.delete(hostelId);
+      } else {
+        newSet.add(hostelId);
+      }
+      // Scroll to top
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+      return newSet;
+    });
+  };
+
+  const toggleBookmark = (hostelId, event) => {
+    event.stopPropagation();
+    setBookmarks(prev => {
       const newSet = new Set(prev);
       if (newSet.has(hostelId)) {
         newSet.delete(hostelId);
@@ -30,7 +62,7 @@ export default function SearchResults({ results, loading, error, onClose }) {
     setImageLoaded(prev => ({ ...prev, [hostelId]: true }));
   };
 
-  // Skeleton Loader Component
+  // Skeleton Loader
   const SkeletonCard = () => (
     <div className={styles.hostelCard}>
       <div className={styles.imageSection}>
@@ -39,164 +71,196 @@ export default function SearchResults({ results, loading, error, onClose }) {
       <div className={styles.contentSection}>
         <div className={styles.skeletonLine} style={{ width: '60%', height: '24px' }}></div>
         <div className={styles.skeletonLine} style={{ width: '40%', height: '16px', marginTop: '8px' }}></div>
-        <div className={styles.skeletonLine} style={{ width: '100%', height: '60px', marginTop: '12px' }}></div>
-        <div className={styles.skeletonLine} style={{ width: '80%', height: '16px', marginTop: '12px' }}></div>
+        <div className={styles.skeletonLine} style={{ width: '100%', height: '50px', marginTop: '12px' }}></div>
+        <div className={styles.skeletonLine} style={{ width: '30%', height: '20px', marginTop: 'auto' }}></div>
       </div>
     </div>
   );
 
   if (loading) {
     return (
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <h2>Searching for hostels...</h2>
-        </div>
-        <div className={styles.resultsWrapper}>
-          {[1, 2, 3, 4].map((i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </div>
+      <div className={styles.resultsWrapper}>
+        {[1, 2, 3].map((i) => (
+          <SkeletonCard key={i} />
+        ))}
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.errorContainer}>
-          <p className={styles.errorText}>{error}</p>
-          {onClose && (
-            <button className={styles.closeBtn} 
-            onClick={onClose}>
-              Try Again
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
-
+  // REMOVED: The "return null" for empty results - let parent handle empty state
+  // if (!results || results.length === 0) {
+  //   return null;
+  // }
 
   return (
     <div className={styles.container}>
-      {/* Header with close button */}
-      <div className={styles.header}>
-        <div>
-          <h2>Search Results</h2>
-          <p className={styles.resultsCount}>
-            {results.length} {results.length === 1 ? 'hostel' : 'hostels'} found
-          </p>
-        </div>
-        {onClose && (
-          <button className={styles.closeButton}
-          onClick={() => window.location.reload()}
-           aria-label="Close search results">
-            <X size={24} />
-          </button>
-        )}
-      </div>
-
-      <div className={styles.resultsWrapper}>
-        {results.map((hostel) => (
-          <div 
-            key={hostel._id} 
-            className={styles.hostelCard}
-            onClick={() => handleHostelClick(hostel._id)}
-          >
-            {/* Image Section */}
-            <div className={styles.imageSection}>
-              {!imageLoaded[hostel._id] && (
-                <div className={styles.imageSkeleton}></div>
-              )}
-              <img 
-                src={hostel.image} 
-                alt={hostel.name}
-                className={styles.hostelImage}
-                loading="lazy"
-                onLoad={() => handleImageLoad(hostel._id)}
-                style={{
-                  opacity: imageLoaded[hostel._id] ? 1 : 0,
-                  transition: 'opacity 0.3s ease-in'
-                }}
-              />
-              
-              {/* Favorite Button */}
-              <button 
-                className={`${styles.favoriteBtn} ${favorites.has(hostel._id) ? styles.active : ''}`}
-                onClick={(e) => toggleFavorite(hostel._id, e)}
-                aria-label="Add to favorites"
-              >
-                <Heart 
-                  size={20} 
-                  fill={favorites.has(hostel._id) ? '#ff5a5f' : 'none'}
+      {/* Only show results wrapper if we have results */}
+      {results && results.length > 0 ? (
+        <div className={styles.resultsWrapper}>
+          {displayResults.map((hostel) => (
+            <div 
+              key={hostel._id} 
+              className={styles.hostelCard}
+              onClick={() => handleHostelClick(hostel._id)}
+            >
+              {/* Image Section */}
+              <div className={styles.imageSection}>
+                {!imageLoaded[hostel._id] && (
+                  <div className={styles.imageSkeleton}></div>
+                )}
+                <img 
+                  src={getHostelImage(hostel)} 
+                  alt={hostel.name}
+                  className={styles.hostelImage}
+                  loading="lazy"
+                  onLoad={() => handleImageLoad(hostel._id)}
+                  style={{
+                    opacity: imageLoaded[hostel._id] ? 1 : 0
+                  }}
                 />
-              </button>
-
-              {/* Rating Badge */}
-              <div className={styles.ratingBadge}>
-                <Star size={16} fill="#ffd700" stroke="#ffd700" />
-                <span>{hostel.rating?.average || '9.4'}</span>
-              </div>
-
-              {/* Featured Badge */}
-              {hostel.featured && (
-                <div className={styles.featuredBadge}>Featured</div>
-              )}
-            </div>
-
-            {/* Content Section */}
-            <div className={styles.contentSection}>
-              {/* Header */}
-              <div className={styles.hostelHeader}>
-                <h3 className={styles.hostelName}>{hostel.name}</h3>
-                <div className={styles.reviewCount}>
-                  {hostel.rating?.count || hostel.matchingRoomsCount || '528'} Reviews
-                </div>
-              </div>
-
-              {/* Badges */}
-              <div className={styles.badgeContainer}>
-                {hostel.HostelGender && (
-                  <span className={styles.badge}>
-                    {hostel.HostelGender.toUpperCase()} HOSTEL
-                  </span>
+                
+                {/* Discount Badge */}
+                {hostel.featured && (
+                  <div className={styles.discountBadge}>Best Deal</div>
                 )}
-                {hostel.matchingRoomsCount && (
-                  <span className={styles.badge}>
-                    {hostel.matchingRoomsCount} ROOMS AVAILABLE
-                  </span>
-                )}
+
+                {/* Favorite Button */}
+                <button 
+                  className={`${styles.favoriteBtn} ${favorites.has(hostel._id) ? styles.active : ''}`}
+                  onClick={(e) => toggleFavorite(hostel._id, e)}
+                >
+                  <Heart 
+                    size={18} 
+                    fill={favorites.has(hostel._id) ? '#ff385c' : 'none'}
+                    stroke={favorites.has(hostel._id) ? '#ff385c' : '#fff'}
+                  />
+                </button>
               </div>
 
-              {/* Description */}
-              <p className={styles.description}>
-                {hostel.description || 'Quality student accommodation near campus with modern facilities and great amenities.'}
-              </p>
-
-              {/* Location */}
-              <div className={styles.locationInfo}>
-                <MapPin size={16} />
-                <span>{hostel.location}</span>
-              </div>
-
-              {/* Footer */}
-              <div className={styles.cardFooter}>
-                <div className={styles.priceSection}>
-                  <button className={styles.compareBtn}>
-                    VIEW AVAILABLE ROOMS
+              {/* Content Section */}
+              <div className={styles.contentSection}>
+                {/* Header */}
+                <div className={styles.header}>
+                  <h3 className={styles.hostelName}>{hostel.name}</h3>
+                  <button 
+                    className={`${styles.bookmarkBtn} ${bookmarks.has(hostel._id) ? styles.active : ''}`}
+                    onClick={(e) => toggleBookmark(hostel._id, e)}
+                  >
+                    <Bookmark 
+                      size={18} 
+                      fill={bookmarks.has(hostel._id) ? '#1e3a8a' : 'none'}
+                    />
                   </button>
-                  <div className={styles.priceInfo}>
-                    <span className={styles.fromText}>from</span>
-                    <span className={styles.price}>
-                      UGX {(hostel.priceRange?.min || hostel.availableRooms?.[0]?.roomPrice || 500000).toLocaleString()}
+                </div>
+
+                {/* Rating */}
+                <div className={styles.ratingSection}>
+                  <div className={styles.ratingBadge}>
+                    <Star size={14} fill="#fbbf24" stroke="#fbbf24" />
+                    <span className={styles.ratingValue}>
+                      {hostel.rating?.average || '4.8'}
+                    </span>
+                    <span className={styles.ratingCount}>
+                      ({hostel.rating?.count || hostel.matchingRoomsCount || '257'})
                     </span>
                   </div>
+                  <span className={styles.ratingLabel}>Excellent Location</span>
+                </div>
+
+                {/* Amenities */}
+                <div className={styles.amenitiesSection}>
+                  {hostel.HostelGender && (
+                    <span className={styles.amenity}>
+                      {hostel.HostelGender === 'male' ? '🚹' : hostel.HostelGender === 'female' ? '🚺' : '👥'} 
+                      {hostel.HostelGender.charAt(0).toUpperCase() + hostel.HostelGender.slice(1)}
+                    </span>
+                  )}
+                  {hostel.amenities?.includes('wifi') && (
+                    <span className={styles.amenity}>📶 Free Wifi</span>
+                  )}
+                  {hostel.amenities?.includes('parking') && (
+                    <span className={styles.amenity}>🅿️ Parking</span>
+                  )}
+                  {hostel.amenities?.includes('security') && (
+                    <span className={styles.amenity}>🔒 Security</span>
+                  )}
+                </div>
+
+                {/* Location */}
+                <div className={styles.locationInfo}>
+                  <MapPin size={14} />
+                  <span>{hostel.location} • {hostel.distance} from campus</span>
+                </div>
+
+                {/* Footer */}
+                <div className={styles.footer}>
+                  <div className={styles.priceSection}>
+                    <div className={styles.dealBadge}>Deal</div>
+                    <div className={styles.priceWrapper}>
+                      <span className={styles.price}>
+                        UGX {(hostel.priceRange?.min || 500000).toLocaleString()}
+                      </span>
+                      {hostel.priceRange?.max && hostel.priceRange.max !== hostel.priceRange.min && (
+                        <span className={styles.priceRange}>
+                          - {hostel.priceRange.max.toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                    {hostel.featured && (
+                      <span className={styles.discount}>28% less than usual</span>
+                    )}
+                  </div>
+                  <button 
+                    className={styles.bookBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleHostelClick(hostel._id);
+                    }}
+                  >
+                    Book Now →
+                  </button>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        // Return empty fragment instead of null
+        <></>
+      )}
+
+      {/* View More Button (only on homepage) */}
+      {hasMore && (
+        <div style={{ textAlign: 'center', marginTop: '30px' }}>
+          <button
+            onClick={() => navigate('/search-results', { 
+              state: { results, searchParams } 
+            })}
+            style={{
+              background: '#5843e3',
+              color: 'white',
+              border: 'none',
+              padding: '14px 40px',
+              borderRadius: '8px',
+              fontSize: '15px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 12px rgba(88, 67, 227, 0.3)'
+            }}
+            onMouseOver={(e) => {
+              e.target.style.background = '#4532c7';
+              e.target.style.transform = 'translateY(-2px)';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.background = '#5843e3';
+              e.target.style.transform = 'translateY(0)';
+            }}
+          >
+            View All {results.length} Results
+          </button>
+        </div>
+      )}
     </div>
   );
 }
