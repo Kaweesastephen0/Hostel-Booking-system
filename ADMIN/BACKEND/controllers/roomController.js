@@ -1,4 +1,4 @@
-import Room from '../Models/RoomModel.js';
+import Room from '../models/RoomModel.js';
 import ErrorResponse from '../utils/errorResponse.js';
 import asyncHandler from '../middleware/async.js';
 
