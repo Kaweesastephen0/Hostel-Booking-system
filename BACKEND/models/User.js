@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const userSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: [true, 'First name is required'],
@@ -63,10 +63,10 @@ const userSchema = new mongoose.Schema({
 });
 
 // Only index non-unique fields
-userSchema.index({ createdAt: -1 });
-userSchema.index({ lastLogin: -1 });
+UserSchema.index({ createdAt: -1 });
+UserSchema.index({ lastLogin: -1 });
 
-userSchema.pre('save', async function(next) {
+UserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
     next();
   }
@@ -74,8 +74,8 @@ userSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-userSchema.methods.matchPassword = async function(enteredPassword) {
+UserSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model('frontUser', UserSchema);

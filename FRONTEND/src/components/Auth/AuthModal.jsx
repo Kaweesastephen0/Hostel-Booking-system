@@ -507,12 +507,12 @@ function Auth() {
                           {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
                       )}
-                      {formData.password && !passwordValidation.isValid && (
-                        <div className={styles.passwordHint}>
-                          Required: {passwordValidation.errors.join(', ')}
-                        </div>
-                      )}
                     </div>
+                    {formData.password && !passwordValidation.isValid && (
+                      <div className={styles.passwordHint}>
+                        Required: {passwordValidation.errors.join(', ')}
+                      </div>
+                    )}
                   </div>
 
                   <div className={styles.fieldWrapper}>
@@ -537,12 +537,12 @@ function Auth() {
                           {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
                       )}
-                      {formData.confirmPassword && (
-                        <div className={formData.password === formData.confirmPassword ? styles.passwordMatch : styles.passwordMismatch}>
-                          {formData.password === formData.confirmPassword ? '✓ Matching' : '✗ Not matching'}
-                        </div>
-                      )}
                     </div>
+                    {formData.confirmPassword && (
+                      <div className={formData.password === formData.confirmPassword ? styles.passwordMatch : styles.passwordMismatch}>
+                        {formData.password === formData.confirmPassword ? '✓ Matching' : '✗ Not matching'}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -772,12 +772,12 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
                   {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               )}
-              {newPassword && !passwordValidation.isValid && (
-                <div className={styles.passwordHint}>
-                  Required: {passwordValidation.errors.join(', ')}
-                </div>
-              )}
             </div>
+            {newPassword && !passwordValidation.isValid && (
+              <div className={styles.passwordHint}>
+                Required: {passwordValidation.errors.join(', ')}
+              </div>
+            )}
           </div>
 
           <div className={styles.fieldWrapper}>
@@ -801,12 +801,12 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
                   {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               )}
-              {confirmPassword && (
-                <div className={newPassword === confirmPassword ? styles.passwordMatch : styles.passwordMismatch}>
-                  {newPassword === confirmPassword ? '✓ Matching' : '✗ Not matching'}
-                </div>
-              )}
             </div>
+            {confirmPassword && (
+              <div className={newPassword === confirmPassword ? styles.passwordMatch : styles.passwordMismatch}>
+                {newPassword === confirmPassword ? '✓ Matching' : '✗ Not matching'}
+              </div>
+            )}
           </div>
 
           <button 

@@ -3,7 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import styles from './RoomDetails.module.css';
 import { 
     MoveLeft, Share2, Heart, Plus, MapPin, Users, Clock, 
-    Wifi, Bus, BookOpen, Utensils, Lock, Dumbbell, Waves 
+    Wifi, Car, BookOpen, Utensils, Lock, Dumbbell, Waves,
+    Droplets, Shield, Tv, Wind, Coffee, WashingMachine,
+    Thermometer, Battery, Zap
 } from 'lucide-react';
 
 const RoomDetails = () => {
@@ -22,6 +24,7 @@ const RoomDetails = () => {
     const fetchRoomDetails = async () => {
         try {
             setLoading(true);
+            setError(null);
             const response = await fetch(`http://localhost:5000/api/rooms/${roomId}`);
             
             if (!response.ok) {
@@ -29,6 +32,7 @@ const RoomDetails = () => {
             }
             
             const result = await response.json();
+            console.log('Room API Response:', result);
             
             if (result.success && result.data) {
                 setRoom(result.data);
@@ -49,11 +53,12 @@ const RoomDetails = () => {
 
     const fetchOtherRooms = async (hostelId) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/rooms/hostel/${hostelId}?excludeRoomId=${roomId}`);
+            const response = await fetch(`http://localhost:5000/api/rooms/hostel/${hostelId}`);
             if (response.ok) {
                 const result = await response.json();
                 if (result.success && result.data) {
-                    setOtherRooms(result.data);
+                    const filteredRooms = result.data.filter(room => room._id !== roomId);
+                    setOtherRooms(filteredRooms.slice(0, 3));
                 }
             }
         } catch (error) {
@@ -77,18 +82,86 @@ const RoomDetails = () => {
 
     const getAmenityIcon = (amenity) => {
         const amenityLower = amenity.toLowerCase();
-        if (amenityLower.includes('wifi')) return <Wifi size={20} />;
-        if (amenityLower.includes('bus') || amenityLower.includes('pickup')) return <Bus size={20} />;
-        if (amenityLower.includes('library')) return <BookOpen size={20} />;
-        if (amenityLower.includes('restaurant') || amenityLower.includes('dining')) return <Utensils size={20} />;
-        if (amenityLower.includes('security')) return <Lock size={20} />;
-        if (amenityLower.includes('gym')) return <Dumbbell size={20} />;
-        if (amenityLower.includes('pool') || amenityLower.includes('swimming')) return <Waves size={20} />;
+        
+        if (amenityLower.includes('wifi') || amenityLower.includes('internet')) 
+            return <Wifi size={20} />;
+        if (amenityLower.includes('water') || amenityLower.includes('hot water')) 
+            return <Droplets size={20} />;
+        if (amenityLower.includes('security') || amenityLower.includes('cctv')) 
+            return <Shield size={20} />;
+        if (amenityLower.includes('electricity') || amenityLower.includes('power')) 
+            return <Zap size={20} />;
+        if (amenityLower.includes('transport') || amenityLower.includes('shuttle') || amenityLower.includes('bus')) 
+            return <Car size={20} />;
+        if (amenityLower.includes('library') || amenityLower.includes('study')) 
+            return <BookOpen size={20} />;
+        if (amenityLower.includes('restaurant') || amenityLower.includes('dining') || amenityLower.includes('cafeteria')) 
+            return <Utensils size={20} />;
+        if (amenityLower.includes('gym') || amenityLower.includes('fitness')) 
+            return <Dumbbell size={20} />;
+        if (amenityLower.includes('pool') || amenityLower.includes('swimming')) 
+            return <Waves size={20} />;
+        if (amenityLower.includes('tv') || amenityLower.includes('television')) 
+            return <Tv size={20} />;
+        if (amenityLower.includes('ac') || amenityLower.includes('air conditioning')) 
+            return <Thermometer size={20} />;
+        if (amenityLower.includes('fan') || amenityLower.includes('ventilation')) 
+            return <Wind size={20} />;
+        if (amenityLower.includes('laundry') || amenityLower.includes('washing')) 
+            return <WashingMachine size={20} />;
+        if (amenityLower.includes('kitchen') || amenityLower.includes('cooking')) 
+            return <Coffee size={20} />;
+        if (amenityLower.includes('generator') || amenityLower.includes('backup')) 
+            return <Battery size={20} />;
+        if (amenityLower.includes('lock') || amenityLower.includes('safe')) 
+            return <Lock size={20} />;
+            
         return <Wifi size={20} />;
     };
 
     const handleBackClick = () => {
         navigate(-1);
+    };
+
+   const handleOtherRoomClick = async (otherRoomId) => {
+        try {
+            setLoading(true);
+            
+            // Fetch the clicked room's details
+            const response = await fetch(`http://localhost:5000/api/rooms/${otherRoomId}`);
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch room details');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                const newRoom = result.data;
+                
+                // Set the clicked room as the main room
+                setRoom(newRoom);
+                
+                // Reset images loaded state
+                setImagesLoaded({});
+                
+                // Update the URL without reload
+                window.history.pushState({}, '', `/rooms/${otherRoomId}`);
+                
+                // Fetch other rooms for the new room
+                if (newRoom.hostelId?._id) {
+                    fetchOtherRooms(newRoom.hostelId._id);
+                }
+                
+                // Scroll to top smoothly
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        } catch (error) {
+            console.error('Error fetching room details:', error);
+            setError('Failed to load room details');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleImageLoad = (index) => {
@@ -100,18 +173,124 @@ const RoomDetails = () => {
         
         const images = [];
         
-        if (room.roomImage) images.push(room.roomImage);
-        if (room.roomImages && room.roomImages.length > 0) images.push(...room.roomImages);
-        if (room.hostelId?.roomImages && room.hostelId.roomImages.length > 0) {
-            images.push(...room.hostelId.roomImages);
+        // Check room images first
+        if (room.roomImages && room.roomImages.length > 0) {
+            const primaryImage = room.roomImages.find(img => img.isPrimary);
+            const otherImages = room.roomImages.filter(img => !img.isPrimary);
+            
+            if (primaryImage) images.push(primaryImage.url);
+            images.push(...otherImages.map(img => img.url));
         }
         
-        const mainImage = images[0];
-        while (images.length < 5) {
-            images.push(mainImage);
+        // Fallback to hostel images
+        if (images.length === 0 && room.hostelId?.images && room.hostelId.images.length > 0) {
+            const primaryHostelImage = room.hostelId.images.find(img => img.isPrimary);
+            const otherHostelImages = room.hostelId.images.filter(img => !img.isPrimary);
+            
+            if (primaryHostelImage) images.push(primaryHostelImage.url);
+            images.push(...otherHostelImages.map(img => img.url));
         }
         
-        return images.slice(0, 5);
+        return images;
+    };
+
+    const renderImageGrid = () => {
+        const displayImages = getDisplayImages();
+        
+        if (displayImages.length === 0) {
+            return (
+                <div className={styles.singleImageContainer}>
+                    <div className={styles.singleImage}>
+                        <div className={styles.noImagePlaceholder}>
+                            <div className={styles.noImageIcon}>📷</div>
+                            <p>No images available</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        if (displayImages.length === 1) {
+            return (
+                <div className={styles.singleImageContainer}>
+                    <div className={styles.singleImage}>
+                        {!imagesLoaded[0] && <div className={styles.imageLoader}></div>}
+                        <img 
+                            src={displayImages[0]} 
+                            alt="Room" 
+                            loading="lazy"
+                            onLoad={() => handleImageLoad(0)}
+                            style={{ opacity: imagesLoaded[0] ? 1 : 0 }}
+                        />
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className={styles.imageContainer}>
+                <div className={styles.leftImageBox}>
+                    {!imagesLoaded[0] && <div className={styles.imageLoader}></div>}
+                    <img 
+                        src={displayImages[0]} 
+                        alt="Room main" 
+                        loading="lazy"
+                        onLoad={() => handleImageLoad(0)}
+                        style={{ opacity: imagesLoaded[0] ? 1 : 0 }}
+                    />
+                </div>
+                
+                <div className={styles.rightImageBox}>
+                    <div className={styles.rightTopImage}>
+                        {[1, 2].map(i => (
+                            <div key={i} className={styles.images}>
+                                {displayImages[i] ? (
+                                    <>
+                                        {!imagesLoaded[i] && <div className={styles.imageLoader}></div>}
+                                        <img 
+                                            src={displayImages[i]} 
+                                            alt={`Room view ${i}`}
+                                            loading="lazy"
+                                            onLoad={() => handleImageLoad(i)}
+                                            style={{ opacity: imagesLoaded[i] ? 1 : 0 }}
+                                        />
+                                    </>
+                                ) : (
+                                    <div className={styles.emptyImageSlot}></div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                    
+                    <div className={styles.rightBottomImage}>
+                        {[3, 4].map(i => (
+                            <div key={i} className={i === 4 && displayImages.length > 5 ? styles.images1 : styles.images}>
+                                {displayImages[i] ? (
+                                    <>
+                                        {!imagesLoaded[i] && <div className={styles.imageLoader}></div>}
+                                        <img 
+                                            src={displayImages[i]} 
+                                            alt={`Room view ${i}`}
+                                            loading="lazy"
+                                            onLoad={() => handleImageLoad(i)}
+                                            style={{ opacity: imagesLoaded[i] ? 1 : 0 }}
+                                        />
+                                        {i === 4 && displayImages.length > 5 && (
+                                            <div className={styles.moreImage}>
+                                                <Plus color="white" /> 
+                                                <span>+{displayImages.length - 5} more</span>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className={styles.emptyImageSlot}></div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     if (loading) {
@@ -122,7 +301,6 @@ const RoomDetails = () => {
                     <div className={styles.iconsSkeleton}></div>
                 </div>
 
-                {/* Image Container Skeleton */}
                 <div className={styles.imageContainer}>
                     <div className={styles.leftImageSkeleton}></div>
                     <div className={styles.rightImageBox}>
@@ -150,7 +328,6 @@ const RoomDetails = () => {
         return <div className={styles.error}>{error || 'Room not found'}</div>;
     }
 
-    const displayImages = getDisplayImages();
     const amenities = room.hostelId?.amenities || [];
     const halfLength = Math.ceil(amenities.length / 2);
     const firstColumnAmenities = amenities.slice(0, halfLength);
@@ -171,64 +348,12 @@ const RoomDetails = () => {
             </div>
 
             {/* Image container */}
-            <div className={styles.imageContainer}>
-                <div className={styles.leftImageBox}>
-                    {!imagesLoaded[0] && <div className={styles.imageLoader}></div>}
-                    <img 
-                        src={displayImages[0]} 
-                        alt="Room main" 
-                        loading="lazy"
-                        onLoad={() => handleImageLoad(0)}
-                        style={{ opacity: imagesLoaded[0] ? 1 : 0 }}
-                    />
-                </div>
-                <div className={styles.rightImageBox}>
-                    <div className={styles.rightTopImage}>
-                        {[1, 2].map(i => (
-                            <div key={i} className={styles.images}>
-                                {!imagesLoaded[i] && <div className={styles.imageLoader}></div>}
-                                <img 
-                                    src={displayImages[i]} 
-                                    alt="sub image"
-                                    loading="lazy"
-                                    onLoad={() => handleImageLoad(i)}
-                                    style={{ opacity: imagesLoaded[i] ? 1 : 0 }}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                    <div className={styles.rightBottomImage}>
-                        <div className={styles.images}>
-                            {!imagesLoaded[3] && <div className={styles.imageLoader}></div>}
-                            <img 
-                                src={displayImages[3]} 
-                                alt="sub image"
-                                loading="lazy"
-                                onLoad={() => handleImageLoad(3)}
-                                style={{ opacity: imagesLoaded[3] ? 1 : 0 }}
-                            />
-                        </div>
-                        <div className={styles.images1}>
-                            {!imagesLoaded[4] && <div className={styles.imageLoader}></div>}
-                            <img 
-                                src={displayImages[4]} 
-                                alt="sub image"
-                                loading="lazy"
-                                onLoad={() => handleImageLoad(4)}
-                                style={{ opacity: imagesLoaded[4] ? 1 : 0 }}
-                            />
-                            <div className={styles.moreImage}>
-                                <Plus color="white" /> <span>more</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {renderImageGrid()}
 
             <div className={styles.subHeadingBox}>
                 <div>Room {room.roomNumber}</div>
                 <div>
-                    Ugx {room.roomPrice.toLocaleString()}
+                    Ugx {room.roomPrice?.toLocaleString() || '0'}
                     <span>/semester</span>
                 </div>
             </div>
@@ -241,7 +366,7 @@ const RoomDetails = () => {
                     </div>
                     <div className={styles.inner3}>
                         <span><Users /></span>
-                        Preferred Gender: {room.roomGender.charAt(0).toUpperCase() + room.roomGender.slice(1)}
+                        Preferred Gender: {room.roomGender?.charAt(0).toUpperCase() + room.roomGender?.slice(1) || 'Mixed'}
                     </div>
                     <div className={styles.inner3}>
                         <span><Clock /></span>
@@ -251,72 +376,85 @@ const RoomDetails = () => {
                     </div>
                 </div>
                 <div>
-                    <button>Book it</button>
+                    <button className={styles.bookButton}>Book it</button>
                 </div>
             </div>
 
-            <div className={styles.AmenityLocation}>
-                <div className={styles.AmenityLeftBox}>
-                    <h3 className={styles.Title}>Amenities</h3>
-                    <div className={styles.AmenitiesBox}>
-                        <div className={styles.first3}>
-                            <ul>
-                                {firstColumnAmenities.map((amenity, index) => (
-                                    <li key={index}>
-                                        {getAmenityIcon(amenity)} <span>{amenity}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <ul>
-                                {secondColumnAmenities.map((amenity, index) => (
-                                    <li key={index}>
-                                        {getAmenityIcon(amenity)} <span>{amenity}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+            {/* Amenities Section */}
+            <div className={styles.amenitiesSection}>
+                <h3 className={styles.sectionTitle}>Amenities</h3>
+                <div className={styles.AmenitiesBox}>
+                    <div className={styles.amenitiesColumn}>
+                        <ul>
+                            {firstColumnAmenities.map((amenity, index) => (
+                                <li key={index}>
+                                    {getAmenityIcon(amenity)} 
+                                    <span>{amenity}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div className={styles.amenitiesColumn}>
+                        <ul>
+                            {secondColumnAmenities.map((amenity, index) => (
+                                <li key={index}>
+                                    {getAmenityIcon(amenity)} 
+                                    <span>{amenity}</span>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
-                <div className={styles.locationMapRightBox}>
-                    <h3 className={styles.Title}>Location</h3>
-                    <div className={styles.mapSpace}>
-                        <img src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83" alt="placeholder map" />
-                    </div>
-                </div>
+                {amenities.length === 0 && (
+                    <p className={styles.noAmenities}>No amenities listed for this hostel</p>
+                )}
             </div>
 
             <div className={styles.descriptionBox}>
-                <h3>Description</h3>
-                <div>
-                    <p>{room.roomDescription}</p>
-                    {room.hostelId?.description && <p>{room.hostelId.description}</p>}
+                <h3 className={styles.sectionTitle}>Description</h3>
+                <div className={styles.descriptionContent}>
+                    {room.roomDescription ? (
+                        <p>{room.roomDescription}</p>
+                    ) : room.hostelId?.description ? (
+                        <p>{room.hostelId.description}</p>
+                    ) : (
+                        <p className={styles.noDescription}>No description available</p>
+                    )}
                 </div>
             </div>
 
             {otherRooms.length > 0 && (
                 <div className={styles.otherRoomsBox}>
-                    <h3>Other Rooms in {room.hostelId?.name || 'This Hostel'}</h3>
+                    <h3 className={styles.sectionTitle}>Other Rooms in {room.hostelId?.name || 'This Hostel'}</h3>
                     <div className={styles.otherRoomGrid}>
-                        {otherRooms.map((otherRoom) => (
-                            <div key={otherRoom._id} className={styles.otherRoom}>
-                                <div className={styles.otherRoomImage}>
-                                    <img src={otherRoom.roomImage} alt={`Room ${otherRoom.roomNumber}`} />
+                        {otherRooms.map((otherRoom) => {
+                            const otherRoomImages = otherRoom.roomImages || [];
+                            const otherRoomMainImage = otherRoomImages.find(img => img.isPrimary) || otherRoomImages[0];
+                            
+                            return (
+                                <div 
+                                    key={otherRoom._id} 
+                                    className={styles.otherRoom}
+                                    onClick={() => handleOtherRoomClick(otherRoom._id)}
+                                >
+                                    <div className={styles.otherRoomImage}>
+                                        {otherRoomMainImage ? (
+                                            <img src={otherRoomMainImage.url} alt={`Room ${otherRoom.roomNumber}`} />
+                                        ) : (
+                                            <div className={styles.noRoomImage}>📷</div>
+                                        )}
+                                    </div>
+                                    <div className={styles.otherRoomInfo}>
+                                        <p className={styles.roomNumber}>Room {otherRoom.roomNumber}</p>
+                                        <p className={styles.roomPrice}>Ugx {otherRoom.roomPrice?.toLocaleString() || '0'}/semester</p>
+                                        <p className={styles.roomType}>{otherRoom.roomType}</p>
+                                    </div>
+                                    <div className={styles.roomOverlay}>
+                                        <span>View Details</span>
+                                    </div>
                                 </div>
-                                <div className={styles.otherRoomInfo}>
-                                    <p>Room-{otherRoom.roomNumber}</p>
-                                    <p>Ugx {otherRoom.roomPrice.toLocaleString()}/semester</p>
-                                </div>
-                                <div className={styles.OtherRoomsAmenities}>
-                                    <ul>
-                                        {amenities.slice(0, 3).map((amenity, index) => (
-                                            <li key={index}>{getAmenityIcon(amenity)}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             )}

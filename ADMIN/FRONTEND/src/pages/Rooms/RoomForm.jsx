@@ -77,7 +77,7 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
 
     // Coerce numeric values
     const payload = {
-      hostel: formData.hostel,
+      hostelId: formData.hostel,
       roomNumber: String(formData.roomNumber),
       roomType: formData.roomType,
       roomGender: formData.roomGender,

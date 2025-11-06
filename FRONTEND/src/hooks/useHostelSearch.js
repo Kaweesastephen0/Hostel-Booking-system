@@ -1,69 +1,62 @@
-// hooks/useHostelSearch.js
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
+import axios from 'axios';
 
 export const useHostelSearch = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const searchHostels = useCallback(async (location, roomType) => {
-    console.log('🔍 Search started with:', { location, roomType });
-    
-    if (!location || !roomType) {
-      setError('Location and room type are required');
-      return;
-    }
-
+  const searchHostels = async (searchParams) => {
     try {
+      console.log("🔍 FRONTEND SEARCH - Params:", searchParams);
+      
       setLoading(true);
       setError(null);
-      
-      const params = new URLSearchParams({
-        location: location.trim(),
-        roomType: roomType.toLowerCase()
-      });
 
-      const url = `http://localhost:5000/api/hostels/search?${params}`;
-      console.log('📡 Fetching from:', url);
-
-      const response = await fetch(url);
-      console.log('📥 Response status:', response.status);
+      // Build query string
+      const params = new URLSearchParams();
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (searchParams.location?.trim()) {
+        params.append('location', searchParams.location.trim());
       }
+      if (searchParams.roomType?.trim()) {
+        params.append('roomType', searchParams.roomType.trim());
+      }
+      if (searchParams.minPrice) {
+        params.append('minPrice', searchParams.minPrice);
+      }
+      if (searchParams.maxPrice) {
+        params.append('maxPrice', searchParams.maxPrice);
+      }
+
+      const url = `/api/hostels/search?${params.toString()}`;
+      console.log("🌐 Calling API:", url);
+
+      const response = await axios.get(url);
       
-      const data = await response.json();
-      console.log('✅ Data received:', data);
-      
-      if (data.success && Array.isArray(data.data)) {
-        setResults(data.data);
-        return data;
+      console.log("✅ Response received:", response.data);
+      console.log("📦 Data:", response.data.data);
+      console.log("📊 Count:", response.data.data?.length);
+
+      if (response.data.success && response.data.data) {
+        console.log(`✅ Setting ${response.data.data.length} results`);
+        setResults(response.data.data);
       } else {
+        console.log("❌ No data in response");
         setResults([]);
-        setError(data.message || 'No results found');
-        return data;
+        setError(response.data.message || 'No results found');
       }
+
     } catch (err) {
-      console.error('❌ Search error:', err);
-      setError('Failed to search hostels. Please try again.');
+      console.error('❌ ERROR:', err);
+      console.error('❌ Error details:', err.response?.data);
+      setError(err.response?.data?.message || err.message || 'Search failed');
       setResults([]);
-      return null;
     } finally {
+      console.log("🏁 Search complete, setting loading to false");
       setLoading(false);
     }
-  }, []);
-
-  const clearResults = useCallback(() => {
-    setResults([]);
-    setError(null);
-  }, []);
-
-  return { 
-    results, 
-    loading, 
-    error, 
-    searchHostels,
-    clearResults 
   };
+
+  return { results, loading, error, searchHostels };
 };

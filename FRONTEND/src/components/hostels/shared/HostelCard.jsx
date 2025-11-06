@@ -10,6 +10,10 @@ export const HostelCard = ({ hostel, variant = 'standard', onClick }) => {
   const [imageError, setImageError] = useState(false);
   
   const handleClick = () => {
+     window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
     if (onClick) {
       onClick(hostel._id);
     } else {
