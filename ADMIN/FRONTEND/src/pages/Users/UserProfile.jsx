@@ -40,7 +40,7 @@ const UserProfile = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [userMeta, setUserMeta] = useState({ lastLogin: null, createdAt: null, updatedAt: null });
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
   const passwordMismatch = useMemo(
     () =>
@@ -79,7 +79,7 @@ const UserProfile = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ const UserProfile = () => {
         payload.password = form.password;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
