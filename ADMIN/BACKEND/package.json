@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha --exit tests/*",
     "dev": "nodemon server.js",
+    "build": "node server.js",
     "start": "node server.js",
     "seed": "node scripts/SeedHostels-SeedRooms.js",
     "seed:dev": "nodemon scripts/SeedHostels-SeedRooms.js"
