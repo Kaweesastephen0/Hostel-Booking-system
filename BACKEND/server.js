@@ -39,17 +39,17 @@ app.use(limiter);
 
 //ensuring requests include Access-Control-Allow-Origin
 
-app.use((req, res, next) => {
+// app.use((req, res, next) => {
    
-    if ( process.env.FRONTEND_URL || process.env.FRONTEND_URI) return next();
+//     if ( process.env.FRONTEND_URL || process.env.FRONTEND_URI) return next();
 
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//     res.header('Access-Control-Allow-Origin', '*');
+//     res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    if (req.method === 'OPTIONS') return res.sendStatus(204);
-    next();
-});
+//     if (req.method === 'OPTIONS') return res.sendStatus(204);
+//     next();
+// });
 
 // CORS configuration
 const allowedOrigins = [
@@ -74,7 +74,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// app.options("*", cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
