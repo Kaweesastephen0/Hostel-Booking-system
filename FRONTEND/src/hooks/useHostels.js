@@ -11,7 +11,7 @@ export const useHostels = (endpoint) => {
         setLoading(true);
         setError(null);
         
-        const response = await fetch(`http://localhost:5000/api/hostels/${endpoint}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/${endpoint}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
