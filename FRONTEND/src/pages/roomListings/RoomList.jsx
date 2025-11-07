@@ -24,7 +24,7 @@ export default function RoomsList() {
         setLoading(true);
         setError(null);
         
-        const response = await fetch(`http://localhost:5000/api/rooms/hostel/${hostelId}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/rooms/hostel/${hostelId}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

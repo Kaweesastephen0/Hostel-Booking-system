@@ -36,7 +36,7 @@ export const getHostelImage = (hostel) => {
     if (typeof imageUrl === 'string') {
       return imageUrl.startsWith('http') 
         ? imageUrl 
-        : `http://localhost:5000${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+        : `${import.meta.env.VITE_API_URL}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
     }
   }
   
