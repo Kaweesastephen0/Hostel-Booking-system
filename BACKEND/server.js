@@ -142,4 +142,4 @@ app.use('/api', (req, res) => {
 
 
 const PORT = process.env.PORT;
-
+app.listen(PORT);
