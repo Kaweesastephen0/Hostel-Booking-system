@@ -24,8 +24,6 @@ const allowedOrigins = [
     process.env.FRONTEND_URI
     
     ]
-    
-
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin) {
