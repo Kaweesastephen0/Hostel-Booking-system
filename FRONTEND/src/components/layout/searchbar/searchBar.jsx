@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { MapPin, Users, DollarSign, X, ChevronDown } from 'lucide-react';
-import styles from './SearchBar.module.css';
+import styles from './searchBar.module.css';
 
 export default function SearchBar({ onSearch }) {
   const [location, setLocation] = useState('');
