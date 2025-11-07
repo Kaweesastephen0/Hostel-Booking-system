@@ -242,7 +242,7 @@ const Bookings = () => {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        credentials: 'include',
+        credentials: 'include'
       });
 
       const payload = await response.json().catch(() => ({}));

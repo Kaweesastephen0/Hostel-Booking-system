@@ -97,8 +97,4 @@ app.all('/', (req, res) => {
 
 const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, () => {
-    console.log(` Hostel Booking API started on port ${PORT}!!`);
-    console.log(` Health check: http://localhost:${PORT}/api/health`);
-    console.log(` Hostels API: http://localhost:${PORT}/api/hostels`);
-});
+app.listen(PORT);
