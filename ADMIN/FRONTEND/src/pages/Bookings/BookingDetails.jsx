@@ -6,7 +6,7 @@ import { Grid } from '@mui/material';
 import { ArrowBack, Edit, Delete, CheckCircle, Cancel, Info, Add } from '@mui/icons-material';
 import { format } from 'date-fns';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'cancelled', 'completed'];
 
@@ -173,7 +173,7 @@ const BookingDetails = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/bookings/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -228,7 +228,7 @@ const BookingDetails = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/booking/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/booking/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -292,7 +292,7 @@ const BookingDetails = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id || booking._id}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${booking.id || booking._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -361,7 +361,7 @@ const BookingDetails = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments`, {
+      const response = await fetch(`${API_BASE_URL}/payments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -403,7 +403,7 @@ const BookingDetails = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${payment.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -473,7 +473,7 @@ const BookingDetails = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/${paymentEditTarget.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${paymentEditTarget.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -521,7 +521,7 @@ const BookingDetails = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${payment.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -579,7 +579,7 @@ const BookingDetails = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id || booking._id}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${booking.id || booking._id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -728,7 +728,7 @@ const BookingDetails = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id || booking._id}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${booking.id || booking._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

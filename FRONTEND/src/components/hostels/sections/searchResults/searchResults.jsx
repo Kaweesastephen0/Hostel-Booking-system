@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Star, Heart, Bookmark } from 'lucide-react';
-import styles from './SearchResult.module.css';
+import styles from './searchResult.module.css';
 
 export default function SearchResultsList({ results, loading, searchParams, limit = null }) {
   const navigate = useNavigate();
