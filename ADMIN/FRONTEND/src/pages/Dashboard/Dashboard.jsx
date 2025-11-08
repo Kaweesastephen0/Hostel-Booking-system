@@ -136,8 +136,6 @@ const Dashboard = () => {
     loadDashboardData();
   }, []);
 
-  // The user name will come from an auth context
-  const userName = "Raymond";
 
   if (error) {
     return (
@@ -149,7 +147,7 @@ const Dashboard = () => {
       </div>
     );
   }
-
+  const currentUser = JSON.parse(localStorage.getItem('user'));
   return (
     <div className="dashboard-content-area">
       <Header
@@ -187,11 +185,13 @@ const Dashboard = () => {
           value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalBookings}
           icon={<CalendarCheck size={24} />}
         />
-        <InfoCard
-          title="Total Users"
-          value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalUsers}
-          icon={<Users size={24} />}
-        />
+        {currentUser.role === 'admin' && (
+          <InfoCard
+            title="Total Users"
+            value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalUsers}
+            icon={<Users size={24} />}
+          />
+        )}
       </div>
 
       <div className="dashboard-analytics-section">

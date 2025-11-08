@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import {
   Box, Button, Typography, Chip, TextField, InputAdornment, MenuItem, FormControl, InputLabel,
-  Select, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar, Grid, Paper
+  Select, Alert, Snackbar, Paper, Grid
 } from '@mui/material';
 import { Add, FilterList, Search, Edit, Delete, Cancel, CheckCircle, Close, Info, Replay } from '@mui/icons-material';
 import Drawer from '@mui/material/Drawer';
@@ -12,7 +12,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { format } from 'date-fns';
 import DataTable from '../../components/common/DataTable';
 import Swal from 'sweetalert2';
-
+import BookingForm from './BookingForm';
 
 let API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -38,40 +38,6 @@ const User = localStorage.getItem('user');
 if (User === null) {
   <Navigate to="/login" />
 }
-const defaultBookingForm = {
-  // Guest Information
-  fullName: '',
-  gender: '',
-  age: '',
-  occupation: '',
-  idNumber: '',
-  phone: '',
-  email: '',
-  location: '',
-
-  // Booking Information
-  hostelName: '',
-  roomNumber: '',
-  roomType: '',
-  duration: '',
-  checkIn: '',
-
-  // Payment Information
-  paymentMethod: '',
-  bookingFee: '',
-  paymentNumber: '',
-
-  // System Fields
-  status: 'pending',
-};
-
-const durationMap = {
-  daily: 1,
-  weekly: 7,
-  monthly: 30,
-  quarterly: 90,
-  yearly: 365
-};
 
 const formatDate = (value) => {
   if (!value) return '—';
@@ -110,9 +76,6 @@ const Bookings = () => {
   const [rowActionState, setRowActionState] = useState({});
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newBooking, setNewBooking] = useState(defaultBookingForm);
-  const [createError, setCreateError] = useState(null);
-  const [creatingBooking, setCreatingBooking] = useState(false);
 
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -472,125 +435,16 @@ const Bookings = () => {
   }), []);
 
   const openAddDialog = () => {
-    setNewBooking(defaultBookingForm);
-    setCreateError(null);
     setIsAddDialogOpen(true);
   };
 
   const closeAddDialog = () => {
-    if (creatingBooking) return;
     setIsAddDialogOpen(false);
   };
 
-  const handleNewBookingChange = (field) => (event) => {
-    setNewBooking((prev) => ({
-      ...prev,
-      [field]: event.target.value,
-    }));
-  };
-
-  const handleCreateBooking = async (event) => {
-    event.preventDefault();
-    setCreateError(null);
-
-    // Destructure and validate required fields
-    const {
-      fullName, gender, age, idNumber, phone, email, location,
-      hostelName, roomNumber, roomType, duration, checkIn,
-      paymentMethod, bookingFee, paymentNumber
-    } = newBooking;
-
-    // Validate required fields
-    const requiredFields = [
-      { field: 'fullName', label: 'Guest name' },
-      { field: 'roomNumber', label: 'Room number' },
-      { field: 'checkIn', label: 'Check-in date' },
-      { field: 'duration', label: 'Duration' },
-      { field: 'bookingFee', label: 'Amount' },
-    ];
-
-    const missingField = requiredFields.find(({ field }) => !newBooking[field]?.toString().trim());
-    if (missingField) {
-      setCreateError(`${missingField.label} is required`);
-      return;
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setCreateError('Please enter a valid email address');
-      return;
-    }
-
-    // Validate age is a positive number
-    const ageValue = parseInt(age, 10);
-    if (isNaN(ageValue) || ageValue <= 0) {
-      setCreateError('Age must be a positive number');
-      return;
-    }
-
-    // Validate booking fee is a positive number
-    const bookingFeeValue = parseFloat(bookingFee);
-    if (isNaN(bookingFeeValue) || bookingFeeValue <= 0) {
-      setCreateError('Booking fee must be a positive number');
-      return;
-    }
-
-    const durationDays = durationMap[duration];
-    if (!durationDays) {
-      setCreateError('Please select a valid duration');
-      return;
-    }
-
-    setCreatingBooking(true);
-
-    try {
-      const token = localStorage.getItem('token');
-      const payload = {
-        fullName,
-        gender,
-        age: ageValue,
-        occupation: newBooking.occupation,
-        idNumber,
-        phone,
-        email,
-        location,
-        hostelName,
-        roomNumber,
-        roomType,
-        duration: durationDays,
-        checkIn,
-        paymentMethod,
-        bookingFee: bookingFeeValue,
-        paymentNumber,
-        status: newBooking.status,
-      };
-
-      const response = await fetch(`${API_BASE_URL}/bookings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        credentials: 'include',
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to create booking.');
-      }
-
-      showSnackbar('Booking created successfully.');
-      await fetchBookings();
-      closeAddDialog();
-    } catch (error) {
-      console.error('Error creating booking:', error);
-      setCreateError(error.message || 'Failed to create booking.');
-    } finally {
-      setCreatingBooking(false);
-    }
+  const handleBookingSuccess = async (message) => {
+    showSnackbar(message);
+    await fetchBookings();
   };
 
 
@@ -862,242 +716,11 @@ const Bookings = () => {
         emptyMessage="No bookings found. Try adjusting your search or filters."
       />
 
-      <Dialog open={isAddDialogOpen} onClose={closeAddDialog} maxWidth="md" fullWidth>
-        <form onSubmit={handleCreateBooking}>
-          <DialogTitle>Add New Booking</DialogTitle>
-          <DialogContent>
-            {createError && (
-              <Alert severity="error" >
-                {createError}
-              </Alert>
-            )}
-            <Box sx={{ mt: 2, maxHeight: '70vh', overflowY: 'auto', pr: 1 }}>
-              <Typography variant="h6" gutterBottom>Guest Information</Typography>
-              <Grid container spacing={2}>
-                <Grid >
-                  <TextField
-                    fullWidth
-                    label="Full Name"
-                    value={newBooking.fullName}
-                    onChange={handleNewBookingChange('fullName')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid >
-                  <FormControl fullWidth margin="normal" required>
-                    <InputLabel>Gender</InputLabel>
-                    <Select
-                      value={newBooking.gender}
-                      onChange={handleNewBookingChange('gender')}
-                      label="Gender"
-                    >
-                      <MenuItem value="male">Male</MenuItem>
-                      <MenuItem value="female">Female</MenuItem>
-                      <MenuItem value="other">Other</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid >
-                  <TextField
-                    fullWidth
-                    label="Age"
-                    type="number"
-                    value={newBooking.age}
-                    onChange={handleNewBookingChange('age')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid>
-                  <TextField
-                    fullWidth
-                    label="ID/STN Number"
-                    value={newBooking.idNumber}
-                    onChange={handleNewBookingChange('idNumber')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid >
-                  <TextField
-                    fullWidth
-                    label="Phone Number"
-                    value={newBooking.phone}
-                    onChange={handleNewBookingChange('phone')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid >
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    type="email"
-                    value={newBooking.email}
-                    onChange={handleNewBookingChange('email')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid>
-                  <TextField
-                    fullWidth
-                    label="Location/Address"
-                    value={newBooking.location}
-                    onChange={handleNewBookingChange('location')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid >
-                  <TextField
-                    fullWidth
-                    label="Occupation"
-                    value={newBooking.occupation}
-                    onChange={handleNewBookingChange('occupation')}
-                    margin="normal"
-                  />
-                </Grid>
-              </Grid>
-
-              <Divider sx={{ my: 3 }} />
-              <Typography variant="h6" gutterBottom>Booking Information</Typography>
-              <Grid container spacing={2}>
-                <Grid>
-                  <TextField
-                    fullWidth
-                    label="Hostel Name"
-                    value={newBooking.hostelName}
-                    onChange={handleNewBookingChange('hostelName')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid >
-                  <TextField
-                    fullWidth
-                    label="Room Number"
-                    value={newBooking.roomNumber}
-                    onChange={handleNewBookingChange('roomNumber')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid >
-                  <FormControl fullWidth margin="normal" required>
-                    <InputLabel>Room Type</InputLabel>
-                    <Select
-                      value={newBooking.roomType}
-                      onChange={handleNewBookingChange('roomType')}
-                      label="Room Type"
-                    >
-                      <MenuItem value="single">Single</MenuItem>
-                      <MenuItem value="double">Double</MenuItem>
-                      <MenuItem value="dormitory">Dormitory</MenuItem>
-                      <MenuItem value="suite">Suite</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid>
-                  <FormControl fullWidth margin="normal" required>
-                    <InputLabel>Duration</InputLabel>
-                    <Select
-                      value={newBooking.duration}
-                      onChange={handleNewBookingChange('duration')}
-                      label="Duration"
-                    >
-                      <MenuItem value="daily">Daily</MenuItem>
-                      <MenuItem value="weekly">Weekly</MenuItem>
-                      <MenuItem value="monthly">Monthly</MenuItem>
-                      <MenuItem value="quarterly">Quarterly</MenuItem>
-                      <MenuItem value="yearly">Yearly</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid >
-                  <TextField
-                    fullWidth
-                    label="Check-in Date"
-                    type="date"
-                    value={newBooking.checkIn}
-                    onChange={handleNewBookingChange('checkIn')}
-                    margin="normal"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    required
-                  />
-                </Grid>
-              </Grid>
-
-              <Divider sx={{ my: 3 }} />
-              <Typography variant="h6" gutterBottom>Payment Information</Typography>
-              <Grid container spacing={2}>
-                <Grid >
-                  <FormControl fullWidth margin="normal" required>
-                    <InputLabel>Payment Method</InputLabel>
-                    <Select
-                      value={newBooking.paymentMethod}
-                      onChange={handleNewBookingChange('paymentMethod')}
-                      label="Payment Method"
-                    >
-                      <MenuItem value="cash">Cash</MenuItem>
-                      <MenuItem value="mobile_money">Mobile Money</MenuItem>
-                      <MenuItem value="bank_transfer">Bank Transfer</MenuItem>
-                      <MenuItem value="credit_card">Credit Card</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid >
-                  <TextField
-                    fullWidth
-                    label="Booking Fee"
-                    type="number"
-                    value={newBooking.bookingFee}
-                    onChange={handleNewBookingChange('bookingFee')}
-                    margin="normal"
-                    InputProps={{
-                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                    }}
-                    required
-                  />
-                </Grid>
-                <Grid>
-                  <TextField
-                    fullWidth
-                    label="Payment Reference/Number"
-                    value={newBooking.paymentNumber}
-                    onChange={handleNewBookingChange('paymentNumber')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-          </DialogContent>
-          <DialogActions sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
-            <Button
-              onClick={closeAddDialog}
-              disabled={creatingBooking}
-              variant="outlined"
-              color="inherit"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              color="primary"
-              variant="contained"
-              disabled={creatingBooking}
-              startIcon={creatingBooking ? <CircularProgress size={20} /> : null}
-              sx={{ minWidth: 150 }}
-            >
-              {creatingBooking ? 'Creating...' : 'Create Booking'}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+      <BookingForm 
+        open={isAddDialogOpen} 
+        onClose={closeAddDialog} 
+        onSuccess={handleBookingSuccess} 
+      />
 
       <Snackbar
         open={snackbar.open}
