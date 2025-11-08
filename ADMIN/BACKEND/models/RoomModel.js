@@ -31,7 +31,7 @@ const roomSchema = new mongoose.Schema({
     manager: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: [true, 'Manager reference is required']
+        required: false
     },
     bookingPrice: {
         type: Number,

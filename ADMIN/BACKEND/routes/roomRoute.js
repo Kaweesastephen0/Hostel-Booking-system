@@ -12,20 +12,21 @@ import Room from '../models/RoomModel.js';
 
 const router = express.Router();
 
-// Public routes
-router.route('/hostel/:hostelId').get(getRoomsByHostel);
-router.route('/:id').get(getRoom);
+// Public routes - must be before protect middleware
+router.get('/hostel/:hostelId', getRoomsByHostel);
+router.get('/:id', getRoom);
 
-// Protected routes - require authentication
+// Protected routes - all routes below require authentication
 router.use(protect);
 
 // Get all rooms (filtered by manager if not admin)
-router.route('/').get(getAllRooms);
+router.get('/', getAllRooms);
 
-// Create, update, delete rooms (admin and manager)
-router.route('/').post(authorize('admin', 'manager'), createRoom);
-router.route('/:id')
-  .put(authorize('admin', 'manager'), checkOwnership(Room), updateRoom)
-  .delete(authorize('admin', 'manager'), checkOwnership(Room), deleteRoom);
+// Create rooms (admin and manager)
+router.post('/', authorize('admin', 'manager'), createRoom);
+
+// Update and delete rooms (admin and manager with ownership check)
+router.put('/:id', authorize('admin', 'manager'), checkOwnership(Room), updateRoom);
+router.delete('/:id', authorize('admin', 'manager'), checkOwnership(Room), deleteRoom);
 
 export default router;

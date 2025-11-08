@@ -51,8 +51,8 @@ app.use('/api/hostels', hostelRoute);
 app.use("/api/rooms", roomRoute); 
 app.use("/api/auth", authRoutes); 
 app.use("/api/bookings", bookingRoutes); 
-app.use("/api/auth", authRoutes); // This would have been the next error
-app.use("/api/bookings", bookingRoutes); // This would have been the error after that
+app.use("/api/auth", authRoutes); 
+app.use("/api/bookings", bookingRoutes); 
 app.use("/api/premium", hostelRoute);
 app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);

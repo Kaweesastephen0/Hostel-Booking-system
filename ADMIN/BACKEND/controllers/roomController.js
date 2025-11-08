@@ -58,11 +58,6 @@ export const createRoom = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Update room
- * @route   PUT /api/rooms/:id
- * @access  Private
- */
 export const updateRoom = asyncHandler(async (req, res) => {
   let room = await Room.findById(req.params.id);
 
