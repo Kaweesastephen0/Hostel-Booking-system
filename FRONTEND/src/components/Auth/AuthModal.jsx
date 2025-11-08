@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Mail, Lock, User, CreditCard, Hash, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AuthModal.module.css';
@@ -60,6 +60,33 @@ function Auth() {
   const [passwordValidation, setPasswordValidation] = useState({ isValid: false, errors: [] });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Reset form data helper
+  const resetFormData = () => {
+    setFormData({
+      firstName: '',
+      surname: '',
+      email: '',
+      gender: 'Male',
+      userType: 'student',
+      studentNumber: '',
+      nin: '',
+      password: '',
+      confirmPassword: '',
+      rememberMe: false
+    });
+    setPasswordValidation({ isValid: false, errors: [] });
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    setError('');
+  };
+
+  // Clear form when component unmounts (user navigates away)
+  useEffect(() => {
+    return () => {
+      resetFormData();
+    };
+  }, []);
 
 
   // FORM VALIDATION HELPERS
@@ -133,6 +160,9 @@ function Auth() {
         storage.setItem('userData', JSON.stringify(data));
         storage.setItem('lastLoginTime', new Date().toISOString());
 
+        // Clear form data
+        resetFormData();
+
         // Dispatch custom event to update header
         window.dispatchEvent(new Event('authStateChanged'));
 
@@ -188,11 +218,9 @@ function Auth() {
       const data = await response.json();
 
       if (response.ok) {
-        // Reset form and switch to login
+        // Reset form completely and switch to login
+        resetFormData();
         setAuthMode('login');
-        setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
-        setPasswordValidation({ isValid: false, errors: [] });
-        setError('');
         alert('Registration successful! Please check your email and then login.');
       } else {
         setError(data.message || 'Registration failed');
@@ -207,19 +235,18 @@ function Auth() {
   
   // MODE SWITCHING
   const switchToForgotPassword = () => {
+    resetFormData();
     setAuthMode('forgot');
-    setError('');
   };
 
   const switchToRegister = () => {
+    resetFormData();
     setAuthMode('register');
-    setError('');
-    setPasswordValidation({ isValid: false, errors: [] });
   };
 
   const switchToLogin = () => {
+    resetFormData();
     setAuthMode('login');
-    setError('');
   };
 
    // RENDER
@@ -679,6 +706,14 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
       const data = await response.json();
 
       if (response.ok) {
+        // Clear all password reset fields
+        setResetCode('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setPasswordValidation({ isValid: false, errors: [] });
+        setShowNewPassword(false);
+        setShowConfirmPassword(false);
+
         alert('Password reset successful! Please login.');
         onBack();
       } else {

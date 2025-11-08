@@ -53,3 +53,4 @@ paymentSchema.pre('save', function (next) {
 const Payment = mongoose.models.Payment || mongoose.model('Payment', paymentSchema);
 
 export default Payment;
+
