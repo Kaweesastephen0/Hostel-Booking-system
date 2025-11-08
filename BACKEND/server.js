@@ -1,12 +1,10 @@
 /********************************************************************
- *  server.js – Express API for Muk-Book Hostel Booking
+ *  server.js – Muk-Book Hostel Booking API
  *  ----------------------------------------------------
- *  • CORS is now **dynamic** and **secure** – only your Vercel URL
- *    (and localhost for dev) are allowed.
- *  • Preflight (OPTIONS) requests are handled automatically.
- *  • All other middleware (helmet, rate-limit, cookie-parser) stay
- *    exactly where they were.
- *  • Minor clean-ups (duplicate logs, unused 404 handlers).
+ *  • CORS: Allows only your Vercel frontend + localhost (dev)
+ *  • NO CRASH: Removed invalid `app.options("*")`
+ *  • Secure: helmet, rate-limit, cookie-parser
+ *  • Ready for Render.com deployment
  ********************************************************************/
 
 import express from "express";
@@ -16,8 +14,8 @@ import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 
+// Database & Routes
 import connectDB from "./config/database.js";
-
 import hostelRoute from "./routes/hostelRoute.js";
 import roomRoute from "./routes/roomRoute.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -25,23 +23,23 @@ import contactRoutes from "./routes/contactRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 
 // ------------------------------------------------------------------
-// 1. Load env variables & connect to MongoDB
+// 1. Load Environment Variables & Connect to MongoDB
 // ------------------------------------------------------------------
-dotenv.config();
-connectDB();
+dotenv.config();           // Loads from Render dashboard (no .env file needed)
+connectDB();               // Connects to MongoDB Atlas
 
 const app = express();
 
 // ------------------------------------------------------------------
-// 2. Security & Utility Middleware
+// 2. Security Middleware
 // ------------------------------------------------------------------
-app.use(helmet());                 // HTTP headers security
-app.use(cookieParser());           // Parse cookies (used in auth)
+app.use(helmet());         // Secure HTTP headers
+app.use(cookieParser());   // Parse cookies (used in auth)
 
-// Rate limiting – protects against brute-force / DoS
+// Rate limiting: 100 requests per IP every 15 mins
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,        // 15 minutes
-  max: 100,                        // 100 requests per IP per window
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: {
     success: false,
     message: "Too many requests from this IP, please try again later.",
@@ -52,24 +50,17 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // ------------------------------------------------------------------
-// 3. CORS – **the part that was blocking your Vercel frontend**
+// 3. CORS – ONLY ALLOW YOUR FRONTEND
 // ------------------------------------------------------------------
-/*
-   - `process.env.FRONTEND_URL` is the only production origin.
-   - During local development we also allow localhost (any port).
-   - `credentials: true` → cookies / Authorization headers work.
-   - `origin` callback logs any disallowed origin for debugging.
-*/
 const allowedOrigins = [
-  process.env.FRONTEND_URL,               // e.g. https://hostel-booking-system-two.vercel.app
-  // ---- local dev helpers (feel free to delete in prod) ----
-  "http://localhost:3000",
-  "http://localhost:5173",   // Vite default
-];
+  process.env.FRONTEND_URL,           // e.g. https://hostel-booking-system-two.vercel.app
+  "http://localhost:3000",            // Local dev
+  "http://localhost:5173",            // Vite default
+].filter(Boolean); // Remove undefined if FRONTEND_URL not set
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Non-browser tools (Postman, curl) have no `origin` header
+    // Allow tools like Postman (no origin)
     if (!origin) return callback(null, true);
 
     if (allowedOrigins.includes(origin)) {
@@ -79,18 +70,19 @@ const corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true,               // needed for cookies / auth
+  credentials: true,                    // Allow cookies & Authorization headers
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
+// Apply CORS to all routes
 app.use(cors(corsOptions));
 
-// Explicitly handle pre-flight for **all** routes (just in case)
-app.options("*", cors(corsOptions));
+// NO NEED FOR: app.options("*", ...) → IT CRASHES THE SERVER
+// cors() already handles preflight automatically
 
 // ------------------------------------------------------------------
-// 4. Body parsers
+// 4. Body Parsing
 // ------------------------------------------------------------------
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -105,7 +97,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/bookings", bookingRoutes);
 
 // ------------------------------------------------------------------
-// 6. Health / Info Endpoints
+// 6. Health & Info Endpoints
 // ------------------------------------------------------------------
 app.get("/api/health", (req, res) => {
   res.json({
@@ -134,15 +126,16 @@ app.get("/", (req, res) => {
       rooms: "/api/rooms",
       auth: "/api/auth",
       contact: "/api/contact",
+      bookings: "/api/bookings",
     },
   });
 });
 
 // ------------------------------------------------------------------
-// 7. Global Error Handler (must be **after** routes)
+// 7. Global Error Handler (must be after routes)
 // ------------------------------------------------------------------
 app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err.stack);
+  console.error("Unhandled Error:", err.stack);
   res.status(500).json({
     success: false,
     message: "Something went wrong!",
@@ -151,7 +144,7 @@ app.use((err, req, res, next) => {
 });
 
 // ------------------------------------------------------------------
-// 8. 404 for any /api/* route that wasn’t matched
+// 8. 404 Handler for /api/*
 // ------------------------------------------------------------------
 app.use("/api", (req, res) => {
   res.status(404).json({
@@ -161,13 +154,13 @@ app.use("/api", (req, res) => {
 });
 
 // ------------------------------------------------------------------
-// 9. Start the server
+// 9. Start Server
 // ------------------------------------------------------------------
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Hostel Booking API started on port ${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/api/health`);
-  console.log(`Hostels API: http://localhost:${PORT}/api/hostels`);
+  console.log(`Hostel Booking API running on port ${PORT}`);
+  console.log(`Health Check: http://localhost:${PORT}/api/health`);
   console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`Frontend URL: ${process.env.FRONTEND_URL || "Not set"}`);
 });
