@@ -1,6 +1,6 @@
-import AdminUser from '../models/User.js';
+import AdminUser from '../models/User.js'
 import mongoose from 'mongoose';
-import User from '../../../../BACKEND/models/User.js';
+import User from '../../../BACKEND/models/User.js'
 
 // Get all admin/manager users
 export const getAdminUsers = async (req, res) => {
