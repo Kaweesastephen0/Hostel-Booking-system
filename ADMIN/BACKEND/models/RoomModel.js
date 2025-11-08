@@ -28,6 +28,11 @@ const roomSchema = new mongoose.Schema({
         ref: 'Hostel', 
         required: [true, 'Hostel Id is required']
     },
+    manager: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, 'Manager reference is required']
+    },
     bookingPrice: {
         type: Number,
         required: [true, 'Booking price is needed'],

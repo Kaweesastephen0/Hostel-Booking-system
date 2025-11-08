@@ -22,6 +22,7 @@ import './App.css';
  */
 const MainLayout = () => {
   return (
+   
     <div className="app-layout">
       <Sidebar />
       <main className="main-content">
@@ -36,6 +37,7 @@ const MainLayout = () => {
 
 function App() {
   return (
+
     <Router>
       <Routes>
         {/* Public routes */}
@@ -52,8 +54,8 @@ function App() {
             <Route path="rooms" element={<RoomsPage />} />
             <Route path="bookings" element={<BookingsPage />} />
             <Route path="bookings/:id" element={<BookingDetails />} />
-            <Route path="users" element={<UsersPage />} />
-            <Route path="users/:id" element={<UserProfile />} />
+            <Route path="users" element={<ProtectedRoute allowedRoles={['admin']}><UsersPage /></ProtectedRoute>} />
+            <Route path="users/:id" element={<ProtectedRoute allowedRoles={['admin']}><UserProfile /></ProtectedRoute>} />
             <Route path="payments" element={<PaymentsPage />} />
             <Route path="profile" element={<Profile />} />
           </Route>
@@ -63,6 +65,7 @@ function App() {
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
+
   );
 }
 

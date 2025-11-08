@@ -7,23 +7,42 @@ import {
   createHostel,
   updateHostel,
   deleteHostel,
-  getHostel
+  getHostel,
+  getMyHostels
 } from '../controllers/hostelControllers.js';
+import { protect, authorize, checkOwnership } from '../middleware/auth.js';
+import Hostel from '../models/HostelModel.js';
 
 const router = express.Router();
 
 // Public routes
-router.get('/', getAllHostels);
 router.get('/featured', getFeaturedHostels);
 router.get('/premiumHostel', getPremiumHostels);
 router.get('/affordable', getAffordableHostels);
 router.get('/:id', getHostel);
 
-// Temporary: make these routes public for local testing (remove this in production)
+// Protected routes
+router.use(protect);
+
+// Get all hostels (filtered by manager if role is manager)
+router.get('/', getAllHostels);
+
+// Get hostels for the logged-in manager
+router.get('/my-hostels', authorize('manager'), getMyHostels);
+
+// Admin only routes
+router.use(authorize('admin'));
 router.post('/', createHostel);
-router.put('/:id', updateHostel);
-router.delete('/:id', deleteHostel);
+router.route('/:id')
+  .put(checkOwnership(Hostel))
+  .delete(checkOwnership(Hostel));
 
+// Manager routes for their own hostels
+router.route('/')
+  .post(authorize('manager'), createHostel);
 
+router.route('/:id')
+  .put(authorize('manager'), checkOwnership(Hostel), updateHostel)
+  .delete(authorize('manager'), checkOwnership(Hostel), deleteHostel);
 
 export default router;

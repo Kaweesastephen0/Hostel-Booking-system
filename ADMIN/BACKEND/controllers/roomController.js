@@ -5,10 +5,13 @@ import asyncHandler from '../middleware/async.js';
 /**
  * @desc    Get all rooms, populated with hostel details
  * @route   GET /api/rooms
- * @access  Public
+ * @access  Protected
  */
 export const getAllRooms = asyncHandler(async (req, res) => {
-  const rooms = await Room.find({}).populate('hostelId', 'name');
+  // Build query with manager filter if applicable
+  const query = req.managerFilter || {};
+  
+  const rooms = await Room.find(query).populate('hostelId', 'name');
 
   res.status(200).json({
     success: true,
@@ -38,10 +41,16 @@ export const getRoom = asyncHandler(async (req, res) => {
 /**
  * @desc    Create new room
  * @route   POST /api/rooms
- * @access  Private
+ * @access  Private (Admin/Manager)
  */
 export const createRoom = asyncHandler(async (req, res) => {
-  const room = await Room.create(req.body);
+  // Set manager to the logged-in user
+  const roomData = {
+    ...req.body,
+    manager: req.user._id
+  };
+  
+  const room = await Room.create(roomData);
 
   res.status(201).json({
     success: true,

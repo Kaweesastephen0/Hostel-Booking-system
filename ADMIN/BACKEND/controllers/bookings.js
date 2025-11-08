@@ -50,6 +50,9 @@ export const createBooking = asyncHandler(async (req, res) => {
     status = 'pending'
   } = req.body;
 
+  // Set manager to the logged-in user
+  const managerId = req.user._id;
+
   // Validate required fields
   if (!fullName || !roomNumber || !checkIn || !duration || !bookingFee) {
     return res.status(400).json({
@@ -121,6 +124,7 @@ export const createBooking = asyncHandler(async (req, res) => {
       
       // System Fields
       reference: `BKG-${Date.now()}`,
+      manager: managerId,
     }], { session });
 
     // Create the payment record
@@ -197,6 +201,11 @@ export const getBookings = asyncHandler(async (req, res) => {
   const sortField = typeof sort === 'string' && sort.trim() ? sort : 'checkIn';
 
   const query = {};
+
+  // Apply manager filter from middleware
+  if (req.managerFilter) {
+    Object.assign(query, req.managerFilter);
+  }
 
   if (search && typeof search === 'string') {
     query.$or = [

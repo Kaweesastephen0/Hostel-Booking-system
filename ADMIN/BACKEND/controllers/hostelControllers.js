@@ -3,7 +3,13 @@ import ErrorResponse from '../utils/errorResponse.js';
 import asyncHandler from '../middleware/async.js';
 
 export const createHostel = asyncHandler(async (req, res) => {
-  const hostel = await HostelModel.create(req.body);
+  // Set manager to the logged-in user
+  const hostelData = {
+    ...req.body,
+    manager: req.user._id
+  };
+  
+  const hostel = await HostelModel.create(hostelData);
   
   res.status(201).json({
     success: true,
@@ -62,7 +68,10 @@ export const deleteHostel = asyncHandler(async (req, res) => {
 
 export const getAllHostels = async(req, res) => {
     try {
-        const hostels = await HostelModel.find({})
+        // Apply manager filter if present
+        const query = req.managerFilter || {};
+        
+        const hostels = await HostelModel.find(query)
             .populate('rooms')
             .lean();
         
