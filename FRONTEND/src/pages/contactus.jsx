@@ -120,7 +120,7 @@ export default function ContactUs() {
           className={styles.bottomImage}
         />
         <p className={styles.footerText}>
-          Muk Book — Your trusted hostel booking platform in Kampala.
+          Muk Book — Your trusted hostel booking platform in Uganda.
         </p>
       </section>
     </div>
