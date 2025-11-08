@@ -63,9 +63,15 @@ export const register = async (req, res) => {
 
       try {
         await transporter.verify();
-        console.log('Email server is ready to send messages');
+        console.log('✓ Email server is ready to send messages');
       } catch (verifyError) {
-        console.error('Email verification failed');
+        console.error('✗ Email verification failed:', verifyError.message);
+        console.error('Email config:', {
+          host: process.env.EMAIL_HOST,
+          port: process.env.EMAIL_PORT,
+          secure: process.env.EMAIL_SECURE,
+          user: process.env.EMAIL_USER ? 'Set' : 'Missing'
+        });
       }
 
       const loginUrl = `${process.env.FRONTEND_URL}/auth`;
@@ -124,9 +130,11 @@ export const register = async (req, res) => {
           html: welcomeMessage,
           text: `Welcome to ${process.env.APP_NAME}!\n\nHello ${user.firstName} ${user.surname},\n\nThank you for registering with ${process.env.APP_NAME} Hostel Booking System!\n\nYour account has been successfully created.`
         });
-        console.log('Welcome email sent successfully');
+        console.log('✓ Welcome email sent successfully to:', user.email);
       } catch (emailError) {
-        console.error('Failed to send welcome email');
+        console.error('✗ Failed to send welcome email:', emailError.message);
+        console.error('SMTP Error details:', emailError);
+        // Don't fail registration if email fails - user is already created
       }
 
       const token = generateToken(user._id);
@@ -230,9 +238,15 @@ export const forgotPassword = async (req, res) => {
 
     try {
       await transporter.verify();
-      console.log('Email server is ready to send messages');
+      console.log('✓ Email server is ready to send messages');
     } catch (verifyError) {
-      console.error('Email server verification failed');
+      console.error('✗ Email verification failed:', verifyError.message);
+      console.error('Email config:', {
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        secure: process.env.EMAIL_SECURE,
+        user: process.env.EMAIL_USER ? 'Set' : 'Missing'
+      });
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
