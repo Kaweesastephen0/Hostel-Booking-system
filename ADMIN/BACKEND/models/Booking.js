@@ -18,6 +18,11 @@ const bookingSchema = new mongoose.Schema(
       enum: ['pending', 'confirmed', 'cancelled', 'completed'],
       default: 'pending',
     },
+    manager: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: false
+    },
 
     // Guest Information
     guestName: {

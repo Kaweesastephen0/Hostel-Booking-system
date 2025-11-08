@@ -11,6 +11,7 @@ import authRoutes from "./routes/authRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 
+
 // Load environment variables
 dotenv.config();
 
@@ -38,11 +39,41 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // CORS configuration
+// Helper function to normalize URLs by removing trailing slashes
+const normalizeUrl = (url) => {
+  if (!url) return url;
+  return url.replace(/\/$/, ''); // Remove trailing slash if present
+};
+
+// Normalize all allowed origins to handle trailing slash mismatch
+const allowedOrigins = [
+  normalizeUrl(process.env.FRONTEND_URL), // e.g. https://hostel-booking-system-two.vercel.app
+  'http://localhost:5173',
+  'http://127.0.0.1:5173'
+].filter(Boolean); // Remove undefined if FRONTEND_URL not set
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    // Normalize the incoming origin for comparison
+    const normalizedOrigin = normalizeUrl(origin);
+
+    if (allowedOrigins.includes(normalizedOrigin)) {
+      callback(null, true);
+    } else {
+      console.warn(`[CORS] Blocked origin: ${origin}`);
+      console.warn(`[CORS] Allowed origins: ${allowedOrigins.join(', ')}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['set-cookie']
 }));
 
 // Body parser middleware

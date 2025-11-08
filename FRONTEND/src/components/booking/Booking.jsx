@@ -1,8 +1,8 @@
 import styles from './Booking.module.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   User, Users, Calendar, Briefcase, IdCard, Phone, Mail, MapPin, Home, Hash,
-  Bed, Clock, CreditCard, DollarSign, AlertCircle
+  Bed, Clock, CreditCard, DollarSign, AlertCircle, Loader
 } from 'lucide-react'
 import hostelService from '../../services/hostelService';
 import Swal from "sweetalert2";
@@ -11,8 +11,24 @@ const Booking = () => {
   const [fieldErrors, setFieldErrors] = useState({});
   const [formErrors, setFormErrors] = useState({});
   const [status, setStatus] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const initializePage = async () => {
+      try {
+        // Add any initial data loading here
+        // For example: await hostelService.getInitialData();
+        setPageLoading(false);
+      } catch (error) {
+        console.error('Error loading page:', error);
+        setFormErrors({ general: 'Failed to load page data' });
+        setPageLoading(false);
+      }
+    };
+
+    initializePage();
+  }, []);
 
   const [form, setForm] = useState({
     fullName: '',
@@ -49,7 +65,6 @@ const Booking = () => {
     // Clear previous error for this field
     delete newErrors[name];
 
-    // Skip validation if field is empty (handled by required attribute)
     if (!value && !['occupation'].includes(name)) {
       setFieldErrors(newErrors);
       return;
@@ -247,6 +262,15 @@ const Booking = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (pageLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <Loader className={styles.loadingSpinner} size={40} />
+        <p>Loading booking form...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.booking}>
@@ -592,11 +616,11 @@ const Booking = () => {
           <button
             type="submit"
             className={styles.submitButton}
-            disabled={loading || isSubmitting}
-            style={{ opacity: (loading || isSubmitting) ? 0.7 : 1 }}
+            disabled={isSubmitting}
+            style={{ opacity: isSubmitting ? 0.7 : 1 }}
           >
             <CreditCard size={24} />
-            {loading || isSubmitting ? 'Processing...' : 'Complete Booking'}
+            {isSubmitting ? 'Processing...' : 'Complete Booking'}
           </button>
 
           {status && !formErrors.general && (

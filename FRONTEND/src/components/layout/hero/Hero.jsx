@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from './hero.module.css';
+import styles from './Hero.module.css';
 import { FaHeart } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../searchbar/searchBar';

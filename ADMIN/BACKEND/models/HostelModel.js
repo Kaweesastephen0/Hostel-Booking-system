@@ -65,8 +65,16 @@ const hostelSchema = new mongoose.Schema({
     featured: {
         type: Boolean,
         default: false
+    },
+    manager: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, 'Manager reference is required']
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
-    
 }, {
     timestamps: true
 });

@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import DataTable from '../../components/common/DataTable';
 import Swal from 'sweetalert2';
 
+
 let API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'cancelled', 'completed'];
@@ -88,6 +89,7 @@ const formatCurrency = (value) => {
 const Bookings = () => {
   const navigate = useNavigate();
 
+
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -160,10 +162,10 @@ const Bookings = () => {
 
   // Status filter is now handled by the handleFilterChange function
   const fetchBookings = useCallback(async () => {
-    setLoading(true);
-    setFetchError(null);
-
     try {
+
+      setLoading(true);
+      setFetchError(null);
       const params = new URLSearchParams({
         page: (page + 1).toString(),
         limit: rowsPerPage.toString(),
@@ -204,7 +206,7 @@ const Bookings = () => {
               const startOfWeek = new Date(startOfDay);
               startOfWeek.setDate(startOfDay.getDate() - startOfDay.getDay()); // Start of current week (Sunday)
               const endOfWeek = new Date(startOfWeek);
-              endOfWeek.setDate(startOfWeek.getDate() + 6); // End of current week (Saturday)
+              endOfWeek.setDate(startOfWeek.getDate() + 6); // End of current week (Saturday)             ``````
 
               params.append('startDate', startOfWeek.toISOString());
               params.append('endDate', new Date(endOfWeek.setHours(23, 59, 59, 999)).toISOString());
@@ -232,17 +234,16 @@ const Bookings = () => {
         params.append('roomType', roomType);
       }
 
-      // This is now handled by the filters.paymentStatus above
-
       const token = localStorage.getItem('token');
 
       const response = await fetch(`${API_BASE_URL}/bookings`, {
+
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        credentials: 'include',
+        credentials: 'include'
       });
 
       const payload = await response.json().catch(() => ({}));
@@ -402,28 +403,15 @@ const Bookings = () => {
         throw new Error(payload.message || 'Failed to update booking status.');
       }
 
-      const updatedBooking = payload?.data?.booking;
-      const nextStatus = updatedBooking?.status || targetStatus;
-
-      setBookings((prev) =>
-        prev.map((item) =>
-          item.id === booking.id
-            ? {
-              ...item,
-              status: nextStatus,
-            }
-            : item
-        )
-      );
-
-      showSnackbar(`Booking marked as ${nextStatus}.`);
+      showSnackbar(`Booking status updated to ${targetStatus}.`);
+      await fetchBookings();
     } catch (error) {
       console.error('Error updating booking status:', error);
       showSnackbar(error.message || 'Failed to update booking status.', 'error');
     } finally {
       updateRowActionState(booking.id, 'updating', false);
     }
-  }, [showSnackbar, updateRowActionState]);
+  }, [updateRowActionState, showSnackbar, fetchBookings]);
 
   const handleOpenDetails = useCallback(async (booking) => {
     setSelectedBooking(booking);
@@ -607,7 +595,7 @@ const Bookings = () => {
 
 
   const columns = useMemo(() => [
-  
+
     {
       id: 'guestName',
       label: 'Guest',
@@ -759,7 +747,7 @@ const Bookings = () => {
           <Box>
             <Paper sx={{ p: 2 }}>
               <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} md={3}>
+                <Grid>
                   <TextField
                     variant="outlined"
                     size="small"
@@ -776,7 +764,7 @@ const Bookings = () => {
                     fullWidth
                   />
                 </Grid>
-                <Grid item xs={12} md={2}>
+                <Grid >
                   <FormControl fullWidth variant="outlined" size="small">
                     <InputLabel>Booking Status</InputLabel>
                     <Select
@@ -792,7 +780,7 @@ const Bookings = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={2}>
+                <Grid>
                   <FormControl fullWidth variant="outlined" size="small">
                     <InputLabel>Date Range</InputLabel>
                     <Select
@@ -808,7 +796,7 @@ const Bookings = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={2}>
+                <Grid>
                   <FormControl fullWidth variant="outlined" size="small">
                     <InputLabel>Room Type</InputLabel>
                     <Select
@@ -823,7 +811,7 @@ const Bookings = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={2}>
+                <Grid >
                   <FormControl fullWidth variant="outlined" size="small">
                     <InputLabel>Payment Status</InputLabel>
                     <Select
@@ -839,7 +827,7 @@ const Bookings = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={1} display="flex" justifyContent="flex-end">
+                <Grid display="flex" justifyContent="flex-end">
                   <Button
                     variant="outlined"
                     color="secondary"
@@ -879,14 +867,14 @@ const Bookings = () => {
           <DialogTitle>Add New Booking</DialogTitle>
           <DialogContent>
             {createError && (
-              <Alert severity="error" sx={{ mb: 2 }}>
+              <Alert severity="error" >
                 {createError}
               </Alert>
             )}
             <Box sx={{ mt: 2, maxHeight: '70vh', overflowY: 'auto', pr: 1 }}>
               <Typography variant="h6" gutterBottom>Guest Information</Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid >
                   <TextField
                     fullWidth
                     label="Full Name"
@@ -896,7 +884,7 @@ const Bookings = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid >
                   <FormControl fullWidth margin="normal" required>
                     <InputLabel>Gender</InputLabel>
                     <Select
@@ -910,7 +898,7 @@ const Bookings = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid >
                   <TextField
                     fullWidth
                     label="Age"
@@ -921,7 +909,7 @@ const Bookings = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid>
                   <TextField
                     fullWidth
                     label="ID/STN Number"
@@ -931,7 +919,7 @@ const Bookings = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid >
                   <TextField
                     fullWidth
                     label="Phone Number"
@@ -941,7 +929,7 @@ const Bookings = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid >
                   <TextField
                     fullWidth
                     label="Email"
@@ -952,7 +940,7 @@ const Bookings = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid>
                   <TextField
                     fullWidth
                     label="Location/Address"
@@ -962,7 +950,7 @@ const Bookings = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid >
                   <TextField
                     fullWidth
                     label="Occupation"
@@ -976,7 +964,7 @@ const Bookings = () => {
               <Divider sx={{ my: 3 }} />
               <Typography variant="h6" gutterBottom>Booking Information</Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid>
                   <TextField
                     fullWidth
                     label="Hostel Name"
@@ -986,7 +974,7 @@ const Bookings = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid >
                   <TextField
                     fullWidth
                     label="Room Number"
@@ -996,7 +984,7 @@ const Bookings = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid >
                   <FormControl fullWidth margin="normal" required>
                     <InputLabel>Room Type</InputLabel>
                     <Select
@@ -1011,7 +999,7 @@ const Bookings = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid>
                   <FormControl fullWidth margin="normal" required>
                     <InputLabel>Duration</InputLabel>
                     <Select
@@ -1027,7 +1015,7 @@ const Bookings = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid >
                   <TextField
                     fullWidth
                     label="Check-in Date"
@@ -1046,7 +1034,7 @@ const Bookings = () => {
               <Divider sx={{ my: 3 }} />
               <Typography variant="h6" gutterBottom>Payment Information</Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid >
                   <FormControl fullWidth margin="normal" required>
                     <InputLabel>Payment Method</InputLabel>
                     <Select
@@ -1061,7 +1049,7 @@ const Bookings = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid >
                   <TextField
                     fullWidth
                     label="Booking Fee"
@@ -1075,7 +1063,7 @@ const Bookings = () => {
                     required
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid>
                   <TextField
                     fullWidth
                     label="Payment Reference/Number"

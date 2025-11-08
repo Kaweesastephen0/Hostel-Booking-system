@@ -19,17 +19,21 @@ connectDB();
 const app = express();
 
 // Middlewares
-const allowedOrigins = (process.env.FRONTEND_URL || "https://hostel-booking-system-xnck.vercel.app")
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    process.env.FRONTEND_URI
+    
+    ]
 const corsOptions = {
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin) {
             return callback(null, true);
         }
-        return callback(new Error("Not allowed by CORS"));
+        if(allowedOrigins.includes(origin)){
+        return callback(null, true);
+        }else{
+            return callback(new Error("Not allowed by CORS"))
+        }
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -93,8 +97,4 @@ app.all('/', (req, res) => {
 
 const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, () => {
-    console.log(` Hostel Booking API started on port ${PORT}!!`);
-    console.log(` Health check: http://localhost:${PORT}/api/health`);
-    console.log(` Hostels API: http://localhost:${PORT}/api/hostels`);
-});
+app.listen(PORT);
