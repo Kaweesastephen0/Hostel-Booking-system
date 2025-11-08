@@ -13,55 +13,70 @@ import {
 export default function Contactus() {
   return (
     <div className={styles.contactPage}>
-      {/* Header Section */}
-      <section className={styles.header}>
-        <img
-          src="https://images.unsplash.com/photo-1600585154161-1c1b0b09f0d5?auto=format&fit=crop&w=1920&q=80"
-          alt="Hostel exterior"
-          className={styles.headerImage}
-        />
-        <div className={styles.overlay}>
-          <h1 className={styles.title}>Contact Muk Book Hostel</h1>
-          <p className={styles.subtitle}>
-            We’re here to help you find your perfect stay near Makerere University.
+      {/* Hero Section */}
+      <section className={styles.hero}>
+        <div className={styles.heroOverlay}>
+          <h1>Contact MUK BOOK</h1>
+          <p>
+            Your trusted companion for hostel discovery around Makerere
+            University. Reach out for support, listings, or collaborations.
           </p>
         </div>
       </section>
 
-      {/* Main Section */}
-      <section className={styles.main}>
-        <div className={styles.infoSection}>
-          <h2 className={styles.heading}>Get in Touch</h2>
-          <p className={styles.text}>
-            Have questions about your booking or need help finding the right hostel?
-            Our friendly team is ready to assist you. Reach out through any of the following:
+      {/* Contact Details */}
+      <section className={styles.mainSection}>
+        <div className={styles.leftPanel}>
+          <img
+            src="https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg?auto=compress&cs=tinysrgb&w=1600"
+            alt="Support team"
+            className={styles.sideImage}
+          />
+        </div>
+
+        <div className={styles.rightPanel}>
+          <h2>Get in Touch</h2>
+          <p className={styles.intro}>
+            We’re here to help — choose your preferred method of contact.
           </p>
 
-          <div className={styles.contactList}>
-            <div className={styles.contactItem}>
-              <FaWhatsapp className={styles.iconGreen} />
-              <a
-                href="https://wa.me/256759546308"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Chat on WhatsApp (+256 759 546 308)
-              </a>
+          <div className={styles.contactGrid}>
+            <div className={styles.card}>
+              <FaWhatsapp className={`${styles.icon} ${styles.green}`} />
+              <div>
+                <h3>WhatsApp</h3>
+                <a
+                  href="https://wa.me/256759546308"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  +256 759 546 308
+                </a>
+              </div>
             </div>
 
-            <div className={styles.contactItem}>
-              <FaEnvelope className={styles.iconBlue} />
-              <a href="mailto:support@mukbook.com">support@mukbook.com</a>
+            <div className={styles.card}>
+              <FaEnvelope className={`${styles.icon} ${styles.blue}`} />
+              <div>
+                <h3>Email</h3>
+                <a href="mailto:support@mukbook.com">support@mukbook.com</a>
+              </div>
             </div>
 
-            <div className={styles.contactItem}>
-              <FaPhoneAlt className={styles.iconBlue} />
-              <a href="tel:+256759546308">+256 759 546 308</a>
+            <div className={styles.card}>
+              <FaPhoneAlt className={`${styles.icon} ${styles.orange}`} />
+              <div>
+                <h3>Call Us</h3>
+                <a href="tel:+256759546308">+256 759 546 308</a>
+              </div>
             </div>
 
-            <div className={styles.contactItem}>
-              <FaMapMarkerAlt className={styles.iconRed} />
-              <p>Kikoni, Makerere — Kampala, Uganda</p>
+            <div className={styles.card}>
+              <FaMapMarkerAlt className={`${styles.icon} ${styles.red}`} />
+              <div>
+                <h3>Address</h3>
+                <p>Kikoni, Makerere University — Kampala, Uganda</p>
+              </div>
             </div>
           </div>
 
@@ -92,35 +107,40 @@ export default function Contactus() {
             </a>
           </div>
         </div>
+      </section>
 
-        {/* Map Section */}
-        <div className={styles.mapWrapper}>
-          <h3 className={styles.mapHeading}>Find Us on Google Map</h3>
-          <div className={styles.mapContainer}>
-            <iframe
-              title="Muk Book Hostel Location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.859209663169!2d32.57254317574396!3d0.332845964069035!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177dbc77554e5bb3%3A0x123456789abcd!2sMakerere%20University!5e0!3m2!1sen!2sug!4v1700000000000"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-            ></iframe>
-          </div>
+      {/* Google Street Map */}
+      <section className={styles.mapSection}>
+        <h2>Find Us on Google Street View</h2>
+        <p className={styles.mapText}>
+          Explore the Makerere University area using the live Google Street Map below.
+        </p>
+        <div className={styles.mapContainer}>
+          <iframe
+            title="Makerere University Street View"
+            src="https://www.google.com/maps/embed?pb=!4v1730668800000!6m8!1m7!1sCAoSLEFGMVFpcE55MmJDaWhYUzYyT3FJOWdtNmNsM2JQRHdBNy1QRG9uVWtDSkty!2m2!1d0.332845964069035!2d32.57254317574396!3f0!4f0!5f0.7820865974627469"
+            width="100%"
+            height="480"
+            style={{ border: 0, borderRadius: "20px" }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
         </div>
       </section>
 
-      {/* Bottom Section */}
-      <section className={styles.bottom}>
-        <div className={styles.bottomOverlay}></div>
+      {/* Footer */}
+      <section className={styles.footerBanner}>
         <img
-          src="https://images.unsplash.com/photo-1600585154172-62cc3f25b7b2?auto=format&fit=crop&w=1200&q=80"
-          alt="Hostel interior view"
-          className={styles.bottomImage}
+          src="https://images.pexels.com/photos/261187/pexels-photo-261187.jpeg?auto=compress&cs=tinysrgb&w=1600"
+          alt="Modern hostel"
+          className={styles.footerImage}
         />
-        <p className={styles.footerText}>
-          Muk Book — Your trusted hostel booking platform in Uganda.
-        </p>
+        <div className={styles.overlay}></div>
+        <div className={styles.footerText}>
+          <h2>Your Hostel Experience, Simplified</h2>
+          <p>© 2025 MUK BOOK — All Rights Reserved</p>
+        </div>
       </section>
     </div>
   );
