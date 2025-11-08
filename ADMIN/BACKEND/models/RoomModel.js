@@ -33,6 +33,11 @@ const roomSchema = new mongoose.Schema({
         ref: 'User',
         required: false
     },
+    status: {
+        type: String,
+        enum: ['available', 'booked', 'maintenance'],
+        default: 'available'
+    },
     bookingPrice: {
         type: Number,
         required: [true, 'Booking price is needed'],
