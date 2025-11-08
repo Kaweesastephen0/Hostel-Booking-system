@@ -1,4 +1,3 @@
-
 import frontUser from '../models/User.js';
 import crypto from 'crypto';
 import sgMail from '@sendgrid/mail';
@@ -7,6 +6,18 @@ import cookieParser from 'cookie-parser';
 
 // Initialize SendGrid
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+// Async email queue helper - sends emails without blocking response
+const queueEmail = async (emailData) => {
+  setImmediate(async () => {
+    try {
+      await sgMail.send(emailData);
+      console.log(`Email sent successfully to ${emailData.to}`);
+    } catch (error) {
+      console.error(`Failed to send email to ${emailData.to}:`, error.response ? error.response.body : error.message);
+    }
+  });
+};
 
 //token creation
 const generateToken = (id) => {
@@ -110,12 +121,8 @@ export const register = async (req, res) => {
         text: `Welcome to ${process.env.APP_NAME}!\n\nHello ${user.firstName} ${user.surname},\n\nThank you for registering with ${process.env.APP_NAME} Hostel Booking System!\n\nYour account has been successfully created.`
       };
 
-      try {
-        await sgMail.send(msg);
-        console.log('Welcome email sent successfully');
-      } catch (emailError) {
-        console.error('Failed to send welcome email:', emailError);
-      }
+      // Queue email asynchronously - doesn't block response
+      queueEmail(msg);
 
       const token = generateToken(user._id);
 
@@ -250,24 +257,15 @@ export const forgotPassword = async (req, res) => {
       text: `Password Reset Request\n\nYou requested a password reset for your ${process.env.APP_NAME} account.\n\nYour reset code is: ${resetToken}\n\nThis code will expire in ${parseInt(process.env.RESET_TOKEN_EXPIRE) / 60000} minutes.\n\nIf you didn't request this, please ignore this email.`
     };
 
-    try {
-      await sgMail.send(msg);
-      console.log('Password reset email sent successfully');
-      res.status(200).json({
-        message: 'Reset code sent to email',
-        success: true
-      });
-    } catch (emailError) {
-      console.error('Failed to send email:', emailError);
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpire = undefined;
-      await user.save();
+    // Queue email asynchronously - doesn't block response
+    queueEmail(msg);
 
-      return res.status(500).json({
-        message: 'Failed to send reset code. Please try again later.',
-        error: process.env.NODE_ENV === 'development' ? emailError.message : undefined
-      });
-    }
+    // Respond immediately without waiting for email
+    res.status(200).json({
+      message: 'Reset code sent to email',
+      success: true
+    });
+
   } catch (error) {
     console.error('Forgot password error:', error);
     res.status(500).json({ message: 'An error occurred during password reset' });
