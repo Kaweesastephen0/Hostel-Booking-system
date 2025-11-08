@@ -23,7 +23,7 @@ export default function ContactUs() {
         <div className={styles.overlay}>
           <h1 className={styles.title}>Contact Muk Book Hostel</h1>
           <p className={styles.subtitle}>
-            We’re here to help you find your perfect stay near Makerere.
+            We’re here to help you find your perfect stay near Makerere University.
           </p>
         </div>
       </section>
@@ -34,8 +34,8 @@ export default function ContactUs() {
           <h2 className={styles.heading}>Get in Touch</h2>
           <p className={styles.text}>
             Have questions about your booking or need help finding the right
-            hostel? Our friendly team is ready to assist you. Reach out anytime
-            through any of the following contacts:
+            hostel? Our friendly team is ready to assist you. Reach out through
+            any of the following:
           </p>
 
           <div className={styles.contactList}>
@@ -113,8 +113,9 @@ export default function ContactUs() {
 
       {/* Bottom Section */}
       <section className={styles.bottom}>
+        <div className={styles.bottomOverlay}></div>
         <img
-          src="https://images.unsplash.com/photo-1600585154172-62cc3f25b7b2?auto=format&fit=crop&w=900&q=80"
+          src="https://images.unsplash.com/photo-1600585154172-62cc3f25b7b2?auto=format&fit=crop&w=1200&q=80"
           alt="Hostel interior view"
           className={styles.bottomImage}
         />
