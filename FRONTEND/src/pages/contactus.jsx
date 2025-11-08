@@ -10,7 +10,7 @@ import {
   FaTwitter,
 } from "react-icons/fa";
 
-export default function ContactUs() {
+export default function Contactus() {
   return (
     <div className={styles.contactPage}>
       {/* Header Section */}
