@@ -21,10 +21,23 @@ export const getHostelImage = (hostel) => {
   if (hostel?.image) return hostel.image;
   
   if (hostel?.images && Array.isArray(hostel.images) && hostel.images.length > 0) {
-    const imageUrl = hostel.images[0];
-    return imageUrl.startsWith('http') 
-      ? imageUrl 
-      : `http://localhost:5000${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+    // Handle both string and object formats
+    let imageUrl;
+    
+    if (typeof hostel.images[0] === 'string') {
+      imageUrl = hostel.images[0];
+    } else if (typeof hostel.images[0] === 'object' && hostel.images[0].url) {
+      imageUrl = hostel.images[0].url;
+    } else {
+      return null;
+    }
+    
+    // Ensure we have a valid URL string before calling startsWith
+    if (typeof imageUrl === 'string') {
+      return imageUrl.startsWith('http') 
+        ? imageUrl 
+        : `${import.meta.env.VITE_API_URL}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+    }
   }
   
   return null;

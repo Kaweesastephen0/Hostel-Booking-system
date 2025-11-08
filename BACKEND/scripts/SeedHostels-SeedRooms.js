@@ -6,232 +6,191 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const sampleHostels = [
-  // These hostels will have rooms 1M and above
+  // Premium hostels (rooms >= 1M)
   {
     name: "Olympia Hostel",
-    description: "A comfortable and secure hostel located in the heart of Makerere.",
-    image: "https://images.pexels.com/photos/20237982/pexels-photo-20237982.jpeg",
-    amenities: ["wifi", "security", "water", "electricity", "parking", "gym"],
+    description: "A comfortable and secure hostel located in the heart of Makerere with modern facilities and 24/7 security.",
+    images: [{ url: "https://images.pexels.com/photos/20237982/pexels-photo-20237982.jpeg", isPrimary: true }],
+    amenities: ["wifi", "security", "water", "electricity", "parking", "gym", "laundry"],
     HostelGender: "mixed",
     distance: "0.3 km",
     location: "Makerere",
     availability: true,
     rating: { average: 4.5, count: 24 },
-    featured: true,
-    rooms: []
+    featured: true
   },
   {
     name: "Lady Juliana Hostel",
-    description: "Modern apartments with all amenities included.",
-    image: "https://images.pexels.com/photos/18153132/pexels-photo-18153132.jpeg",
-    amenities: ["wifi", "security", "water", "electricity", "parking", "laundry"],
+    description: "Modern female-only apartments with all amenities included and excellent security measures.",
+    images: [{ url: "https://images.pexels.com/photos/18153132/pexels-photo-18153132.jpeg", isPrimary: true }],
+    amenities: ["wifi", "security", "water", "electricity", "parking", "laundry", "kitchen"],
     HostelGender: "female",
     distance: "0.2 km",
     location: "Makerere",
     availability: true,
     rating: { average: 4.3, count: 32 },
-    featured: true,
-    rooms: []
+    featured: true
   },
   {
     name: "Apex Hostel",
-    description: "Luxury student accommodation with premium amenities.",
-    image: "https://images.pexels.com/photos/2119714/pexels-photo-2119714.jpeg",
-    amenities: ["wifi", "security", "water", "electricity", "parking", "gym"],
+    description: "Luxury student accommodation with premium amenities including gym and study rooms.",
+    images: [{ url: "https://images.pexels.com/photos/2119714/pexels-photo-2119714.jpeg", isPrimary: true }],
+    amenities: ["wifi", "security", "water", "electricity", "parking", "gym", "study_room"],
     HostelGender: "female",
     distance: "0.3 km",
     location: "Makerere",
     availability: true,
     rating: { average: 4.7, count: 45 },
-    featured: true,
-    rooms: []
+    featured: true
   },
   {
-    name: "Aryan Hostel",
-    description: "Premium accommodation with all modern facilities.",
-    image: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
-    amenities: ["wifi", "security", "water", "electricity", "parking", "gym"],
+    name: "Douglas Villa",
+    description: "Spacious and elegant hostel with a homely environment, perfect for serious students.",
+    images: [{ url: "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg", isPrimary: true }],
+    amenities: ["wifi", "security", "water", "electricity", "parking", "kitchen", "lounge"],
     HostelGender: "mixed",
-    distance: "0.2 km",
+    distance: "0.5 km",
     location: "Makerere",
     availability: true,
-    rating: { average: 4.4, count: 56 },
-    featured: true,
-    rooms: []
+    rating: { average: 4.6, count: 38 },
+    featured: true
   },
   {
-    name: "Castle Ville Hostel",
-    description: "Premium student residence with modern facilities.",
-    image: "https://images.pexels.com/photos/262048/pexels-photo-262048.jpeg",
-    amenities: ["wifi", "security", "water", "electricity", "parking", "gym"],
-    HostelGender: "mixed",
-    distance: "0.3 km",
-    location: "Makerere",
-    availability: true,
-    rating: { average: 4.6, count: 29 },
-    featured: true,
-    rooms: []
-  },
-  {
-    name: "Dream World Hostel",
-    description: "Luxury accommodation for students.",
-    image: "https://images.pexels.com/photos/6585757/pexels-photo-6585757.jpeg",
-    amenities: ["wifi", "security", "water", "electricity", "parking", "gym"],
-    HostelGender: "mixed",
+    name: "Mary Stuart Hall",
+    description: "Premium female hostel with modern amenities and spacious rooms near main campus.",
+    images: [{ url: "https://images.pexels.com/photos/1457847/pexels-photo-1457847.jpeg", isPrimary: true }],
+    amenities: ["wifi", "security", "water", "electricity", "parking", "laundry", "study_room"],
+    HostelGender: "female",
     distance: "0.4 km",
     location: "Makerere",
     availability: true,
-    rating: { average: 4.7, count: 51 },
-    featured: true,
-    rooms: []
+    rating: { average: 4.8, count: 52 },
+    featured: true
   },
-
-  // These hostels will have rooms below 1M
+  
+  // Mid-range hostels (600k - 1M)
+  {
+    name: "Akamwesi Hostel",
+    description: "Affordable mixed hostel with good security and basic amenities for students.",
+    images: [{ url: "https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg", isPrimary: true }],
+    amenities: ["wifi", "security", "water", "electricity"],
+    HostelGender: "mixed",
+    distance: "0.6 km",
+    location: "Makerere",
+    availability: true,
+    rating: { average: 4.1, count: 28 },
+    featured: false
+  },
+  {
+    name: "Complex Hostel",
+    description: "Well-maintained hostel with good ventilation and proximity to lecture rooms.",
+    images: [{ url: "https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg", isPrimary: true }],
+    amenities: ["wifi", "security", "water", "electricity", "parking"],
+    HostelGender: "mixed",
+    distance: "0.7 km",
+    location: "Makerere",
+    availability: true,
+    rating: { average: 4.0, count: 22 },
+    featured: false
+  },
+  {
+    name: "Nsibirwa Hostel",
+    description: "Comfortable accommodation with reliable water and electricity supply.",
+    images: [{ url: "https://images.pexels.com/photos/2029665/pexels-photo-2029665.jpeg", isPrimary: true }],
+    amenities: ["wifi", "security", "water", "electricity", "kitchen"],
+    HostelGender: "mixed",
+    distance: "0.5 km",
+    location: "Makerere",
+    availability: true,
+    rating: { average: 4.2, count: 31 },
+    featured: false
+  },
+  {
+    name: "Livingstone Hall",
+    description: "Classic male hostel with study-friendly environment and good security.",
+    images: [{ url: "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg", isPrimary: true }],
+    amenities: ["wifi", "security", "water", "electricity", "study_room"],
+    HostelGender: "male",
+    distance: "0.3 km",
+    location: "Makerere",
+    availability: true,
+    rating: { average: 4.3, count: 41 },
+    featured: false
+  },
+  
+  // Affordable hostels (rooms < 600k)
   {
     name: "Nakiyingi Hostel",
-    description: "Affordable accommodation for students on a budget.",
-    image: "https://images.pexels.com/photos/1838639/pexels-photo-1838639.jpeg",
+    description: "Affordable accommodation for students on a budget with basic amenities.",
+    images: [{ url: "https://images.pexels.com/photos/1838639/pexels-photo-1838639.jpeg", isPrimary: true }],
     amenities: ["wifi", "security", "water", "electricity"],
     HostelGender: "mixed",
     distance: "0.4 km",
     location: "Makerere",
     availability: true,
     rating: { average: 4.2, count: 18 },
-    featured: false,
-    rooms: []
+    featured: false
   },
   {
-    name: "New Nana Hostel",
-    description: "Comfortable residence for students near LDC.",
-    image: "https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg",
-    amenities: ["wifi", "security", "water", "electricity"],
-    HostelGender: "mixed",
-    distance: "0.5 km",
-    location: "Makerere",
-    availability: true,
-    rating: { average: 4.3, count: 22 },
-    featured: false,
-    rooms: []
-  },
-  {
-    name: "Baskon Hostel",
-    description: "Affordable comfort with basic amenities.",
-    image: "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg",
-    amenities: ["wifi", "security", "water", "electricity"],
-    HostelGender: "mixed",
-    distance: "0.7 km",
-    location: "Makerere",
-    availability: true,
-    rating: { average: 4.1, count: 15 },
-    featured: false,
-    rooms: []
-  },
-  {
-    name: "Akwata Empola Hostel",
-    description: "Popular student hostel with friendly environment.",
-    image: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg",
-    amenities: ["wifi", "security", "water", "electricity"],
-    HostelGender: "mixed",
-    distance: "0.3 km",
-    location: "Makerere",
-    availability: true,
-    rating: { average: 4.0, count: 42 },
-    featured: false,
-    rooms: []
-  },
-  {
-    name: "Muhika Hostel",
-    description: "Budget-friendly accommodation for students.",
-    image: "https://images.pexels.com/photos/271619/pexels-photo-271619.jpeg",
-    amenities: ["wifi", "security", "water", "electricity"],
-    HostelGender: "mixed",
-    distance: "0.6 km",
-    location: "Makerere",
-    availability: true,
-    rating: { average: 3.9, count: 38 },
-    featured: false,
-    rooms: []
-  },
-  {
-    name: "JJ Hostel",
-    description: "Family-run hostel with personalized service.",
-    image: "https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg",
-    amenities: ["wifi", "security", "water", "electricity"],
-    HostelGender: "mixed",
-    distance: "0.7 km",
-    location: "Makerere",
-    availability: true,
-    rating: { average: 4.2, count: 36 },
-    featured: false,
-    rooms: []
-  },
-   {
     name: "Green Valley Hostel",
-    description: "Eco-friendly budget accommodation with garden space.",
-    image: "https://images.pexels.com/photos/2091166/pexels-photo-2091166.jpeg",
+    description: "Eco-friendly budget accommodation with garden space and fresh air.",
+    images: [{ url: "https://images.pexels.com/photos/2091166/pexels-photo-2091166.jpeg", isPrimary: true }],
     amenities: ["wifi", "security", "water", "electricity", "garden"],
     HostelGender: "mixed",
     distance: "0.8 km",
     location: "Makerere",
     availability: true,
     rating: { average: 4.0, count: 25 },
-    featured: false,
-    rooms: []
+    featured: false
   },
   {
-    name: "Student Comfort Hostel",
-    description: "Perfect for students seeking comfortable budget living.",
-    image: "https://images.pexels.com/photos/271706/pexels-photo-271706.jpeg",
-    amenities: ["wifi", "security", "water", "electricity", "common room"],
+    name: "Kikoni View Hostel",
+    description: "Budget-friendly hostel in Kikoni with easy access to campus and affordable rates.",
+    images: [{ url: "https://images.pexels.com/photos/2251247/pexels-photo-2251247.jpeg", isPrimary: true }],
+    amenities: ["security", "water", "electricity"],
     HostelGender: "mixed",
-    distance: "0.5 km",
-    location: "Makerere",
+    distance: "1.2 km",
+    location: "Kikoni",
     availability: true,
-    rating: { average: 4.1, count: 30 },
-    featured: false,
-    rooms: []
+    rating: { average: 3.8, count: 15 },
+    featured: false
   },
   {
-    name: "Campus View Hostel",
-    description: "Budget hostel with great views of the campus area.",
-    image: "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg",
+    name: "Katanga Hostel",
+    description: "Affordable student hostel in the lively Katanga area with market access.",
+    images: [{ url: "https://images.pexels.com/photos/1454806/pexels-photo-1454806.jpeg", isPrimary: true }],
+    amenities: ["security", "water", "electricity"],
+    HostelGender: "mixed",
+    distance: "1.5 km",
+    location: "Katanga",
+    availability: true,
+    rating: { average: 3.9, count: 20 },
+    featured: false
+  },
+  {
+    name: "Mitchell Hall",
+    description: "Traditional male hostel with spacious rooms and study-friendly atmosphere.",
+    images: [{ url: "https://images.pexels.com/photos/2119713/pexels-photo-2119713.jpeg", isPrimary: true }],
     amenities: ["wifi", "security", "water", "electricity"],
-    HostelGender: "female",
-    distance: "0.6 km",
+    HostelGender: "male",
+    distance: "0.4 km",
     location: "Makerere",
     availability: true,
-    rating: { average: 4.3, count: 28 },
-    featured: false,
-    rooms: []
-  },
-   {
-    name: "Urban Lodge Hostel",
-    description: "Modern urban living at affordable prices.",
-    image: "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg",
-    amenities: ["wifi", "security", "water", "electricity", "laundry"],
-    HostelGender: "mixed",
-    distance: "0.9 km",
-    location: "Makerere",
-    availability: true,
-    rating: { average: 3.8, count: 22 },
-    featured: false,
-    rooms: []
+    rating: { average: 4.1, count: 35 },
+    featured: false
   },
   {
-    name: "Scholar's Rest Hostel",
-    description: "Quiet environment perfect for focused students.",
-    image: "https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg",
-    amenities: ["wifi", "security", "water", "electricity", "study room"],
+    name: "University Hall",
+    description: "Historic hostel offering budget accommodation with basic facilities.",
+    images: [{ url: "https://images.pexels.com/photos/2883049/pexels-photo-2883049.jpeg", isPrimary: true }],
+    amenities: ["security", "water", "electricity"],
     HostelGender: "male",
-    distance: "0.7 km",
+    distance: "0.2 km",
     location: "Makerere",
     availability: true,
-    rating: { average: 4.4, count: 35 },
-    featured: false,
-    rooms: []
+    rating: { average: 3.7, count: 42 },
+    featured: false
   }
-
-
 ];
 
 const seedAll = async () => {
@@ -251,362 +210,434 @@ const seedAll = async () => {
     // 2. Create rooms for each hostel
     const sampleRooms = [];
 
-    // Rooms for hostels that will have 1M+ rooms (first 6 hostels)
-    // Olympia Hostel - all rooms 1M+
+    // Olympia Hostel - Premium rooms
+    const olympiaId = insertedHostels[0]._id;
     sampleRooms.push(
       {
+        hostelId: olympiaId,
         roomNumber: "OLY-101",
-        roomImage: "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg",
+        roomImages: [{ url: "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg", isPrimary: true }],
         roomType: 'single', 
         roomGender: 'mixed', 
         roomPrice: 1200000,
-        hostelId: insertedHostels[0]._id,
         bookingPrice: 96000,
-        roomDescription: 'Spacious single room with great ventilation',
+        roomDescription: 'Spacious single room with private bathroom and study desk',
         maxOccupancy: 1,
       },
       {
+        hostelId: olympiaId,
         roomNumber: "OLY-102",
-        roomImage: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg",
+        roomImages: [{ url: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg", isPrimary: true }],
         roomType: "double", 
         roomGender: "mixed", 
         roomPrice: 1800000, 
-        hostelId: insertedHostels[0]._id,
         bookingPrice: 180000, 
-        roomDescription: 'Comfortable double room', 
+        roomDescription: 'Comfortable double room with built-in wardrobes', 
         maxOccupancy: 2, 
+      },
+      {
+        hostelId: olympiaId,
+        roomNumber: "OLY-103",
+        roomImages: [{ url: "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg", isPrimary: true }],
+        roomType: 'single', 
+        roomGender: 'male', 
+        roomPrice: 1150000,
+        bookingPrice: 92000,
+        roomDescription: 'Modern single room with excellent lighting',
+        maxOccupancy: 1,
       }
     );
 
-    // Lady Juliana Hostel - all rooms 1M+
+    // Lady Juliana Hostel - Premium rooms
+    const ladyJulianaId = insertedHostels[1]._id;
     sampleRooms.push(
       {
+        hostelId: ladyJulianaId,
         roomNumber: "LJH-201",
-        roomImage: "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg",
+        roomImages: [{ url: "https://images.pexels.com/photos/2082087/pexels-photo-2082087.jpeg", isPrimary: true }],
         roomType: 'single', 
         roomGender: 'female', 
         roomPrice: 1100000,
-        hostelId: insertedHostels[1]._id,
         bookingPrice: 88000,
-        roomDescription: 'Cozy single room',
+        roomDescription: 'Cozy single room with private balcony',
         maxOccupancy: 1,
       },
       {
+        hostelId: ladyJulianaId,
         roomNumber: "LJH-202",
-        roomImage: "https://images.pexels.com/photos/262048/pexels-photo-262048.jpeg",
-        roomType: "double", 
-        roomGender: "female", 
-        roomPrice: 1600000, 
-        hostelId: insertedHostels[1]._id,
-        bookingPrice: 160000, 
-        roomDescription: 'Luxury double room', 
-        maxOccupancy: 2, 
+        roomImages: [{ url: "https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg", isPrimary: true }],
+        roomType: 'double', 
+        roomGender: 'female', 
+        roomPrice: 1600000,
+        bookingPrice: 160000,
+        roomDescription: 'Elegant double room with ensuite bathroom',
+        maxOccupancy: 2,
       }
     );
 
-    // Apex Hostel - all rooms 1M+
+    // Apex Hostel - Premium rooms
+    const apexId = insertedHostels[2]._id;
     sampleRooms.push(
       {
+        hostelId: apexId,
         roomNumber: "APX-301",
-        roomImage: "https://images.pexels.com/photos/1648768/pexels-photo-1648768.jpeg",
+        roomImages: [{ url: "https://images.pexels.com/photos/1648768/pexels-photo-1648768.jpeg", isPrimary: true }],
         roomType: 'single', 
         roomGender: 'female', 
         roomPrice: 1300000,
-        hostelId: insertedHostels[2]._id,
         bookingPrice: 104000,
-        roomDescription: 'Premium single room',
+        roomDescription: 'Premium single room with air conditioning',
         maxOccupancy: 1,
       },
       {
+        hostelId: apexId,
         roomNumber: "APX-302",
-        roomImage: "https://images.pexels.com/photos/271643/pexels-photo-271643.jpeg",
-        roomType: "double", 
-        roomGender: "female", 
-        roomPrice: 2000000, 
-        hostelId: insertedHostels[2]._id,
-        bookingPrice: 200000, 
-        roomDescription: 'Executive double room', 
-        maxOccupancy: 2, 
-      }
-    );
-
-    // Aryan Hostel - all rooms 1M+
-    sampleRooms.push(
-      {
-        roomNumber: "ARY-401",
-        roomImage: "https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg",
+        roomImages: [{ url: "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg", isPrimary: true }],
         roomType: 'single', 
-        roomGender: 'mixed', 
-        roomPrice: 1400000,
-        hostelId: insertedHostels[3]._id,
-        bookingPrice: 112000,
-        roomDescription: 'Luxury single room',
+        roomGender: 'female', 
+        roomPrice: 1250000,
+        bookingPrice: 100000,
+        roomDescription: 'Luxury single with kitchenette and workspace',
         maxOccupancy: 1,
       }
     );
 
-    // Castle Ville Hostel - all rooms 1M+
+    // Douglas Villa - Premium rooms
+    const douglasId = insertedHostels[3]._id;
     sampleRooms.push(
       {
-        roomNumber: "CVL-501",
-        roomImage: "https://images.pexels.com/photos/6585757/pexels-photo-6585757.jpeg",
+        hostelId: douglasId,
+        roomNumber: "DV-401",
+        roomImages: [{ url: "https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg", isPrimary: true }],
         roomType: 'single', 
         roomGender: 'mixed', 
-        roomPrice: 1500000,
-        hostelId: insertedHostels[4]._id,
-        bookingPrice: 120000,
-        roomDescription: 'Premium single room',
+        roomPrice: 1150000,
+        bookingPrice: 92000,
+        roomDescription: 'Spacious room with modern fixtures',
         maxOccupancy: 1,
-      }
-    );
-
-    // Dream World Hostel - all rooms 1M+
-    sampleRooms.push(
+      },
       {
-        roomNumber: "DWH-601",
-        roomImage: "https://images.pexels.com/photos/6585763/pexels-photo-6585763.jpeg",
-        roomType: 'single', 
+        hostelId: douglasId,
+        roomNumber: "DV-402",
+        roomImages: [{ url: "https://images.pexels.com/photos/439227/pexels-photo-439227.jpeg", isPrimary: true }],
+        roomType: 'double', 
         roomGender: 'mixed', 
         roomPrice: 1700000,
-        hostelId: insertedHostels[5]._id,
-        bookingPrice: 136000,
-        roomDescription: 'Luxury single room',
-        maxOccupancy: 1,
+        bookingPrice: 170000,
+        roomDescription: 'Large double room with study area',
+        maxOccupancy: 2,
       }
     );
 
-    // Rooms for hostels that will have below 1M rooms (remaining hostels)
-    // Nakiyingi Hostel - all rooms below 1M
+    // Mary Stuart Hall - Premium rooms
+    const maryId = insertedHostels[4]._id;
     sampleRooms.push(
       {
-        roomNumber: "NAK-701",
-        roomImage: "https://images.pexels.com/photos/271619/pexels-photo-271619.jpeg",
-        roomType: 'shared', 
-        roomGender: 'mixed', 
-        roomPrice: 600000,
-        hostelId: insertedHostels[6]._id,
-        bookingPrice: 36000,
-        roomDescription: 'Budget shared accommodation',
-        maxOccupancy: 4,
+        hostelId: maryId,
+        roomNumber: "MSH-501",
+        roomImages: [{ url: "https://images.pexels.com/photos/1329711/pexels-photo-1329711.jpeg", isPrimary: true }],
+        roomType: 'single', 
+        roomGender: 'female', 
+        roomPrice: 1280000,
+        bookingPrice: 102400,
+        roomDescription: 'Premium room with garden view',
+        maxOccupancy: 1,
       },
       {
-        roomNumber: "NAK-702",
-        roomImage: "https://images.pexels.com/photos/271706/pexels-photo-271706.jpeg",
+        hostelId: maryId,
+        roomNumber: "MSH-502",
+        roomImages: [{ url: "https://images.pexels.com/photos/1457845/pexels-photo-1457845.jpeg", isPrimary: true }],
         roomType: 'single', 
-        roomGender: 'mixed', 
-        roomPrice: 800000,
-        hostelId: insertedHostels[6]._id,
-        bookingPrice: 64000,
-        roomDescription: 'Affordable single room',
+        roomGender: 'female', 
+        roomPrice: 1200000,
+        bookingPrice: 96000,
+        roomDescription: 'Comfortable single with private facilities',
         maxOccupancy: 1,
       }
     );
 
-    // New Nana Hostel - all rooms below 1M
+    // Akamwesi Hostel - Mid-range rooms
+    const akamwesiId = insertedHostels[5]._id;
     sampleRooms.push(
       {
-        roomNumber: "NAN-801",
-        roomImage: "https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg",
-        roomType: 'single', 
-        roomGender: 'mixed', 
-        roomPrice: 700000,
-        hostelId: insertedHostels[7]._id,
-        bookingPrice: 56000,
-        roomDescription: 'Comfortable single room',
-        maxOccupancy: 1,
-      }
-    );
-
-    // Baskon Hostel - all rooms below 1M
-    sampleRooms.push(
-      {
-        roomNumber: "BSK-901",
-        roomImage: "https://images.pexels.com/photos/271706/pexels-photo-271706.jpeg",
-        roomType: 'shared', 
-        roomGender: 'mixed', 
-        roomPrice: 500000,
-        hostelId: insertedHostels[8]._id,
-        bookingPrice: 30000,
-        roomDescription: 'Budget shared room',
-        maxOccupancy: 4,
-      }
-    );
-
-    // Akwata Empola Hostel - all rooms below 1M
-    sampleRooms.push(
-      {
-        roomNumber: "AKE-1001",
-        roomImage: "https://images.pexels.com/photos/271619/pexels-photo-271619.jpeg",
-        roomType: 'single', 
-        roomGender: 'mixed', 
-        roomPrice: 650000,
-        hostelId: insertedHostels[9]._id,
-        bookingPrice: 52000,
-        roomDescription: 'Affordable single room',
-        maxOccupancy: 1,
-      }
-    );
-
-    // Muhika Hostel - all rooms below 1M
-    sampleRooms.push(
-      {
-        roomNumber: "MUH-1101",
-        roomImage: "https://images.pexels.com/photos/271706/pexels-photo-271706.jpeg",
-        roomType: 'shared', 
-        roomGender: 'mixed', 
-        roomPrice: 450000,
-        hostelId: insertedHostels[10]._id,
-        bookingPrice: 27000,
-        roomDescription: 'Budget shared accommodation',
-        maxOccupancy: 4,
-      }
-    );
-    // Add after your existing room definitions...
-
-// Green Valley Hostel - all rooms below 600,000
-sampleRooms.push(
-  {
-    roomNumber: "GVH-1301",
-    roomImage: "https://images.pexels.com/photos/271619/pexels-photo-271619.jpeg",
-    roomType: 'shared', 
-    roomGender: 'mixed', 
-    roomPrice: 450000,
-    hostelId: insertedHostels[12]._id,
-    bookingPrice: 27000,
-    roomDescription: 'Budget shared room with garden view',
-    maxOccupancy: 4,
-  },
-  {
-    roomNumber: "GVH-1302",
-    roomImage: "https://images.pexels.com/photos/271706/pexels-photo-271706.jpeg",
-    roomType: 'single', 
-    roomGender: 'mixed', 
-    roomPrice: 580000,
-    hostelId: insertedHostels[12]._id,
-    bookingPrice: 46400,
-    roomDescription: 'Affordable single room',
-    maxOccupancy: 1,
-  }
-);
-
-// Student Comfort Hostel - all rooms below 600,000
-sampleRooms.push(
-  {
-    roomNumber: "SCH-1401",
-    roomImage: "https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg",
-    roomType: 'single', 
-    roomGender: 'mixed', 
-    roomPrice: 400000,
-    hostelId: insertedHostels[13]._id,
-    bookingPrice: 44000,
-    roomDescription: 'Comfortable single room',
-    maxOccupancy: 1,
-  }
-);
-
-// Campus View Hostel - all rooms below 600,000
-sampleRooms.push(
-  {
-    roomNumber: "CVH-1501",
-    roomImage: "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg",
-    roomType: 'shared', 
-    roomGender: 'female', 
-    roomPrice: 400000,
-    hostelId: insertedHostels[14]._id,
-    bookingPrice: 28800,
-    roomDescription: 'Shared room for female students',
-    maxOccupancy: 3,
-  },
-  {
-    roomNumber: "CVH-1502",
-    roomImage: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg",
-    roomType: 'single', 
-    roomGender: 'female', 
-    roomPrice: 500000,
-    hostelId: insertedHostels[14]._id,
-    bookingPrice: 47200,
-    roomDescription: 'Single room with campus view',
-    maxOccupancy: 1,
-  }
-);
-
-// Urban Lodge Hostel - all rooms below 600,000
-sampleRooms.push(
-  {
-    roomNumber: "ULH-1601",
-    roomImage: "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg",
-    roomType: 'shared', 
-    roomGender: 'mixed', 
-    roomPrice: 450000,
-    hostelId: insertedHostels[15]._id,
-    bookingPrice: 25200,
-    roomDescription: 'Budget urban accommodation',
-    maxOccupancy: 4,
-  }
-);
-
-// Scholar's Rest Hostel - all rooms below 600,000
-sampleRooms.push(
-  {
-    roomNumber: "SRH-1701",
-    roomImage: "https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg",
-    roomType: 'single', 
-    roomGender: 'male', 
-    roomPrice: 570000,
-    hostelId: insertedHostels[16]._id,
-    bookingPrice: 45600,
-    roomDescription: 'Quiet single room for studying',
-    maxOccupancy: 1,
-  },
-  {
-    roomNumber: "SRH-1702",
-    roomImage: "https://images.pexels.com/photos/271643/pexels-photo-271643.jpeg",
-    roomType: 'double', 
-    roomGender: 'male', 
-    roomPrice: 520000,
-    hostelId: insertedHostels[16]._id,
-    bookingPrice: 52000,
-    roomDescription: 'Double room for student buddies',
-    maxOccupancy: 2,
-  }
-);
-
-    // JJ Hostel - all rooms below 1M
-    sampleRooms.push(
-      {
-        roomNumber: "JJH-1201",
-        roomImage: "https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg",
+        hostelId: akamwesiId,
+        roomNumber: "AKM-601",
+        roomImages: [{ url: "https://images.pexels.com/photos/2251247/pexels-photo-2251247.jpeg", isPrimary: true }],
         roomType: 'single', 
         roomGender: 'mixed', 
         roomPrice: 750000,
-        hostelId: insertedHostels[11]._id,
         bookingPrice: 60000,
-        roomDescription: 'Comfortable single room',
+        roomDescription: 'Simple single room with good ventilation',
         maxOccupancy: 1,
       },
-      
+      {
+        hostelId: akamwesiId,
+        roomNumber: "AKM-602",
+        roomImages: [{ url: "https://images.pexels.com/photos/1454806/pexels-photo-1454806.jpeg", isPrimary: true }],
+        roomType: 'double', 
+        roomGender: 'mixed', 
+        roomPrice: 900000,
+        bookingPrice: 90000,
+        roomDescription: 'Affordable double room with shared bathroom',
+        maxOccupancy: 2,
+      }
+    );
+
+    // Complex Hostel - Mid-range rooms
+    const complexId = insertedHostels[6]._id;
+    sampleRooms.push(
+      {
+        hostelId: complexId,
+        roomNumber: "CPX-701",
+        roomImages: [{ url: "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg", isPrimary: true }],
+        roomType: 'single', 
+        roomGender: 'mixed', 
+        roomPrice: 700000,
+        bookingPrice: 56000,
+        roomDescription: 'Basic single room near lecture halls',
+        maxOccupancy: 1,
+      },
+      {
+        hostelId: complexId,
+        roomNumber: "CPX-702",
+        roomImages: [{ url: "https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg", isPrimary: true }],
+        roomType: 'shared', 
+        roomGender: 'male', 
+        roomPrice: 850000,
+        bookingPrice: 68000,
+        roomDescription: 'Shared room for 3 students',
+        maxOccupancy: 3,
+      }
+    );
+
+    // Nsibirwa Hostel - Mid-range rooms
+    const nsibirwaId = insertedHostels[7]._id;
+    sampleRooms.push(
+      {
+        hostelId: nsibirwaId,
+        roomNumber: "NSB-801",
+        roomImages: [{ url: "https://images.pexels.com/photos/2029665/pexels-photo-2029665.jpeg", isPrimary: true }],
+        roomType: 'single', 
+        roomGender: 'mixed', 
+        roomPrice: 780000,
+        bookingPrice: 62400,
+        roomDescription: 'Clean single room with study desk',
+        maxOccupancy: 1,
+      },
+      {
+        hostelId: nsibirwaId,
+        roomNumber: "NSB-802",
+        roomImages: [{ url: "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg", isPrimary: true }],
+        roomType: 'double', 
+        roomGender: 'mixed', 
+        roomPrice: 950000,
+        bookingPrice: 95000,
+        roomDescription: 'Well-maintained double room',
+        maxOccupancy: 2,
+      }
+    );
+
+    // Livingstone Hall - Mid-range rooms
+    const livingstoneId = insertedHostels[8]._id;
+    sampleRooms.push(
+      {
+        hostelId: livingstoneId,
+        roomNumber: "LVH-901",
+        roomImages: [{ url: "https://images.pexels.com/photos/2883049/pexels-photo-2883049.jpeg", isPrimary: true }],
+        roomType: 'single', 
+        roomGender: 'male', 
+        roomPrice: 720000,
+        bookingPrice: 57600,
+        roomDescription: 'Traditional single room for male students',
+        maxOccupancy: 1,
+      },
+      {
+        hostelId: livingstoneId,
+        roomNumber: "LVH-902",
+        roomImages: [{ url: "https://images.pexels.com/photos/271639/pexels-photo-271639.jpeg", isPrimary: true }],
+        roomType: 'double', 
+        roomGender: 'male', 
+        roomPrice: 880000,
+        bookingPrice: 88000,
+        roomDescription: 'Classic double room with good lighting',
+        maxOccupancy: 2,
+      }
+    );
+
+    // Nakiyingi Hostel - Affordable rooms
+    const nakiyingiId = insertedHostels[9]._id;
+    sampleRooms.push(
+      {
+        hostelId: nakiyingiId,
+        roomNumber: "NAK-1001",
+        roomImages: [{ url: "https://images.pexels.com/photos/271619/pexels-photo-271619.jpeg", isPrimary: true }],
+        roomType: 'shared', 
+        roomGender: 'mixed', 
+        roomPrice: 500000,
+        bookingPrice: 36000,
+        roomDescription: 'Budget shared accommodation for 4 students',
+        maxOccupancy: 4,
+      },
+      {
+        hostelId: nakiyingiId,
+        roomNumber: "NAK-1002",
+        roomImages: [{ url: "https://images.pexels.com/photos/271706/pexels-photo-271706.jpeg", isPrimary: true }],
+        roomType: 'single', 
+        roomGender: 'mixed', 
+        roomPrice: 580000,
+        bookingPrice: 46400,
+        roomDescription: 'Affordable single room with basic amenities',
+        maxOccupancy: 1,
+      }
+    );
+
+    // Green Valley Hostel - Affordable rooms
+    const greenValleyId = insertedHostels[10]._id;
+    sampleRooms.push(
+      {
+        hostelId: greenValleyId,
+        roomNumber: "GVH-1101",
+        roomImages: [{ url: "https://images.pexels.com/photos/1838639/pexels-photo-1838639.jpeg", isPrimary: true }],
+        roomType: 'shared', 
+        roomGender: 'mixed', 
+        roomPrice: 450000,
+        bookingPrice: 27000,
+        roomDescription: 'Budget shared room with garden view',
+        maxOccupancy: 4,
+      },
+      {
+        hostelId: greenValleyId,
+        roomNumber: "GVH-1102",
+        roomImages: [{ url: "https://images.pexels.com/photos/2091166/pexels-photo-2091166.jpeg", isPrimary: true }],
+        roomType: 'single', 
+        roomGender: 'female', 
+        roomPrice: 550000,
+        bookingPrice: 44000,
+        roomDescription: 'Eco-friendly single room',
+        maxOccupancy: 1,
+      }
+    );
+
+    // Kikoni View Hostel - Affordable rooms
+    const kikoniId = insertedHostels[11]._id;
+    sampleRooms.push(
+      {
+        hostelId: kikoniId,
+        roomNumber: "KKV-1201",
+        roomImages: [{ url: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg", isPrimary: true }],
+        roomType: 'shared', 
+        roomGender: 'mixed', 
+        roomPrice: 420000,
+        bookingPrice: 25200,
+        roomDescription: 'Basic shared room in Kikoni area',
+        maxOccupancy: 4,
+      },
+      {
+        hostelId: kikoniId,
+        roomNumber: "KKV-1202",
+        roomImages: [{ url: "https://images.pexels.com/photos/271706/pexels-photo-271706.jpeg", isPrimary: true }],
+        roomType: 'double', 
+        roomGender: 'mixed', 
+        roomPrice: 600000,
+        bookingPrice: 60000,
+        roomDescription: 'Simple double room near market',
+        maxOccupancy: 2,
+      }
+    );
+
+    // Katanga Hostel - Affordable rooms
+    const katangaId = insertedHostels[12]._id;
+    sampleRooms.push(
+      {
+        hostelId: katangaId,
+        roomNumber: "KTG-1301",
+        roomImages: [{ url: "https://images.pexels.com/photos/1454806/pexels-photo-1454806.jpeg", isPrimary: true }],
+        roomType: 'shared', 
+        roomGender: 'male', 
+        roomPrice: 400000,
+        bookingPrice: 24000,
+        roomDescription: 'Budget room in lively Katanga area',
+        maxOccupancy: 4,
+      },
+      {
+        hostelId: katangaId,
+        roomNumber: "KTG-1302",
+        roomImages: [{ url: "https://images.pexels.com/photos/271619/pexels-photo-271619.jpeg", isPrimary: true }],
+        roomType: 'single', 
+        roomGender: 'male', 
+        roomPrice: 520000,
+        bookingPrice: 41600,
+        roomDescription: 'Small single room near taxi park',
+        maxOccupancy: 1,
+      }
+    );
+
+    // Mitchell Hall - Affordable rooms
+    const mitchellId = insertedHostels[13]._id;
+    sampleRooms.push(
+      {
+        hostelId: mitchellId,
+        roomNumber: "MTH-1401",
+        roomImages: [{ url: "https://images.pexels.com/photos/2119713/pexels-photo-2119713.jpeg", isPrimary: true }],
+        roomType: 'single', 
+        roomGender: 'male', 
+        roomPrice: 650000,
+        bookingPrice: 52000,
+        roomDescription: 'Traditional single room with desk',
+        maxOccupancy: 1,
+      },
+      {
+        hostelId: mitchellId,
+        roomNumber: "MTH-1402",
+        roomImages: [{ url: "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg", isPrimary: true }],
+        roomType: 'double', 
+        roomGender: 'male', 
+        roomPrice: 800000,
+        bookingPrice: 80000,
+        roomDescription: 'Spacious double room for male students',
+        maxOccupancy: 2,
+      }
+    );
+
+    // University Hall - Affordable rooms
+    const universityId = insertedHostels[14]._id;
+    sampleRooms.push(
+      {
+        hostelId: universityId,
+        roomNumber: "UNH-1501",
+        roomImages: [{ url: "https://images.pexels.com/photos/2883049/pexels-photo-2883049.jpeg", isPrimary: true }],
+        roomType: 'shared', 
+        roomGender: 'male', 
+        roomPrice: 480000,
+        bookingPrice: 28800,
+        roomDescription: 'Historic shared room on main campus',
+        maxOccupancy: 4,
+      },
+      {
+        hostelId: universityId,
+        roomNumber: "UNH-1502",
+        roomImages: [{ url: "https://images.pexels.com/photos/271639/pexels-photo-271639.jpeg", isPrimary: true }],
+        roomType: 'single', 
+        roomGender: 'male', 
+        roomPrice: 590000,
+        bookingPrice: 47200,
+        roomDescription: 'Classic single room in historic building',
+        maxOccupancy: 1,
+      }
     );
 
     // 3. Insert all rooms
     const insertedRooms = await Room.insertMany(sampleRooms);
     console.log(`✅ Successfully inserted ${insertedRooms.length} rooms`);
 
-    // 4. Update hostels with room references
-    console.log('\n🔗 Linking rooms to hostels...');
+    // 4. Verify room-hostel links
+    console.log('\n🔗 Verifying room-hostel links...');
     for (const hostel of insertedHostels) {
       const hostelRooms = insertedRooms.filter(room => 
         room.hostelId.toString() === hostel._id.toString()
       );
       
-      const roomIds = hostelRooms.map(room => room._id);
-      
-      await Hostel.findByIdAndUpdate(
-        hostel._id,
-        { $set: { rooms: roomIds } },
-        { new: true }
-      );
-      
-      console.log(`   ✅ ${hostel.name}: ${hostelRooms.length} rooms linked`);
+      console.log(`   ✅ ${hostel.name}: ${hostelRooms.length} rooms linked via hostelId`);
     }
 
     // 5. Display final summary
@@ -615,13 +646,14 @@ sampleRooms.push(
     console.log(`Total Hostels: ${insertedHostels.length}`);
     console.log(`Total Rooms: ${insertedRooms.length}`);
     
-    console.log('\n📊 Hostels with rooms 1M+:');
+    // 6. Test virtual populate
+    console.log('\n📊 Testing virtual populate (hostels with rooms):');
     const hostelsWithRooms = await Hostel.find().populate('rooms');
     hostelsWithRooms.forEach(hostel => {
       const roomPrices = hostel.rooms.map(room => room.roomPrice);
       const minPrice = Math.min(...roomPrices);
       const maxPrice = Math.max(...roomPrices);
-      console.log(`   🏨 ${hostel.name}: UGX ${minPrice.toLocaleString()} - UGX ${maxPrice.toLocaleString()}`);
+      console.log(`   🏨 ${hostel.name}: ${hostel.rooms.length} rooms | UGX ${minPrice.toLocaleString()} - UGX ${maxPrice.toLocaleString()}`);
     });
 
   } catch (error) {

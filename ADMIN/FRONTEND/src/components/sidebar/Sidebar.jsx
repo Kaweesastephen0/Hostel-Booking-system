@@ -14,32 +14,42 @@ import {
 import './Sidebar.css';
 
 const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const navigate = useNavigate();
 
+  // Get user role from localStorage
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userRole = user?.role || 'manager';
+
+  const allNavItems = [
+    { to: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard', roles: ['admin', 'manager'] },
+    { to: '/hostels', icon: <Building size={20} />, label: 'Hostels', roles: ['admin', 'manager'] },
+    { to: '/rooms', icon: <BedDouble size={20} />, label: 'Rooms', roles: ['admin', 'manager'] },
+    { to: '/bookings', icon: <CalendarCheck size={20} />, label: 'Bookings', roles: ['admin', 'manager'] },
+    { to: '/payments', icon: <Wallet size={20} />, label: 'Payments', roles: ['admin', 'manager'] },
+    { to: '/users', icon: <Users size={20} />, label: 'Users', roles: ['admin'] },
+    { to: '/settings', icon: <Settings size={20} />, label: 'Settings', roles: ['admin', 'manager'] },
+  ];
+
+  // Filter nav items based on user role
+  const navItems = allNavItems.filter(item => item.roles.includes(userRole));
+
   const handleLogout = () => {
-    // Stephan I think this is you to Implement the logout logic here
-    console.log('Logging out...');
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
     navigate('/login');
   };
 
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
-
-  const navItems = [
-    { to: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
-    { to: '/hostels', icon: <Building size={20} />, label: 'Hostels' },
-    { to: '/rooms', icon: <BedDouble size={20} />, label: 'Rooms' },
-    { to: '/bookings', icon: <CalendarCheck size={20} />, label: 'Bookings' },
-    { to: '/payments', icon: <Wallet size={20} />, label: 'Payments' },
-    { to: '/users', icon: <Users size={20} />, label: 'Users' },
-    { to: '/settings', icon: <Settings size={20} />, label: 'Settings' },
-  ];
+  const handleMouseEnter = () => setIsCollapsed(false);
+  const handleMouseLeave = () => setIsCollapsed(true);
 
   return (
-    <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-      <div className="sidebar-header" onDoubleClick={toggleSidebar} title="Double-click to toggle sidebar">
+    <aside 
+      className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="sidebar-header">
         <UserCog className="sidebar-logo" size={32} />
         <h1 className="sidebar-title">Admin Panel</h1>
       </div>
@@ -67,7 +77,9 @@ const Sidebar = () => {
           tabIndex={0}
         >
           <div className="sidebar-link-icon">
-            <LogOut size={20} />
+            <button onClick={handleLogout}>
+              <LogOut size={20} />
+            </button>
           </div>
           <span className="sidebar-link-label">Logout</span>
         </div>

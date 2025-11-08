@@ -10,8 +10,10 @@ const HostelForm = ({ hostel, onSubmit, onCancel }) => {
     description: '',
     amenities: '',
     HostelGender: 'mixed',
-    image: '',
+    images: [{ url: '', isPrimary: true }],
   });
+
+  const [errors, setErrors] = useState({}); // ✅ Add error state
 
   useEffect(() => {
     if (hostel) {
@@ -22,7 +24,9 @@ const HostelForm = ({ hostel, onSubmit, onCancel }) => {
         description: hostel.description || '',
         amenities: Array.isArray(hostel.amenities) ? hostel.amenities.join(', ') : '',
         HostelGender: hostel.HostelGender || 'mixed',
-        image: hostel.image || '',
+        images: hostel.images && hostel.images.length > 0 
+          ? hostel.images 
+          : [{ url: '', isPrimary: true }]
       });
     }
   }, [hostel]);
@@ -30,53 +34,156 @@ const HostelForm = ({ hostel, onSubmit, onCancel }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const url = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      images: [{ url, isPrimary: true }]
+    }));
+    // Clear image error when user starts typing
+    if (errors.image) {
+      setErrors(prev => ({ ...prev, image: '' }));
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // ✅ Custom validation instead of browser validation
+    const newErrors = {};
+    
+    if (!formData.name.trim()) newErrors.name = 'Hostel name is required';
+    if (!formData.location.trim()) newErrors.location = 'Location is required';
+    if (!formData.distance.trim()) newErrors.distance = 'Distance is required';
+    if (!formData.images[0]?.url?.trim()) newErrors.image = 'Image URL is required';
+    
+    // Check if there are any errors
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    // Clear errors if validation passes
+    setErrors({});
+
     const finalData = {
       ...formData,
       amenities: formData.amenities.split(',').map(item => item.trim()).filter(Boolean),
+      images: formData.images.filter(img => img.url && img.url.trim() !== '')
     };
+    
+    console.log('Submitting data:', finalData);
     onSubmit(finalData);
   };
 
   return (
-    <form className="hostel-form" onSubmit={handleSubmit}>
+    <form className="hostel-form" onSubmit={handleSubmit} noValidate> {/* ✅ Add noValidate */}
       <div className="form-grid">
+        {/* Hostel Name */}
         <div className="form-group">
           <label htmlFor="name"><Building size={14} /> Hostel Name</label>
-          <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} placeholder="e.g., Nana Hostel" required />
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            value={formData.name} 
+            onChange={handleChange} 
+            placeholder="e.g., Nana Hostel" 
+            className={errors.name ? 'error' : ''}
+          />
+          {errors.name && <span className="error-message">{errors.name}</span>}
         </div>
+
+        {/* Location */}
         <div className="form-group">
           <label htmlFor="location"><MapPin size={14} /> Location / City</label>
-          <input type="text" id="location" name="location" value={formData.location} onChange={handleChange} placeholder="e.g., Wandegeya" required />
+          <input 
+            type="text" 
+            id="location" 
+            name="location" 
+            value={formData.location} 
+            onChange={handleChange} 
+            placeholder="e.g., Wandegeya" 
+            className={errors.location ? 'error' : ''}
+          />
+          {errors.location && <span className="error-message">{errors.location}</span>}
         </div>
+
+        {/* Distance */}
         <div className="form-group">
           <label htmlFor="distance"><Milestone size={14} /> Distance from Campus</label>
-          <input type="text" id="distance" name="distance" value={formData.distance} onChange={handleChange} placeholder="e.g., 0.5 km" required />
+          <input 
+            type="text" 
+            id="distance" 
+            name="distance" 
+            value={formData.distance} 
+            onChange={handleChange} 
+            placeholder="e.g., 0.5 km" 
+            className={errors.distance ? 'error' : ''}
+          />
+          {errors.distance && <span className="error-message">{errors.distance}</span>}
         </div>
+
+        {/* Hostel Gender */}
         <div className="form-group">
           <label htmlFor="HostelGender"><Users size={14} /> Hostel Gender</label>
-          <select id="HostelGender" name="HostelGender" value={formData.HostelGender} onChange={handleChange} required>
+          <select id="HostelGender" name="HostelGender" value={formData.HostelGender} onChange={handleChange}>
             <option value="mixed">Mixed</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
         </div>
+
+        {/* Description */}
         <div className="form-group form-group-full">
           <label htmlFor="description"><Info size={14} /> Description</label>
-          <textarea id="description" name="description" value={formData.description} onChange={handleChange} rows="4"></textarea>
+          <textarea 
+            id="description" 
+            name="description" 
+            value={formData.description} 
+            onChange={handleChange} 
+            rows="4"
+            placeholder="Describe the hostel facilities, environment, etc."
+          ></textarea>
         </div>
+        
+        {/* ✅ FIXED: Image URL Input - removed 'required' attribute */}
         <div className="form-group form-group-full">
           <label htmlFor="image"><ImageIcon size={14} /> Image URL</label>
-          <input type="url" id="image" name="image" value={formData.image} onChange={handleChange} placeholder="https://example.com/image.jpg" required />
+          <input 
+            type="url" 
+            id="image" 
+            name="image" 
+            value={formData.images[0]?.url || ''} 
+            onChange={handleImageChange} 
+            placeholder="https://example.com/image.jpg" 
+            className={errors.image ? 'error' : ''}
+          />
+          {errors.image && <span className="error-message">{errors.image}</span>}
+          <small className="field-hint">Enter a valid image URL (jpg, png, etc.)</small>
         </div>
+        
+        {/* Amenities */}
         <div className="form-group form-group-full">
           <label htmlFor="amenities"><Tag size={14} /> Amenities (comma-separated)</label>
-          <input type="text" id="amenities" name="amenities" value={formData.amenities} onChange={handleChange} placeholder="e.g., WiFi, Security, Reading Area" />
+          <input 
+            type="text" 
+            id="amenities" 
+            name="amenities" 
+            value={formData.amenities} 
+            onChange={handleChange} 
+            placeholder="e.g., WiFi, Security, Reading Area" 
+          />
+          <small className="field-hint">Separate multiple amenities with commas</small>
         </div>
       </div>
+      
       <div className="form-actions">
         <button type="button" className="btn btn-secondary" onClick={onCancel}>
           Cancel

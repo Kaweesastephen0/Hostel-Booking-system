@@ -1,41 +1,29 @@
-const API_URL = 'http://localhost:5000/api/hostels';
+import axios from './axios';
 
-const handleResponse = async (response) => {
-  const json = await response.json();
-  if (!response.ok) {
-    throw new Error(json.message || 'Something went wrong');
-  }
-  return json.data;
-};
+const API_URL = '/hostels'; // Base URL is handled by axios instance
+
+const handleResponse = (response) => response.data.data;
 
 export const getAllHostels = async () => {
-  const response = await fetch(API_URL);
+  const response = await axios.get(API_URL);
   return handleResponse(response);
 };
 
 export const getHostelById = async (id) => {
-  const response = await fetch(`${API_URL}/${id}`);
+  const response = await axios.get(`${API_URL}/${id}`);
   return handleResponse(response);
 };
 
 export const createHostel = async (hostelData) => {
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(hostelData),
-  });
+  const response = await axios.post(API_URL, hostelData);
   return handleResponse(response);
 };
 
 export const updateHostel = async (id, hostelData) => {
-  const response = await fetch(`${API_URL}/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(hostelData),
-  });
+  const response = await axios.put(`${API_URL}/${id}`, hostelData);
   return handleResponse(response);
 };
 
 export const deleteHostel = async (id) => {
-  await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+  await axios.delete(`${API_URL}/${id}`);
 };

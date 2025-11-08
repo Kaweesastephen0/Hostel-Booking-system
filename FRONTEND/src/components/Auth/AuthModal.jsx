@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Mail, Lock, User, CreditCard, Hash, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AuthModal.module.css';
@@ -61,6 +61,33 @@ function Auth() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Reset form data helper
+  const resetFormData = () => {
+    setFormData({
+      firstName: '',
+      surname: '',
+      email: '',
+      gender: 'Male',
+      userType: 'student',
+      studentNumber: '',
+      nin: '',
+      password: '',
+      confirmPassword: '',
+      rememberMe: false
+    });
+    setPasswordValidation({ isValid: false, errors: [] });
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    setError('');
+  };
+
+  // Clear form when component unmounts (user navigates away)
+  useEffect(() => {
+    return () => {
+      resetFormData();
+    };
+  }, []);
+
 
   // FORM VALIDATION HELPERS
   //Checks if login form is complete and valid
@@ -115,8 +142,9 @@ function Auth() {
     setError('');
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: formData.email,
@@ -127,12 +155,17 @@ function Auth() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store authentication data based on "Remember Me" preference
+        // Store only user data (not token) in localStorage
         const storage = formData.rememberMe ? localStorage : sessionStorage;
-        storage.setItem('userToken', data.token);
         storage.setItem('userData', JSON.stringify(data));
         storage.setItem('lastLoginTime', new Date().toISOString());
-        
+
+        // Clear form data
+        resetFormData();
+
+        // Dispatch custom event to update header
+        window.dispatchEvent(new Event('authStateChanged'));
+
         navigate('/');
       } else {
         setError(data.message || 'Login failed');
@@ -167,7 +200,7 @@ function Auth() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/register`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -185,11 +218,9 @@ function Auth() {
       const data = await response.json();
 
       if (response.ok) {
-        // Reset form and switch to login
+        // Reset form completely and switch to login
+        resetFormData();
         setAuthMode('login');
-        setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
-        setPasswordValidation({ isValid: false, errors: [] });
-        setError('');
         alert('Registration successful! Please check your email and then login.');
       } else {
         setError(data.message || 'Registration failed');
@@ -204,19 +235,18 @@ function Auth() {
   
   // MODE SWITCHING
   const switchToForgotPassword = () => {
+    resetFormData();
     setAuthMode('forgot');
-    setError('');
   };
 
   const switchToRegister = () => {
+    resetFormData();
     setAuthMode('register');
-    setError('');
-    setPasswordValidation({ isValid: false, errors: [] });
   };
 
   const switchToLogin = () => {
+    resetFormData();
     setAuthMode('login');
-    setError('');
   };
 
    // RENDER
@@ -504,12 +534,12 @@ function Auth() {
                           {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
                       )}
-                      {formData.password && !passwordValidation.isValid && (
-                        <div className={styles.passwordHint}>
-                          Required: {passwordValidation.errors.join(', ')}
-                        </div>
-                      )}
                     </div>
+                    {formData.password && !passwordValidation.isValid && (
+                      <div className={styles.passwordHint}>
+                        Required: {passwordValidation.errors.join(', ')}
+                      </div>
+                    )}
                   </div>
 
                   <div className={styles.fieldWrapper}>
@@ -534,12 +564,12 @@ function Auth() {
                           {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
                       )}
-                      {formData.confirmPassword && (
-                        <div className={formData.password === formData.confirmPassword ? styles.passwordMatch : styles.passwordMismatch}>
-                          {formData.password === formData.confirmPassword ? '✓ Matching' : '✗ Not matching'}
-                        </div>
-                      )}
                     </div>
+                    {formData.confirmPassword && (
+                      <div className={formData.password === formData.confirmPassword ? styles.passwordMatch : styles.passwordMismatch}>
+                        {formData.password === formData.confirmPassword ? '✓ Matching' : '✗ Not matching'}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -676,6 +706,14 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
       const data = await response.json();
 
       if (response.ok) {
+        // Clear all password reset fields
+        setResetCode('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setPasswordValidation({ isValid: false, errors: [] });
+        setShowNewPassword(false);
+        setShowConfirmPassword(false);
+
         alert('Password reset successful! Please login.');
         onBack();
       } else {
@@ -769,12 +807,12 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
                   {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               )}
-              {newPassword && !passwordValidation.isValid && (
-                <div className={styles.passwordHint}>
-                  Required: {passwordValidation.errors.join(', ')}
-                </div>
-              )}
             </div>
+            {newPassword && !passwordValidation.isValid && (
+              <div className={styles.passwordHint}>
+                Required: {passwordValidation.errors.join(', ')}
+              </div>
+            )}
           </div>
 
           <div className={styles.fieldWrapper}>
@@ -798,12 +836,12 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
                   {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               )}
-              {confirmPassword && (
-                <div className={newPassword === confirmPassword ? styles.passwordMatch : styles.passwordMismatch}>
-                  {newPassword === confirmPassword ? '✓ Matching' : '✗ Not matching'}
-                </div>
-              )}
             </div>
+            {confirmPassword && (
+              <div className={newPassword === confirmPassword ? styles.passwordMatch : styles.passwordMismatch}>
+                {newPassword === confirmPassword ? '✓ Matching' : '✗ Not matching'}
+              </div>
+            )}
           </div>
 
           <button 

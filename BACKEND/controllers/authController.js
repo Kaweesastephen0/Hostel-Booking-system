@@ -1,42 +1,42 @@
-
-import User from '../models/User.js';
+import frontUser from '../models/User.js';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
-
+import cookieParser from 'cookie-parser'; // Import cookie-parser
+//token creation
 const generateToken = (id) => {
   if (!process.env.JWT_SECRET) {
     throw new Error('JWT_SECRET is not configured');
   }
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE 
+    expiresIn: process.env.JWT_EXPIRE
   });
 };
-
+//user registration checking if email, studentnumber and nin if already exists
 export const register = async (req, res) => {
   try {
     const { firstName, surname, email, gender, userType, studentNumber, nin, password } = req.body;
 
-    const userExists = await User.findOne({ email });
+    const userExists = await frontUser.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
     if (userType === 'student' && studentNumber) {
-      const studentExists = await User.findOne({ studentNumber });
+      const studentExists = await frontUser.findOne({ studentNumber });
       if (studentExists) {
         return res.status(400).json({ message: 'Student number already registered' });
       }
     }
 
     if (userType === 'non-student' && nin) {
-      const ninExists = await User.findOne({ nin });
+      const ninExists = await frontUser.findOne({ nin });
       if (ninExists) {
         return res.status(400).json({ message: 'NIN already registered' });
       }
     }
 
-    const user = await User.create({
+    const user = await frontUser.create({
       firstName,
       surname,
       email,
@@ -129,6 +129,16 @@ export const register = async (req, res) => {
         console.error('Failed to send welcome email');
       }
 
+      const token = generateToken(user._id);
+
+      // Set HTTP-only cookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      });
+
       res.status(201).json({
         _id: user._id,
         firstName: user.firstName,
@@ -137,8 +147,7 @@ export const register = async (req, res) => {
         gender: user.gender,
         userType: user.userType,
         studentNumber: user.studentNumber,
-        createdAt: user.createdAt,
-        token: generateToken(user._id)
+        createdAt: user.createdAt
       });
     }
   } catch (error) {
@@ -150,11 +159,21 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await frontUser.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
       user.lastLogin = Date.now();
       await user.save();
+
+      const token = generateToken(user._id);
+
+      // Set HTTP-only cookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      });
 
       res.json({
         _id: user._id,
@@ -165,8 +184,7 @@ export const login = async (req, res) => {
         userType: user.userType,
         studentNumber: user.studentNumber,
         createdAt: user.createdAt,
-        lastLogin: user.lastLogin,
-        token: generateToken(user._id)
+        lastLogin: user.lastLogin
       });
     } else {
       res.status(401).json({ message: 'Invalid email or password' });
@@ -180,7 +198,7 @@ export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await frontUser.findOne({ email });
 
     if (!user) {
       return res.status(404).json({ message: 'No user found with this email' });
@@ -301,7 +319,7 @@ export const resetPassword = async (req, res) => {
       .update(resetCode)
       .digest('hex');
 
-    const user = await User.findOne({
+    const user = await frontUser.findOne({
       email,
       resetPasswordToken,
       resetPasswordExpire: { $gt: Date.now() }
@@ -325,7 +343,7 @@ export const resetPassword = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = req.cookies.token;
 
     if (!token) {
       return res.status(401).json({ message: 'No token provided' });
@@ -336,7 +354,7 @@ export const updateProfile = async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    const user = await frontUser.findById(decoded.id);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -346,7 +364,7 @@ export const updateProfile = async (req, res) => {
 
     if (userType !== user.userType) {
       if (userType === 'student' && studentNumber) {
-        const existingStudent = await User.findOne({
+        const existingStudent = await frontUser.findOne({
           studentNumber,
           _id: { $ne: user._id }
         });
@@ -356,7 +374,7 @@ export const updateProfile = async (req, res) => {
       }
 
       if (userType === 'non-student' && nin) {
-        const existingNin = await User.findOne({
+        const existingNin = await frontUser.findOne({
           nin,
           _id: { $ne: user._id }
         });
@@ -366,7 +384,7 @@ export const updateProfile = async (req, res) => {
       }
     } else {
       if (userType === 'student' && studentNumber && studentNumber !== user.studentNumber) {
-        const existingStudent = await User.findOne({
+        const existingStudent = await frontUser.findOne({
           studentNumber,
           _id: { $ne: user._id }
         });
@@ -376,7 +394,7 @@ export const updateProfile = async (req, res) => {
       }
 
       if (userType === 'non-student' && nin && nin !== user.nin) {
-        const existingNin = await User.findOne({
+        const existingNin = await frontUser.findOne({
           nin,
           _id: { $ne: user._id }
         });
@@ -419,7 +437,7 @@ export const updateProfile = async (req, res) => {
 
 export const changePassword = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = req.cookies.token;
 
     if (!token) {
       return res.status(401).json({ message: 'No token provided' });
@@ -430,7 +448,7 @@ export const changePassword = async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    const user = await frontUser.findById(decoded.id);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -449,5 +467,20 @@ export const changePassword = async (req, res) => {
     res.json({ message: 'Password changed successfully' });
   } catch (error) {
     res.status(500).json({ message: 'An error occurred during password change' });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    res.cookie('token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 0
+    });
+
+    res.json({ message: 'Logged out successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred during logout' });
   }
 };

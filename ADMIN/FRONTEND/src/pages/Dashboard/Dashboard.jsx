@@ -1,47 +1,43 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Building,
   BedDouble,
   CalendarCheck,
-  Wallet,
-  Plus,
+  Users,
+  Loader2,
 } from "lucide-react";
 import Header from "../../components/header/Header";
 import InfoCard from "../../components/cards/InfoCard";
 import BookingChart from "../../components/charts/BookingChart";
 import DataTable from "../../components/table/DataTable";
+import dashboardService from "../../services/dashboardService";
+import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
-const bookingChartData = [
-  { name: 'Jan', bookings: 65 },
-  { name: 'Feb', bookings: 59 },
-  { name: 'Mar', bookings: 80 },
-  { name: 'Apr', bookings: 81 },
-  { name: 'May', bookings: 56 },
-  { name: 'Jun', bookings: 55 },
-  { name: 'Jul', bookings: 40 },
-];
-
-const recentBookingsData = [
-  { id: 'BK001', student: 'John Doe', hostel: 'Nana Hostel', date: '2024-05-20', status: 'Confirmed' },
-  { id: 'BK002', student: 'Jane Smith', hostel: 'Akamwesi Hostel', date: '2024-05-19', status: 'Pending' },
-  { id: 'BK003', student: 'Peter Jones', hostel: 'Olympia Hostel', date: '2024-05-19', status: 'Confirmed' },
-  { id: 'BK004', student: 'Mary Williams', hostel: 'Kare Hostel', date: '2024-05-18', status: 'Cancelled' },
-];
+import HostelForm from "../../components/hostels/HostelForm";
+import RoomForm from "../Rooms/RoomForm";
+import Modal from "../../components/modal/Modal";
 
 const recentBookingsColumns = [
-  { Header: 'Booking ID', accessor: 'id' },
-  { Header: 'Student', accessor: 'student' },
-  { Header: 'Hostel', accessor: 'hostel' },
-  { Header: 'Date', accessor: 'date' },
+  { Header: 'Booking ID', accessor: 'reference' },
+  { Header: 'Student', accessor: 'guestName' },
+  { Header: 'Hostel', accessor: 'hostelName' },
+  {
+    Header: 'Date',
+    accessor: 'createdAt',
+    Cell: ({ value }) => new Date(value).toLocaleDateString()
+  },
   {
     Header: 'Status',
     accessor: 'status',
-    Cell: (row) => (
-      <span className={`status-badge status-${row.status.toLowerCase()}`}>
-        {row.status}
-      </span>
-    ),
+    Cell: ({ value }) => {
+      const status = value || 'pending';
+      return (
+        <span className={`status-badge status-${status.toLowerCase()}`}>
+          {status}
+        </span>
+      );
+    },
   },
 ];
 
@@ -53,47 +49,207 @@ const getGreeting = () => {
 };
 
 const Dashboard = () => {
-  // The user name here will come from an auth context
-  const userName = "Raymond";
+  const navigate = useNavigate();
+  const [isHostelModalOpen, setIsHostelModalOpen] = useState(false);
+  const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
+  const [totals, setTotals] = useState({
+    totalHostels: 0,
+    totalRooms: 0,
+    totalBookings: 0,
+    totalUsers: 0
+  });
+  const [recentBookings, setRecentBookings] = useState([]);
+  const [bookingChartData, setBookingChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  const handleAction = (action) => {
+    switch (action) {
+      case 'add-hostel':
+        navigate('/hostels/new');
+        break;
+      case 'add-room':
+        navigate('/rooms/new');
+        break;
+      case 'add-user':
+        navigate('/users/new');
+        break;
+      case 'settings':
+        navigate('/settings');
+        break;
+      case 'create-report':
+        navigate('/reports/new');
+        break;
+      case 'view-reports':
+        navigate('/reports');
+        break;
+      default:
+        console.log('Unknown action:', action);
+    }
+  };
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+
+        const dashboardTotals = await dashboardService.getTotals();
+        setTotals(dashboardTotals);
+
+
+        const response = await fetch('https://hostel-booking-system.onrender.com/api/bookings?limit=5&sort=-createdAt');
+        const data = await response.json();
+        if (data.success && Array.isArray(data.data?.bookings)) {
+
+          const mappedBookings = data.data.bookings.map(booking => ({
+            reference: booking.reference || `BK-${booking._id?.slice(-6)}` || 'N/A',
+            guestName: booking.guestName || 'Unknown Guest',
+            hostelName: booking.hostelName || 'N/A',
+            createdAt: booking.createdAt || new Date().toISOString(),
+            status: booking.status || 'pending'
+          }));
+          setRecentBookings(mappedBookings);
+        } else {
+          setRecentBookings([]);
+        }
+
+        // Calculating of the  booking chart data (last 7 months)
+        const months = Array.from({ length: 7 }, (_, i) => {
+          const d = new Date();
+          d.setMonth(d.getMonth() - i);
+          return d.toLocaleString('default', { month: 'short' });
+        }).reverse();
+
+        //Implementation of real booking statistics endpoint
+        setBookingChartData(months.map(name => ({
+          name,
+          bookings: Math.floor(Math.random() * 100)
+        })));
+
+      } catch (err) {
+        console.error('Dashboard data error:', err);
+        setError(err.message || 'Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, []);
+
+
+  if (error) {
+    return (
+      <div className="dashboard-error">
+        <p>Error loading dashboard: {error}</p>
+        <button onClick={() => window.location.reload()} className="btn btn-primary">
+          Retry
+        </button>
+      </div>
+    );
+  }
+  const currentUser = JSON.parse(localStorage.getItem('user'));
   return (
     <div className="dashboard-content-area">
       <Header
-        title={`${getGreeting()}, ${userName}!`}
+        title="Dashboard"
         subtitle="Here's what's happening with your hostels today."
+        showGreeting={true}
       >
-        <button className="btn btn-primary"><Plus size={16} /> Add New Hostel</button>
+        <button
+          className="btn btn-primary"
+          onClick={() => setIsHostelModalOpen(true)}
+        >
+          <Building size={16} /> Add Hostel
+        </button>
+        <button
+          className="btn btn-primary"
+          onClick={() => setIsRoomModalOpen(true)}
+        >
+          <BedDouble size={16} /> Add Room
+        </button>
       </Header>
+
       <div className="dashboard-summary-cards">
         <InfoCard
           title="Total Hostels"
-          value="15"
+          value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalHostels}
           icon={<Building size={24} />}
         />
         <InfoCard
           title="Available Rooms"
-          value="250"
+          value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalRooms}
           icon={<BedDouble size={24} />}
         />
         <InfoCard
           title="Active Bookings"
-          value="180"
+          value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalBookings}
           icon={<CalendarCheck size={24} />}
         />
-        <InfoCard
-          title="Total Revenue"
-          value="UGX 54M"
-          icon={<Wallet size={24} />}
-        />
+        {currentUser.role === 'admin' ? (
+          <InfoCard
+            title="Total Users"
+            value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalUsers}
+            icon={<Users size={24} />}
+          />
+        ) : ()}
       </div>
 
       <div className="dashboard-analytics-section">
-        <BookingChart data={bookingChartData} />
+        <BookingChart />
         <div className="recent-activity">
           <h3>Recent Activity</h3>
-          <DataTable columns={recentBookingsColumns} data={recentBookingsData} />
+          {loading ? (
+            <div className="loading-spinner">
+              <Loader2 className="animate-spin" size={24} />
+              <span>Loading recent bookings...</span>
+            </div>
+          ) : (
+            <DataTable
+              columns={recentBookingsColumns}
+              data={recentBookings}
+              emptyMessage="No recent bookings found"
+            />
+          )}
         </div>
       </div>
+
+      <Modal
+        isOpen={isHostelModalOpen}
+        onClose={() => setIsHostelModalOpen(false)}
+        title="Add New Hostel"
+      >
+        <HostelForm
+          onSubmit={async (data) => {
+            try {
+              await dashboardService.createHostel(data);
+              setIsHostelModalOpen(false);
+              fetchDashboardData(); // Refresh data
+            } catch (error) {
+              console.error('Failed to create hostel:', error);
+            }
+          }}
+          onCancel={() => setIsHostelModalOpen(false)}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={isRoomModalOpen}
+        onClose={() => setIsRoomModalOpen(false)}
+        title="Add New Room"
+      >
+        <RoomForm
+          onSubmit={async (data) => {
+            try {
+              await dashboardService.createRoom(data);
+              setIsRoomModalOpen(false);
+              fetchDashboardData(); // Refresh data
+            } catch (error) {
+              console.error('Failed to create room:', error);
+            }
+          }}
+          onCancel={() => setIsRoomModalOpen(false)}
+        />
+      </Modal>
     </div>
   );
 };

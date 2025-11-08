@@ -7,13 +7,13 @@ import jwt from "jsonwebtoken";
 export const register = asyncHandler(async (req, res, next) => {
   const { email, password, fullName, role } = req.body;
 
-  // Check if user already exists
+  // Checking if user already exists
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     return next(new ErrorResponse('User already exists with this email', 400));
   }
 
-  // Create user
+  // Creating user
   const user = await User.create({
     email,
     password,
@@ -28,6 +28,8 @@ export const register = asyncHandler(async (req, res, next) => {
 
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
+
+  try{
 
   // Validate email & password
   if (!email || !password) {
@@ -53,11 +55,39 @@ export const login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Invalid credentials", 401));
   }
 
+  const token = jwt.sign(
+    {id: user._id},
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" } 
+  );
+
+
   // Update last login
   user.lastLogin = Date.now();
   await user.save({ validateBeforeSave: false });
 
-  sendTokenResponse(user, 200, res);
+
+  res
+     .cookie("token", token, {
+      httpOnly:true,
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 *1000,
+     })
+    .status(200).json({
+    success: true,
+    msg: "Login Successfull",
+    token,
+    user: { 
+      id: user._id, 
+      email: user.email, 
+      fullName: user.fullName,
+      role: user.role
+    }
+  });
+
+} catch{
+  res.status(500).json({msg: "Server error"});
+}
 });
 
 export const getMe = asyncHandler(async (req, res, next) => {

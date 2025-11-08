@@ -26,8 +26,8 @@ const Login = () => {
         setError('');
 
         try {
-            const API_URL = 'http://localhost:5000';
-            const response = await fetch(`${API_URL}/api/auth/login`, {
+            const API_URL = import.meta.env.VITE_APP_API_URL;
+            const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -46,6 +46,7 @@ const Login = () => {
 
             if (data.success && data.user) {
                 localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem("token", data.token);
                 navigate('/dashboard');
             } else {
                 throw new Error('Invalid response from server');
@@ -156,13 +157,12 @@ const Login = () => {
                                 <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
                                 <span className="ml-2 text-sm text-white">Remember me</span>
                             </label>
-                            <a href="#" className="text-sm text-white hover:text-white">Forgot password?</a>
                         </div>
 
                         <button
                             type="submit"
 
-                            className={`w-full flex items-center justify-center gap-2 bg-[#9B5DE0] hover:bg-[#D78FEE] cursor-pointer text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                            className={`w-full flex items-center justify-center gap-2 bg-[#3b82f6] hover:bg-[#2563eb] cursor-pointer text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
                             disabled={isLoading}
                         >
                             {isLoading ? (

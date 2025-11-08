@@ -30,7 +30,7 @@ const Users = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [rowActionState, setRowActionState] = useState({});
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
   const passwordMismatch =
     Boolean(newUser.password) &&
     Boolean(newUser.confirmPassword) &&
@@ -76,7 +76,7 @@ const Users = () => {
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/users?${params.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}/users?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -183,7 +183,7 @@ const Users = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/users/${user.id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/${user.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -214,7 +214,7 @@ const Users = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/users/${user.id}/status`, {
+      const response = await fetch(`${API_BASE_URL}/users/${user.id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -360,7 +360,7 @@ const Users = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/users`, {
+      const response = await fetch(`${API_BASE_URL}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -524,6 +524,7 @@ const Users = () => {
               type="submit"
               variant="contained"
               color="primary"
+              onClick={handleCreateUser}
               disabled={creatingUser || passwordMismatch}
             >
               {creatingUser ? 'Adding...' : 'Add User'}

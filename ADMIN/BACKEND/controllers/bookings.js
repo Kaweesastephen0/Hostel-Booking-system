@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Booking from '../models/Booking.js';
+import Room from '../models/RoomModel.js';
 import asyncHandler from '../middleware/async.js';
 
 const parsePositiveInt = (value, fallback) => {
@@ -49,6 +50,9 @@ export const createBooking = asyncHandler(async (req, res) => {
     paymentNumber = '',
     status = 'pending'
   } = req.body;
+
+  // Set manager to the logged-in user
+  const managerId = req.user._id;
 
   // Validate required fields
   if (!fullName || !roomNumber || !checkIn || !duration || !bookingFee) {
@@ -121,6 +125,7 @@ export const createBooking = asyncHandler(async (req, res) => {
       
       // System Fields
       reference: `BKG-${Date.now()}`,
+      manager: managerId,
     }], { session });
 
     // Create the payment record
@@ -134,9 +139,16 @@ export const createBooking = asyncHandler(async (req, res) => {
       paidAt: new Date()
     }], { session });
 
-    // Update booking with payment reference
+    // Updating booking with payment reference
     booking[0].paymentReference = payment[0]._id;
     await booking[0].save({ session });
+
+    // Updating room status to 'booked' after a successful booking
+    await Room.findByIdAndUpdate(
+      roomNumber,
+      { status: 'booked' },
+      { session }
+    );
 
     // Commit the transaction
     await session.commitTransaction();
@@ -197,6 +209,11 @@ export const getBookings = asyncHandler(async (req, res) => {
   const sortField = typeof sort === 'string' && sort.trim() ? sort : 'checkIn';
 
   const query = {};
+
+  // Apply manager filter from middleware
+  if (req.managerFilter) {
+    Object.assign(query, req.managerFilter);
+  }
 
   if (search && typeof search === 'string') {
     query.$or = [
@@ -306,7 +323,30 @@ export const updateBooking = asyncHandler(async (req, res) => {
   if (guestEmail !== undefined) booking.guestEmail = guestEmail;
   if (guestPhone !== undefined) booking.guestPhone = guestPhone;
   if (roomNumber !== undefined) booking.roomNumber = roomNumber;
-  if (status !== undefined) booking.status = status;
+  
+  // Handle room status changes based on booking status
+  if (status !== undefined && status !== booking.status) {
+    // If booking is cancelled or completed, make room available
+    if (status === 'cancelled' || status === 'completed') {
+      if (booking.roomNumber) {
+        await Room.findByIdAndUpdate(
+          booking.roomNumber,
+          { status: 'available' }
+        );
+      }
+    }
+    // If booking is confirmed, mark room as booked
+    else if (status === 'confirmed') {
+      if (booking.roomNumber) {
+        await Room.findByIdAndUpdate(
+          booking.roomNumber,
+          { status: 'booked' }
+        );
+      }
+    }
+    booking.status = status;
+  }
+  
   if (checkIn !== undefined) booking.checkIn = checkIn;
   if (checkOut !== undefined) booking.checkOut = checkOut;
   if (amount !== undefined) booking.amount = amount;
@@ -329,6 +369,14 @@ export const deleteBooking = asyncHandler(async (req, res) => {
 
   if (!booking) {
     return res.status(404).json({ success: false, message: 'Booking not found' });
+  }
+
+  // Setting room status back to available when a booking is cancalled
+  if (booking.roomNumber) {
+    await Room.findByIdAndUpdate(
+      booking.roomNumber,
+      { status: 'available' }
+    );
   }
 
   await booking.deleteOne();

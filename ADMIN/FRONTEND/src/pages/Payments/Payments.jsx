@@ -38,10 +38,10 @@ import {
 import { format } from 'date-fns';
 import DataTable from '../../components/common/DataTable';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
 const PAYMENT_STATUS_OPTIONS = ['pending', 'completed', 'failed', 'refunded'];
-const PAYMENT_METHOD_OPTIONS = ['cash', 'card', 'mobile', 'bank_transfer'];
+const PAYMENT_METHOD_OPTIONS = ['cash', 'card', 'mobile_money', 'bank_transfer'];
 
 const statusColorMap = {
   pending: 'warning',
@@ -67,7 +67,7 @@ const statusActionTarget = {
 const methodLabelMap = {
   cash: 'Cash',
   card: 'Card',
-  mobile: 'Mobile Money',
+  mobile_money: 'Mobile Money',
   bank_transfer: 'Bank Transfer',
 };
 
@@ -182,7 +182,7 @@ const Payments = () => {
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/payments?${params.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}/payments?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -262,7 +262,7 @@ const Payments = () => {
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings?${params.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -388,7 +388,7 @@ const Payments = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/payments`, {
+      const response = await fetch(`${API_BASE_URL}/payments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -424,7 +424,7 @@ const Payments = () => {
     }
   };
 
-  const handleOpenDetails = async (payment) => {
+  const handleOpenDetails = useCallback(async (payment) => {
     setSelectedPayment(payment);
     setPaymentDetails(null);
     setDetailsError(null);
@@ -432,7 +432,7 @@ const Payments = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${payment.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -476,7 +476,7 @@ const Payments = () => {
     } finally {
       setLoadingDetails(false);
     }
-  };
+  });
 
   const handleCloseDetails = () => {
     setSelectedPayment(null);
@@ -484,7 +484,7 @@ const Payments = () => {
     setDetailsError(null);
   };
 
-  const handleUpdateStatus = async (payment, targetStatus) => {
+  const handleUpdateStatus = useCallback(async (payment, targetStatus) => {
     if (!targetStatus || targetStatus === payment.status) return;
 
     updateRowActionState(payment.id, 'updating', true);
@@ -492,7 +492,7 @@ const Payments = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${payment.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -542,9 +542,9 @@ const Payments = () => {
     } finally {
       updateRowActionState(payment.id, 'updating', false);
     }
-  };
+  }, []);
 
-  const handleDeletePayment = async (payment) => {
+  const handleDeletePayment = useCallback(async (payment) => {
     const displayName = payment.reference || payment.bookingGuestName || payment.bookingRoomNumber || 'this payment';
 
     if (!window.confirm(`Are you sure you want to delete ${displayName}? This action cannot be undone.`)) {
@@ -555,7 +555,7 @@ const Payments = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${payment.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -582,7 +582,7 @@ const Payments = () => {
     } finally {
       updateRowActionState(payment.id, 'deleting', false);
     }
-  };
+  });
 
   const handleOpenEditDialog = () => {
     const source = paymentDetails || selectedPayment;
@@ -629,7 +629,7 @@ const Payments = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/${source.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${source.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -1017,7 +1017,7 @@ const Payments = () => {
             <Button onClick={closeAddDialog} disabled={creatingPayment}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary" disabled={creatingPayment}>
+            <Button type="submit" variant="contained" color="primary" onClick={handleCreatePayment} disabled={creatingPayment}>
               {creatingPayment ? 'Saving...' : 'Save Payment'}
             </Button>
           </DialogActions>
@@ -1210,7 +1210,7 @@ const Payments = () => {
             <Button onClick={handleCloseEditDialog} disabled={savingEdit}>
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary" disabled={savingEdit}>
+            <Button type="submit" variant="contained" onClick={handleSubmitEdit} color="primary" disabled={savingEdit}>
               {savingEdit ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogActions>

@@ -1,37 +1,36 @@
 import { useState, useRef, useEffect } from 'react';
-import { MapPin, Calendar, Users, X, ChevronDown } from 'lucide-react';
-import styles from './SearchBar.module.css';
+import { MapPin, Users, DollarSign, X, ChevronDown } from 'lucide-react';
+import styles from './searchBar.module.css';
 
-export default function SearchBar() {
-  const [location, setLocation] = useState('Wandegeya');
-  const [semester, setSemester] = useState('Semester');
-  const [rooms, setRooms] = useState(1);
-  const [roomType, setRoomType] = useState('Single');
+export default function SearchBar({ onSearch }) {
+  const [location, setLocation] = useState('');
+  const [roomType, setRoomType] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
   const [showRoomDropdown, setShowRoomDropdown] = useState(false);
-  const [showSemesterDropdown, setShowSemesterDropdown] = useState(false);
+  const [showPriceDropdown, setShowPriceDropdown] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   
   const roomDropdownRef = useRef(null);
-  const guestFieldRef = useRef(null);
-  const semesterDropdownRef = useRef(null);
-  const dateFieldRef = useRef(null);
+  const roomFieldRef = useRef(null);
+  const priceDropdownRef = useRef(null);
+  const priceFieldRef = useRef(null);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Close room dropdown
       if (roomDropdownRef.current && 
           !roomDropdownRef.current.contains(event.target) &&
-          guestFieldRef.current && 
-          !guestFieldRef.current.contains(event.target)) {
+          roomFieldRef.current && 
+          !roomFieldRef.current.contains(event.target)) {
         setShowRoomDropdown(false);
       }
 
-      // Close semester dropdown
-      if (semesterDropdownRef.current && 
-          !semesterDropdownRef.current.contains(event.target) &&
-          dateFieldRef.current && 
-          !dateFieldRef.current.contains(event.target)) {
-        setShowSemesterDropdown(false);
+      if (priceDropdownRef.current && 
+          !priceDropdownRef.current.contains(event.target) &&
+          priceFieldRef.current && 
+          !priceFieldRef.current.contains(event.target)) {
+        setShowPriceDropdown(false);
       }
     };
 
@@ -39,167 +38,133 @@ export default function SearchBar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleClearLocation = () => {
-    setLocation('');
-  };
-
+  const handleClearLocation = () => setLocation('');
+  
   const toggleRoomDropdown = () => {
     setShowRoomDropdown(!showRoomDropdown);
-    setShowSemesterDropdown(false); // Close other dropdown
+    setShowPriceDropdown(false);
   };
 
-  const toggleSemesterDropdown = () => {
-    setShowSemesterDropdown(!showSemesterDropdown);
-    setShowRoomDropdown(false); // Close other dropdown
-  };
-
-  const handleRoomChange = (operation) => {
-    if (operation === 'increment') {
-      setRooms(prev => prev + 1);
-    } else if (operation === 'decrement' && rooms > 1) {
-      setRooms(prev => prev - 1);
-    }
+  const togglePriceDropdown = () => {
+    setShowPriceDropdown(!showPriceDropdown);
+    setShowRoomDropdown(false);
   };
 
   const handleRoomTypeSelect = (type) => {
     setRoomType(type);
-  };
-
-  const handleSemesterSelect = (semesterOption) => {
-    setSemester(semesterOption);
-    setShowSemesterDropdown(false);
-  };
-
-  const handleApply = () => {
     setShowRoomDropdown(false);
   };
 
-  // Semester options for student hostels
-  const semesterOptions = [
-    '1 Semester',
-    '2 Semesters',
-    'Semester holiday',
+  const handleClearRoomType = () => {
+    setRoomType('');
+  };
+
+  const handleApplyPrice = () => {
+    setShowPriceDropdown(false);
+  };
+
+  const handleClearPrice = () => {
+    setMinPrice('');
+    setMaxPrice('');
+  };
+
+  const roomTypes = ['single', 'double', 'shared'];
+
+  const handleSearch = async () => {
+    // FLEXIBLE SEARCH: Check if at least one field has a value
+    if (!location.trim() && !roomType && !minPrice && !maxPrice) {
+      alert('Please enter at least one search criteria (location, room type, or price)');
+      return;
+    }
+
+    setIsSearching(true);
     
-  ];
+    // Build search params object (only include fields that have values)
+    const searchParams = {};
+    if (location.trim()) searchParams.location = location;
+    if (roomType) searchParams.roomType = roomType;
+    if (minPrice) searchParams.minPrice = minPrice;
+    if (maxPrice) searchParams.maxPrice = maxPrice;
+    
+    // Call parent's onSearch callback with flexible params
+    if (onSearch) {
+      await onSearch(searchParams);
+    }
+    
+    setIsSearching(false);
+  };
 
-  const roomTypes = ['Single', 'Double', 'Shared Dorm'];
+  // Display text for room type field
+  const getRoomTypeDisplay = () => {
+    if (!roomType) return 'Any room type';
+    return `${roomType.charAt(0).toUpperCase() + roomType.slice(1)} room`;
+  };
 
-  const handleSearch = () => {
-    const searchData = {
-      location,
-      semester,
-      rooms,
-      roomType
-    };
-    console.log('Searching for student hostels:', searchData);
-    alert(`Searching for ${rooms} ${roomType} room(s) in ${location} for ${semester}`);
+  // Display text for price field
+  const getPriceDisplay = () => {
+    if (!minPrice && !maxPrice) return 'Any price';
+    if (minPrice && maxPrice) return `UGX ${Number(minPrice).toLocaleString()} - ${Number(maxPrice).toLocaleString()}`;
+    if (minPrice) return `From UGX ${Number(minPrice).toLocaleString()}`;
+    if (maxPrice) return `Up to UGX ${Number(maxPrice).toLocaleString()}`;
   };
 
   return (
     <div className={styles.searchContainer}>
-      {/* Location Field */}
+      {/* LOCATION FIELD */}
       <div className={`${styles.searchField} ${styles.location}`}>
         <MapPin className={styles.icon} size={20} />
         <div className={styles.inputWrapper}>
           <input
             type="text"
-            placeholder="Enter campus location..."
+            placeholder="Enter location (Makerere, Kikoni, Katanga...)"
             className={styles.input}
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
         </div>
         {location && (
-          <button 
-            className={styles.clearBtn} 
-            aria-label="Clear location"
-            onClick={handleClearLocation}
-          >
+          <button className={styles.clearBtn} onClick={handleClearLocation}>
             <X size={20} />
           </button>
         )}
       </div>
 
-      {/* Semester Field */}
-      <div 
-        className={`${styles.searchField} ${styles.dates}`}
-        ref={dateFieldRef}
-        onClick={toggleSemesterDropdown}
-      >
-        <Calendar className={styles.iconCalendar} size={20} />
-        <div className={styles.inputWrapper}>
-          <div className={styles.dateRange}>{semester}</div>
-        </div>
-        <ChevronDown 
-          className={`${styles.dropdownIcon} ${showSemesterDropdown ? styles.rotated : ''}`} 
-          size={20} 
-        />
-
-        {/* Semester Dropdown */}
-        {showSemesterDropdown && (
-          <div 
-             ref={semesterDropdownRef}
-          className={`${styles.semesterDropdown} ${showSemesterDropdown ? styles.active : ''}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-            {semesterOptions.map((option, index) => (
-              <div
-                key={index}
-                className={`${styles.semesterOption} ${semester === option ? styles.active : ''}`}
-                onClick={() => handleSemesterSelect(option)}
-              >
-                {option}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Room Selection Field */}
+      {/* ROOM TYPE FIELD */}
       <div 
         className={`${styles.searchField} ${styles.guests}`}
-        ref={guestFieldRef}
+        ref={roomFieldRef}
         onClick={toggleRoomDropdown}
       >
         <Users className={styles.iconUsers} size={20} />
         <div className={styles.inputWrapper}>
           <div className={styles.guestInfo}>
-            {rooms} {roomType} room{rooms > 1 ? 's' : ''}
+            {getRoomTypeDisplay()}
           </div>
         </div>
+        {roomType && (
+          <button 
+            className={styles.clearBtn} 
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClearRoomType();
+            }}
+          >
+            <X size={16} />
+          </button>
+        )}
         <ChevronDown 
           className={`${styles.dropdownIcon} ${showRoomDropdown ? styles.rotated : ''}`} 
           size={20} 
         />
 
-        {/* Room Selection Dropdown */}
+        {/* Room Type Dropdown */}
         <div 
           ref={roomDropdownRef}
           className={`${styles.dropdown} ${showRoomDropdown ? styles.active : ''}`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className={styles.dropdownSection}>
-            <h4>Number of Rooms</h4>
-            <div className={styles.counter}>
-              <button 
-                className={styles.counterBtn}
-                onClick={() => handleRoomChange('decrement')}
-                disabled={rooms <= 1}
-              >
-                -
-              </button>
-              <span className={styles.counterValue}>{rooms}</span>
-              <button 
-                className={styles.counterBtn}
-                onClick={() => handleRoomChange('increment')}
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          <div className={styles.dropdownSection}>
-            <h4>Room Type</h4>
+            <h4>Select Room Type</h4>
             <div className={styles.roomTypeOptions}>
               {roomTypes.map(type => (
                 <button
@@ -207,25 +172,90 @@ export default function SearchBar() {
                   className={`${styles.roomTypeBtn} ${roomType === type ? styles.active : ''}`}
                   onClick={() => handleRoomTypeSelect(type)}
                 >
-                  {type}
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
                 </button>
               ))}
             </div>
           </div>
-
-          <button 
-            className={styles.applyBtn}
-            onClick={handleApply}
-          >
-            Apply
-          </button>
         </div>
       </div>
 
-      <button className={styles.searchBtn} onClick={handleSearch}>
-        Find Hostels
+      {/* PRICE RANGE FIELD */}
+      <div 
+        className={`${styles.searchField} ${styles.price}`}
+        ref={priceFieldRef}
+        onClick={togglePriceDropdown}
+      >
+        <DollarSign className={styles.iconPrice} size={20} />
+        <div className={styles.inputWrapper}>
+          <div className={styles.priceInfo}>
+            {getPriceDisplay()}
+          </div>
+        </div>
+        {(minPrice || maxPrice) && (
+          <button 
+            className={styles.clearBtn} 
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClearPrice();
+            }}
+          >
+            <X size={16} />
+          </button>
+        )}
+        <ChevronDown 
+          className={`${styles.dropdownIcon} ${showPriceDropdown ? styles.rotated : ''}`} 
+          size={20} 
+        />
+
+        {/* Price Dropdown */}
+        <div 
+          ref={priceDropdownRef}
+          className={`${styles.dropdown} ${showPriceDropdown ? styles.active : ''}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className={styles.dropdownSection}>
+            <h4>Price Range (UGX)</h4>
+            
+            <div className={styles.priceInputGroup}>
+              <div className={styles.priceInput}>
+                <label>Min Price</label>
+                <input
+                  type="number"
+                  placeholder="400,000"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  className={styles.priceField}
+                />
+              </div>
+              
+              <div className={styles.priceInput}>
+                <label>Max Price</label>
+                <input
+                  type="number"
+                  placeholder="1,800,000"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  className={styles.priceField}
+                />
+              </div>
+            </div>
+
+            <button className={styles.applyBtn} onClick={handleApplyPrice}>
+              Apply
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* SEARCH BUTTON */}
+      <button 
+        className={styles.searchBtn} 
+        onClick={handleSearch}
+        disabled={isSearching}
+      >
+        {isSearching ? 'Searching...' : 'Search'}
       </button>
     </div>
   );
 }
-// 😉
