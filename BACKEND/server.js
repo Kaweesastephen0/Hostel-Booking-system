@@ -39,21 +39,34 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // CORS configuration
+// Helper function to normalize URLs by removing trailing slashes
+const normalizeUrl = (url) => {
+  if (!url) return url;
+  return url.replace(/\/$/, ''); // Remove trailing slash if present
+};
+
+// Normalize all allowed origins to handle trailing slash mismatch
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
+  normalizeUrl(process.env.FRONTEND_URL), // e.g. https://hostel-booking-system-two.vercel.app
   'http://localhost:5173',
   'http://127.0.0.1:5173'
-].filter(Boolean);
+].filter(Boolean); // Remove undefined if FRONTEND_URL not set
 
 app.use(cors({
   origin: function(origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      return callback(null, true);
+    }
 
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    // Normalize the incoming origin for comparison
+    const normalizedOrigin = normalizeUrl(origin);
+
+    if (allowedOrigins.includes(normalizedOrigin)) {
       callback(null, true);
     } else {
-      console.log('Blocked by CORS:', origin);
+      console.warn(`[CORS] Blocked origin: ${origin}`);
+      console.warn(`[CORS] Allowed origins: ${allowedOrigins.join(', ')}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
