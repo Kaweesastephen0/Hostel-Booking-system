@@ -8,4 +8,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  resolve: {
+    alias: {
+      'react': '/home/killan/Desktop/GITHUB/Hostel-Booking-system/ADMIN/FRONTEND/node_modules/react',
+      'react-dom': '/home/killan/Desktop/GITHUB/Hostel-Booking-system/ADMIN/FRONTEND/node_modules/react-dom'
+    }
+  }
 })

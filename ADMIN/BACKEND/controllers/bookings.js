@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import Booking from '../models/Booking.js';
 import asyncHandler from '../middleware/async.js';
+import { createActivityLog } from '../utils/activityLogger.js';
 
 const parsePositiveInt = (value, fallback) => {
   const parsed = parseInt(value, 10);
@@ -146,6 +147,23 @@ export const createBooking = asyncHandler(async (req, res) => {
     
     // End the session
     session.endSession();
+    
+    await createActivityLog(
+      req,
+      `Created booking: ${booking[0].reference}`,
+      'booking',
+      {
+        bookingId: booking[0]._id,
+        reference: booking[0].reference,
+        guestName: booking[0].guestName,
+        guestEmail: booking[0].guestEmail,
+        roomNumber: booking[0].roomNumber,
+        checkIn: booking[0].checkIn,
+        checkOut: booking[0].checkOut,
+        amount: booking[0].amount,
+        status: booking[0].status
+      }
+    );
     
     // Send response
     res.status(201).json({
@@ -302,6 +320,14 @@ export const updateBooking = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, message: 'Booking not found' });
   }
 
+  const oldData = {
+    guestName: booking.guestName,
+    status: booking.status,
+    amount: booking.amount,
+    checkIn: booking.checkIn,
+    checkOut: booking.checkOut
+  };
+
   if (guestName !== undefined) booking.guestName = guestName;
   if (guestEmail !== undefined) booking.guestEmail = guestEmail;
   if (guestPhone !== undefined) booking.guestPhone = guestPhone;
@@ -313,6 +339,25 @@ export const updateBooking = asyncHandler(async (req, res) => {
   if (notes !== undefined) booking.notes = notes;
 
   const updatedBooking = await booking.save();
+
+  await createActivityLog(
+    req,
+    `Updated booking: ${updatedBooking.reference}`,
+    'booking',
+    {
+      bookingId: updatedBooking._id,
+      reference: updatedBooking.reference,
+      oldData,
+      newData: {
+        guestName: updatedBooking.guestName,
+        status: updatedBooking.status,
+        amount: updatedBooking.amount,
+        checkIn: updatedBooking.checkIn,
+        checkOut: updatedBooking.checkOut
+      },
+      changes: req.body
+    }
+  );
 
   res.status(200).json({
     success: true,
@@ -331,7 +376,24 @@ export const deleteBooking = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, message: 'Booking not found' });
   }
 
+  const bookingData = {
+    bookingId: booking._id,
+    reference: booking.reference,
+    guestName: booking.guestName,
+    guestEmail: booking.guestEmail,
+    roomNumber: booking.roomNumber,
+    status: booking.status,
+    amount: booking.amount
+  };
+
   await booking.deleteOne();
+
+  await createActivityLog(
+    req,
+    `Deleted booking: ${booking.reference}`,
+    'booking',
+    bookingData
+  );
 
   res.status(200).json({
     success: true,

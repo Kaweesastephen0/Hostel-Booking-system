@@ -18,6 +18,7 @@ import {
   DialogActions,
   DialogContentText,
   Alert,
+  Grid,
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
@@ -32,12 +33,12 @@ import './Hostels.css';
 
 const ITEMS_PER_PAGE = 9;
 
-const Hostels = () => {
+const Hostels = ({ isCreateMode = false }) => {
   const [hostels, setHostels] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
-  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(isCreateMode);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedHostel, setSelectedHostel] = useState(null);
   const [hostelToDelete, setHostelToDelete] = useState(null);
@@ -146,73 +147,180 @@ const Hostels = () => {
 
   return (
     <div className="hostels-page-container">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5" component="h1">
-          Hostel Management
-        </Typography>
-        <Box>
+      {/* Page Header */}
+      <Box sx={{ mb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h5" component="h1">
+            Hostel Management
+          </Typography>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={handleAddNew} 
+            startIcon={<Plus size={16} />}
+          >
+            Add New Hostel
+          </Button>
+        </Box>
+
+        {/* Info Cards */}
+        <Box sx={{ 
+          mb: 4,
+          width: '100%',
+          maxWidth: '100%',
+          mx: 'auto',
+          px: { xs: 2, sm: 3, md: 4 }
+        }}>
+          <Grid 
+            container 
+            spacing={{ xs: 2, sm: 3, md: 4 }}
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'stretch',
+              width: '100%'
+            }}
+          >
+            <Grid 
+              item 
+              xs={12} 
+              sm={6} 
+              md={4}
+              sx={{
+                display: 'flex',
+                minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33% - 24px)' }
+              }}
+            >
+              <InfoCard
+                title="Total Hostels"
+                value={filteredHostels.length}
+                icon={<Building size={22} />}
+                color="primary"
+                sx={{ 
+                  height: '100%',
+                  minHeight: '140px',
+                  width: '100%',
+                  flex: 1
+                }}
+              />
+            </Grid>
+            <Grid 
+              item 
+              xs={12} 
+              sm={6} 
+              md={4}
+              sx={{
+                display: 'flex',
+                minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33% - 24px)' }
+              }}
+            >
+              <InfoCard
+                title="Total Rooms"
+                value={filteredHostels.reduce((acc, h) => acc + (h.rooms?.length || 0), 0)}
+                icon={<BedDouble size={22} />}
+                color="success"
+                sx={{ 
+                  height: '100%',
+                  minHeight: '140px',
+                  width: '100%',
+                  flex: 1
+                }}
+              />
+            </Grid>
+            <Grid 
+              item 
+              xs={12} 
+              sm={6} 
+              md={4}
+              sx={{
+                display: 'flex',
+                minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33% - 24px)' }
+              }}
+            >
+              <InfoCard
+                title="Available Hostels"
+                value={filteredHostels.filter(h => h.availability).length}
+                icon={<CheckCircle size={22} />}
+                color="warning"
+                sx={{ 
+                  height: '100%',
+                  minHeight: '140px',
+                  width: '100%',
+                  flex: 1
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+
+        {/* Filters and Search Section */}
+        <Box sx={{ 
+          display: 'flex', 
+          gap: 2, 
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          backgroundColor: 'background.paper',
+          padding: 2,
+          borderRadius: 1,
+          boxShadow: 1
+        }}>
+          <TextField
+            size="small"
+            placeholder="Search by name or location..."
+            value={searchTerm}
+            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ flexGrow: 1, minWidth: '200px' }}
+          />
+
+          <FormControl size="small" sx={{ minWidth: '200px' }}>
+            <InputLabel>Location</InputLabel>
+            <Select name="location" value={filters.location} onChange={handleFilterChange} label="Location">
+              <MenuItem value="all">All Locations</MenuItem>
+              {uniqueLocations.map(loc => <MenuItem key={loc} value={loc}>{loc}</MenuItem>)}
+            </Select>
+          </FormControl>
+
+          <FormControl size="small" sx={{ minWidth: '180px' }}>
+            <InputLabel>Gender</InputLabel>
+            <Select name="gender" value={filters.gender} onChange={handleFilterChange} label="Gender">
+              <MenuItem value="all">All Genders</MenuItem>
+              <MenuItem value="male">Male</MenuItem>
+              <MenuItem value="female">Female</MenuItem>
+              <MenuItem value="mixed">Mixed</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl size="small" sx={{ minWidth: '180px' }}>
+            <InputLabel>Availability</InputLabel>
+            <Select name="availability" value={filters.availability} onChange={handleFilterChange} label="Availability">
+              <MenuItem value="all">All Availabilities</MenuItem>
+              <MenuItem value="true">Available</MenuItem>
+              <MenuItem value="false">Not Available</MenuItem>
+            </Select>
+          </FormControl>
+
           <ToggleButtonGroup
             value={viewMode}
             exclusive
             onChange={(e, newView) => newView && setViewMode(newView)}
-            aria-label="view mode"
             size="small"
-            sx={{ marginRight: 2 }}
           >
             <ToggleButton value="grid" aria-label="grid view">
-              <LayoutGrid size={18} />
+              <LayoutGrid size={20} />
             </ToggleButton>
             <ToggleButton value="table" aria-label="table view">
-              <List size={18} />
+              <List size={20} />
             </ToggleButton>
           </ToggleButtonGroup>
-          <Button variant="contained" color="primary" onClick={handleAddNew} startIcon={<Plus size={16} />}>
-            Add New Hostel
-          </Button>
         </Box>
       </Box>
-
-      <Box display="flex" gap={2} mb={3} flexWrap="wrap">
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="Search by name or location..."
-          value={searchTerm}
-          onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-          InputProps={{ startAdornment: (<InputAdornment position="start"><Search /></InputAdornment>) }}
-          sx={{ minWidth: 250 }}
-        />
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 200 }}>
-          <InputLabel>Location</InputLabel>
-          <Select name="location" value={filters.location} onChange={handleFilterChange} label="Location">
-            <MenuItem value="all">All Locations</MenuItem>
-            {uniqueLocations.map(loc => <MenuItem key={loc} value={loc}>{loc}</MenuItem>)}
-          </Select>
-        </FormControl>
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Gender</InputLabel>
-          <Select name="gender" value={filters.gender} onChange={handleFilterChange} label="Gender">
-            <MenuItem value="all">All Genders</MenuItem>
-            <MenuItem value="male">Male</MenuItem>
-            <MenuItem value="female">Female</MenuItem>
-            <MenuItem value="mixed">Mixed</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Availability</InputLabel>
-          <Select name="availability" value={filters.availability} onChange={handleFilterChange} label="Availability">
-            <MenuItem value="all">All Availabilities</MenuItem>
-            <MenuItem value="true">Available</MenuItem>
-            <MenuItem value="false">Not Available</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-
-      <div className="hostels-summary-cards">
-        <InfoCard title="Total Hostels" value={filteredHostels.length} icon={<Building />} />
-        <InfoCard title="Total Rooms" value={filteredHostels.reduce((acc, h) => acc + (h.rooms?.length || 0), 0)} icon={<BedDouble />} />
-        <InfoCard title="Available Hostels" value={filteredHostels.filter(h => h.availability).length} icon={<CheckCircle />} />
-      </div>
 
       {isLoading && <div className="loading-indicator">Loading hostels...</div>}
       

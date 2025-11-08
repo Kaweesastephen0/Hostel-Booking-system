@@ -149,7 +149,7 @@
 .profile-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 2.5rem; /* increased spacing between cards for clearer layout */
 }
 
 @media (min-width: 992px) {
@@ -161,7 +161,12 @@
 .profile-grid__left, .profile-grid__right {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 2.5rem; /* increased spacing inside columns */
+}
+
+/* Slightly larger card padding for better visual separation */
+.profile-card {
+    padding: 1.5rem;
 }
 
 .profile-overview-card {

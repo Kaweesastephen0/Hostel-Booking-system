@@ -6,6 +6,7 @@ import {
   Users,
   Loader2,
 } from "lucide-react";
+import { Button } from "@mui/material";
 import Header from "../../components/header/Header";
 import InfoCard from "../../components/cards/InfoCard";
 import BookingChart from "../../components/charts/BookingChart";
@@ -14,9 +15,7 @@ import dashboardService from "../../services/dashboardService";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
-import HostelForm from "../../components/hostels/HostelForm";
-import RoomForm from "../Rooms/RoomForm";
-import Modal from "../../components/modal/Modal";
+
 
 const recentBookingsColumns = [
   { Header: 'Booking ID', accessor: 'reference' },
@@ -50,8 +49,7 @@ const getGreeting = () => {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [isHostelModalOpen, setIsHostelModalOpen] = useState(false);
-  const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
+
   const [totals, setTotals] = useState({
     totalHostels: 0,
     totalRooms: 0,
@@ -89,52 +87,47 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-
-        const dashboardTotals = await dashboardService.getTotals();
-        setTotals(dashboardTotals);
-
-
-        const response = await fetch('http://localhost:5000/api/bookings?limit=5&sort=-createdAt');
-        const data = await response.json();
-        if (data.success && Array.isArray(data.data?.bookings)) {
-
-          const mappedBookings = data.data.bookings.map(booking => ({
-            reference: booking.reference || `BK-${booking._id?.slice(-6)}` || 'N/A',
-            guestName: booking.guestName || 'Unknown Guest',
-            hostelName: booking.hostelName || 'N/A',
-            createdAt: booking.createdAt || new Date().toISOString(),
-            status: booking.status || 'pending'
-          }));
-          setRecentBookings(mappedBookings);
-        } else {
-          setRecentBookings([]);
-        }
-
-        // Calculating of the  booking chart data (last 7 months)
-        const months = Array.from({ length: 7 }, (_, i) => {
-          const d = new Date();
-          d.setMonth(d.getMonth() - i);
-          return d.toLocaleString('default', { month: 'short' });
-        }).reverse();
-
-        //Implementation of real booking statistics endpoint
-        setBookingChartData(months.map(name => ({
-          name,
-          bookings: Math.floor(Math.random() * 100)
-        })));
-
-      } catch (err) {
-        console.error('Dashboard data error:', err);
-        setError(err.message || 'Failed to load dashboard data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadDashboardData();
+    // fetchDashboardData is defined below and used here to populate dashboard
+    fetchDashboardData();
   }, []);
+
+  // Extracted data load function so modals can refresh after create actions
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    try {
+      const dashboardTotals = await dashboardService.getTotals();
+      setTotals(dashboardTotals);
+
+      const response = await fetch('http://localhost:5000/api/bookings?limit=5&sort=-createdAt');
+      const data = await response.json();
+      if (data.success && Array.isArray(data.data?.bookings)) {
+        const mappedBookings = data.data.bookings.map(booking => ({
+          reference: booking.reference || `BK-${booking._id?.slice(-6)}` || 'N/A',
+          guestName: booking.guestName || 'Unknown Guest',
+          hostelName: booking.hostelName || 'N/A',
+          createdAt: booking.createdAt || new Date().toISOString(),
+          status: booking.status || 'pending'
+        }));
+        setRecentBookings(mappedBookings);
+      } else {
+        setRecentBookings([]);
+      }
+
+      const months = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setMonth(d.getMonth() - i);
+        return d.toLocaleString('default', { month: 'short' });
+      }).reverse();
+
+      setBookingChartData(months.map(name => ({ name, bookings: Math.floor(Math.random() * 100) })));
+
+    } catch (err) {
+      console.error('Dashboard data error:', err);
+      setError(err.message || 'Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // The user name will come from an auth context
   const userName = "Raymond";
@@ -157,18 +150,22 @@ const Dashboard = () => {
         subtitle="Here's what's happening with your hostels today."
         showGreeting={true}
       >
-        <button
-          className="btn btn-primary"
-          onClick={() => setIsHostelModalOpen(true)}
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Building size={16} />}
+          onClick={() => navigate('/hostels/new')}
         >
-          <Building size={16} /> Add Hostel
-        </button>
-        <button
-          className="btn btn-primary"
-          onClick={() => setIsRoomModalOpen(true)}
+          Add Hostel
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<BedDouble size={16} />}
+          onClick={() => navigate('/rooms/new')}
         >
-          <BedDouble size={16} /> Add Room
-        </button>
+          Add Room
+        </Button>
       </Header>
 
       <div className="dashboard-summary-cards">
@@ -213,43 +210,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <Modal
-        isOpen={isHostelModalOpen}
-        onClose={() => setIsHostelModalOpen(false)}
-        title="Add New Hostel"
-      >
-        <HostelForm
-          onSubmit={async (data) => {
-            try {
-              await dashboardService.createHostel(data);
-              setIsHostelModalOpen(false);
-              fetchDashboardData(); // Refresh data
-            } catch (error) {
-              console.error('Failed to create hostel:', error);
-            }
-          }}
-          onCancel={() => setIsHostelModalOpen(false)}
-        />
-      </Modal>
 
-      <Modal
-        isOpen={isRoomModalOpen}
-        onClose={() => setIsRoomModalOpen(false)}
-        title="Add New Room"
-      >
-        <RoomForm
-          onSubmit={async (data) => {
-            try {
-              await dashboardService.createRoom(data);
-              setIsRoomModalOpen(false);
-              fetchDashboardData(); // Refresh data
-            } catch (error) {
-              console.error('Failed to create room:', error);
-            }
-          }}
-          onCancel={() => setIsRoomModalOpen(false)}
-        />
-      </Modal>
     </div>
   );
 };

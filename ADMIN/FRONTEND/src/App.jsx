@@ -1,5 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { ThemeProvider as MaterialTailwindProvider } from "@material-tailwind/react";
+import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { SidebarProvider } from './context/SidebarContext';
 import Sidebar from './components/sidebar/Sidebar';
 import Navbar from './components/navbar/Navbar';
 import UsersPage from './pages/Users/Users';
@@ -12,9 +17,32 @@ import RoomsPage from './pages/Rooms/Rooms.jsx';
 import Profile from './pages/Profile/Profile';
 import BookingDetails from './pages/Bookings/BookingDetails';
 import UserProfile from './pages/Users/UserProfile';
+import SettingsPage from './pages/Settings/SettingsPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import PublicRoute from './components/common/PublicRoute';
 import './App.css';
+
+const muiTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#2563eb',  // System blue color
+    }
+  },
+  components: {
+    MuiTextField: {
+      defaultProps: {
+        size: 'small',
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: '6px',
+        },
+      },
+    },
+  },
+});
 
 /**
  * MainLayout component to wrap authenticated pages
@@ -36,33 +64,44 @@ const MainLayout = () => {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Public routes */}
-        <Route element={<PublicRoute />}>
-          <Route path="/login" element={<Login />} />
-        </Route>
+    <MaterialTailwindProvider>
+      <MuiThemeProvider theme={muiTheme}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <SidebarProvider>
+            <Router>
+              <Routes>
+                {/* Public routes */}
+                <Route element={<PublicRoute />}>
+                  <Route path="/login" element={<Login />} />
+                </Route>
 
-        {/* Protected routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<MainLayout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="hostels" element={<Hostels />} />
-            <Route path="rooms" element={<RoomsPage />} />
-            <Route path="bookings" element={<BookingsPage />} />
-            <Route path="bookings/:id" element={<BookingDetails />} />
-            <Route path="users" element={<UsersPage />} />
-            <Route path="users/:id" element={<UserProfile />} />
-            <Route path="payments" element={<PaymentsPage />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
-        </Route>
+                {/* Protected routes */}
+                <Route element={<ProtectedRoute />}>
+                  <Route element={<MainLayout />}>
+                    <Route index element={<Navigate to="/dashboard" replace />} />
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="hostels" element={<Hostels />} />
+                    <Route path="hostels/new" element={<Hostels isCreateMode={true} />} />
+                    <Route path="rooms" element={<RoomsPage />} />
+                    <Route path="rooms/new" element={<RoomsPage isCreateMode={true} />} />
+                    <Route path="bookings" element={<BookingsPage />} />
+                    <Route path="bookings/:id" element={<BookingDetails />} />
+                    <Route path="users" element={<UsersPage />} />
+                    <Route path="users/:id" element={<UserProfile />} />
+                    <Route path="payments" element={<PaymentsPage />} />
+                    <Route path="profile" element={<Profile />} />
+                    <Route path="settings" element={<SettingsPage />} />
+                  </Route>
+                </Route>
 
-        {/* Catch all other routes */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </Router>
+                {/* Catch all other routes */}
+                <Route path="*" element={<Navigate to="/login" replace />} />
+              </Routes>
+            </Router>
+          </SidebarProvider>
+        </LocalizationProvider>
+      </MuiThemeProvider>
+    </MaterialTailwindProvider>
   );
 }
 

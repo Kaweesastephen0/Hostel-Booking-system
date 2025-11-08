@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from "react";
+import { Loader2, Lock } from 'lucide-react';
 import ProfileInfoCard from "../../components/profile/ProfileInfoCard";
-import ProfileSettingsCard from "../../components/profile/ProfileSettingsCard";
+import ProfileSettingsCard from './ProfileSettingsCard';
 import userService from "../../services/userService";
+import { Snackbar, Alert, Box, TextField, Button, Paper, Typography, Divider } from '@mui/material';
 import "./Profile.css";
 
 const ProfilePage = () => {
@@ -25,6 +26,15 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+
+  const passwordMismatch = useMemo(
+    () =>
+      Boolean(password.newPassword) &&
+      Boolean(password.confirmNewPassword) &&
+      password.newPassword !== password.confirmNewPassword,
+    [password.newPassword, password.confirmNewPassword]
+  );
 
   useEffect(() => {
     const loadUserProfile = async () => {
@@ -67,9 +77,11 @@ const ProfilePage = () => {
         email: user.email
       });
       setIsEditing(false);
+      showSnackbar('Profile updated successfully.');
     } catch (err) {
       setError(err.message || 'Failed to update profile');
       console.error('Profile update error:', err);
+      showSnackbar(err.message || 'Failed to update profile', 'error');
     }
   };
 
@@ -83,19 +95,22 @@ const ProfilePage = () => {
     try {
       await userService.changePassword(password.currentPassword, password.newPassword);
       setPassword({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
+      showSnackbar('Password changed successfully.');
     } catch (err) {
       setError(err.message || 'Failed to change password');
       console.error('Password change error:', err);
+      showSnackbar(err.message || 'Failed to change password', 'error');
     }
   };
 
   const handleDeleteAccount = async () => {
     try {
       await userService.deleteAccount();
-      alert('Account deleted successfully.'); // Replace with toast notification
+      showSnackbar('Account deleted successfully.');
     } catch (err) {
       setError(err.message || 'Failed to delete account');
       console.error('Account deletion error:', err);
+      showSnackbar(err.message || 'Failed to delete account', 'error');
     }
   };
 
@@ -111,10 +126,20 @@ const ProfilePage = () => {
       // Reload user data to get updated avatar
       const { data } = await userService.getCurrentUser();
       setUser(data);
+      showSnackbar('Avatar updated successfully.');
     } catch (err) {
       setError(err.message || 'Failed to update avatar');
       console.error('Avatar update error:', err);
+      showSnackbar(err.message || 'Failed to update avatar', 'error');
     }
+  };
+
+  const showSnackbar = (message, severity = 'success') => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
   if (isLoading) {
@@ -125,7 +150,7 @@ const ProfilePage = () => {
     <div className="profile-page-container">
       <div className="profile-grid">
         <div className="profile-grid__left">
-          <ProfileInfoCard user={user} onFileChange={handleFileChange} isEditing={isEditing} onUserChange={handleUserChange} />
+          <ProfileInfoCard user={user} onFileChange={handleFileChange} isEditing={isEditing} onUserChange={handleUserChange} onUpdateProfile={handleUpdateProfile} />
         </div>
         <div className="profile-grid__right">
           <ProfileSettingsCard
@@ -140,8 +165,19 @@ const ProfilePage = () => {
           />
         </div>
       </div>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
 
 export default ProfilePage;
+

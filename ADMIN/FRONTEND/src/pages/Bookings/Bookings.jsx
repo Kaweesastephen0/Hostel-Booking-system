@@ -715,7 +715,7 @@ const Bookings = () => {
         if (status === 'cancelled') return <Replay fontSize="small" />;
         return <Info fontSize="small" />;
       },
-      tooltip: (row) => {
+      getTooltip: (row) => {
         const status = row.status?.toLowerCase();
         if (status === 'pending') return 'Mark as Confirmed';
         if (status === 'confirmed') return 'Cancel Booking';

@@ -1,0 +1,135 @@
+:root {
+    --primary-color: #3b82f6;
+    --system-blue: #3b82f6;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+}
+
+/* Modern Tabs Container */
+.tabs-container {
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.tabs-list {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0 0;
+    margin-bottom: 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    -ms-overflow-style: auto;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tabs-list::-webkit-scrollbar {
+    height: 4px;
+}
+
+.tabs-list::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.tabs-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+/* Individual Tab Items */
+.tab-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1.125rem;
+    color: var(--text-secondary);
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+/* Tab Icon Styling */
+.tab-item svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 1.5px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.6;
+}
+
+/* Tab Label */
+.tab-label {
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover State */
+.tab-item:hover {
+    color: var(--text-primary);
+}
+
+.tab-item:hover svg {
+    opacity: 0.8;
+}
+
+/* Active Tab State */
+.tab-item.active {
+    color: var(--system-blue);
+}
+
+.tab-item.active svg {
+    stroke: var(--system-blue);
+    opacity: 1;
+}
+
+/* Animated Underline for Active Tab */
+.tab-item::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--system-blue) 0%, var(--system-blue) 100%);
+    transform: scaleX(0);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 2px 2px 0 0;
+}
+
+.tab-item.active::after {
+    transform: scaleX(1);
+}
+
+/* Dark Mode Support */
+[data-theme="dark"] {
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+}
+
+[data-theme="dark"] .tabs-list {
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .tabs-list::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+
+[data-theme="dark"] .tabs-list::-webkit-scrollbar-thumb {
+    background: #334155;
+}
+
+[data-theme="dark"] .tab-item.active {
+    color: #60a5fa;
+}
+
+[data-theme="dark"] .tab-item.active::after {
+    background: #60a5fa;
+}

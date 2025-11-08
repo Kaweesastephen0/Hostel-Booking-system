@@ -54,38 +54,22 @@ const Header = ({
   return (
     <div className="page-header">
       <div className="header-content">
-        <div className="header-main">
+        <div className="header-left">
           <h1 className="header-title">{title}</h1>
           {subtitle && <p className="header-subtitle">{subtitle}</p>}
-        </div>
-        
-        {showGreeting && !loading && user && (
-          <div className="greeting-section">
+          {showGreeting && !loading && user && (
             <p className="greeting-text">
               {getGreeting()}, {user.name}
               <span className="user-role">({user.role})</span>
             </p>
-          </div>
-        )}
-      </div>
-
-      <div className="header-actions">
-        {children}
+          )}
+        </div>
         
-        {showActions && user && (
-          <ActionMenu userType={user.role} onAction={onAction} />
-        )}
-        
-        {showUserProfile && !loading && user && (
-          <div className="user-profile">
-            {user.avatar ? (
-              <img 
-                src={user.avatar} 
-                alt={user.name} 
-                className="user-avatar" 
-              />
-            ) : (
-              <UserCircle className="user-avatar-icon" />
+        {user && (
+          <div className="header-actions">
+            {children}
+            {showActions && (
+              <ActionMenu userType={user.role} onAction={onAction} />
             )}
           </div>
         )}

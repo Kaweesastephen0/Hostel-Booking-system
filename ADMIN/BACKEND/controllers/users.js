@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import asyncHandler from '../middleware/async.js';
+import { createActivityLog } from '../utils/activityLogger.js';
 
 const parsePositiveInt = (value, fallback) => {
   const parsed = parseInt(value, 10);
@@ -56,6 +57,19 @@ export const createUser = asyncHandler(async (req, res) => {
     role,
     isActive: typeof isActive === 'boolean' ? isActive : true,
   });
+
+  await createActivityLog(
+    req,
+    `Created user: ${user.fullName} (${role})`,
+    'user',
+    {
+      userId: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+      isActive: user.isActive
+    }
+  );
 
   res.status(201).json({
     success: true,
@@ -184,6 +198,20 @@ export const updateUser = asyncHandler(async (req, res) => {
 
   const updatedUser = await user.save();
 
+  await createActivityLog(
+    req,
+    `Updated user: ${updatedUser.fullName}`,
+    'user',
+    {
+      userId: updatedUser._id,
+      fullName: updatedUser.fullName,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      isActive: updatedUser.isActive,
+      changes: { fullName, email, role, isActive }
+    }
+  );
+
   res.status(200).json({
     success: true,
     data: {
@@ -204,7 +232,21 @@ export const deleteUser = asyncHandler(async (req, res) => {
     });
   }
 
+  const userData = {
+    userId: user._id,
+    fullName: user.fullName,
+    email: user.email,
+    role: user.role
+  };
+
   await user.deleteOne();
+
+  await createActivityLog(
+    req,
+    `Deleted user: ${user.fullName}`,
+    'user',
+    userData
+  );
 
   res.status(200).json({
     success: true,
@@ -232,6 +274,18 @@ export const toggleUserStatus = asyncHandler(async (req, res) => {
   }
 
   const updatedUser = await user.save({ validateBeforeSave: false });
+
+  await createActivityLog(
+    req,
+    `${isActive !== undefined ? (isActive ? 'Activated' : 'Deactivated') : 'Toggled status of'} user: ${updatedUser.fullName}`,
+    'user',
+    {
+      userId: updatedUser._id,
+      fullName: updatedUser.fullName,
+      email: updatedUser.email,
+      isActive: updatedUser.isActive
+    }
+  );
 
   res.status(200).json({
     success: true,

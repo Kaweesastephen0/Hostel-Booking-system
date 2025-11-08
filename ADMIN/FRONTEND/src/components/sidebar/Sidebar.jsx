@@ -1,20 +1,27 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link, useLocation, useNavigate, NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard,
-  Building,
+  Home,
+  Building2,
   BedDouble,
-  CalendarCheck,
   Users,
   Settings,
-  LogOut,
-  UserCog,
+  CreditCard,
+  BookOpen,
+  Menu,
+  X,
+  LayoutDashboard,
+  Building,
+  CalendarCheck,
   Wallet,
+  UserCog,
+  LogOut
 } from 'lucide-react';
+import { useSidebar } from '../../context/SidebarContext';
 import './Sidebar.css';
 
 const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const { isCollapsed, setIsCollapsed } = useSidebar();
   const navigate = useNavigate();
 
   const navItems = [

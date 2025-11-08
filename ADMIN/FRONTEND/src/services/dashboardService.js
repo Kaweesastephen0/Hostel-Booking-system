@@ -99,6 +99,33 @@ const dashboardService = {
       throw new Error(message);
     }
   },
+  // Create a hostel (accepts JSON or FormData)
+  createHostel: async (hostelData) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const headers = (hostelData instanceof FormData) ? { 'Content-Type': 'multipart/form-data' } : {};
+      const response = await axios.post('/hostels', hostelData, { headers });
+      return response.data.data;
+    } catch (err) {
+      const message = err.response?.data?.message || err.message || 'Failed to create hostel';
+      throw new Error(message);
+    }
+  },
+
+  // Create a room (accepts JSON or FormData)
+  createRoom: async (roomData) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const headers = (roomData instanceof FormData) ? { 'Content-Type': 'multipart/form-data' } : {};
+      const response = await axios.post('/rooms', roomData, { headers });
+      return response.data.data;
+    } catch (err) {
+      const message = err.response?.data?.message || err.message || 'Failed to create room';
+      throw new Error(message);
+    }
+  }
 };
 
 export default dashboardService;

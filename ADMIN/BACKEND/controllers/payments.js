@@ -1,6 +1,7 @@
 import Payment from '../models/Payment.js';
 import Booking from '../models/Booking.js';
 import asyncHandler from '../middleware/async.js';
+import { createActivityLog } from '../utils/activityLogger.js';
 
 const parsePositiveInt = (value, fallback) => {
   const parsed = parseInt(value, 10);
@@ -63,6 +64,20 @@ export const createPayment = asyncHandler(async (req, res) => {
     notes,
     paidAt: status === 'completed' ? new Date() : undefined,
   });
+
+  await createActivityLog(
+    req,
+    `Created payment: ${payment.reference || booking.reference}`,
+    'payment',
+    {
+      paymentId: payment._id,
+      bookingId: booking._id,
+      bookingReference: booking.reference,
+      amount: payment.amount,
+      method: payment.method,
+      status: payment.status
+    }
+  );
 
   res.status(201).json({
     success: true,
@@ -208,6 +223,12 @@ export const updatePayment = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, message: 'Payment not found' });
   }
 
+  const oldData = {
+    method: payment.method,
+    status: payment.status,
+    amount: payment.amount
+  };
+
   if (method !== undefined) payment.method = method;
   if (status !== undefined) {
     payment.status = status;
@@ -219,6 +240,23 @@ export const updatePayment = asyncHandler(async (req, res) => {
   if (notes !== undefined) payment.notes = notes;
 
   const updatedPayment = await payment.save();
+
+  await createActivityLog(
+    req,
+    `Updated payment for booking: ${payment.booking}`,
+    'payment',
+    {
+      paymentId: updatedPayment._id,
+      bookingId: updatedPayment.booking,
+      oldData,
+      newData: {
+        method: updatedPayment.method,
+        status: updatedPayment.status,
+        amount: updatedPayment.amount
+      },
+      changes: req.body
+    }
+  );
 
   res.status(200).json({
     success: true,
@@ -237,7 +275,22 @@ export const deletePayment = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, message: 'Payment not found' });
   }
 
+  const paymentData = {
+    paymentId: payment._id,
+    bookingId: payment.booking,
+    amount: payment.amount,
+    method: payment.method,
+    status: payment.status
+  };
+
   await payment.deleteOne();
+
+  await createActivityLog(
+    req,
+    `Deleted payment for booking: ${payment.booking}`,
+    'payment',
+    paymentData
+  );
 
   res.status(200).json({
     success: true,

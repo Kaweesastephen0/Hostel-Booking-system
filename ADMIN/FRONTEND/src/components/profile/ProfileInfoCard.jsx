@@ -1,7 +1,7 @@
 import React from 'react';
 import { Camera } from 'lucide-react';
 
-const ProfileInfoCard = ({ user, isEditing, onUserChange }) => {
+const ProfileInfoCard = ({ user, isEditing, onUserChange, onFileChange, onUpdateProfile }) => {
   return (
     <div className="profile-info-card">
       <div className="profile-header">
@@ -19,7 +19,7 @@ const ProfileInfoCard = ({ user, isEditing, onUserChange }) => {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => onFileChange(e)}
+                  onChange={onFileChange}
                   style={{ display: 'none' }}
                 />
               </label>
@@ -74,6 +74,11 @@ const ProfileInfoCard = ({ user, isEditing, onUserChange }) => {
             />
           </div>
         )}
+      </div>
+      <div className="form-actions">
+        <button onClick={onUpdateProfile} className="btn btn-primary">
+          {isEditing ? 'Save' : 'Edit'}
+        </button>
       </div>
     </div>
   );

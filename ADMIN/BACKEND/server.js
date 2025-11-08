@@ -9,6 +9,9 @@ import authRoutes from "./routes/auth.js";
 import bookingRoutes from "./routes/bookings.js";
 import userRoutes from "./routes/users.js";
 import paymentRoutes from "./routes/payments.js";
+import settingsRoutes from "./routes/settings.js";
+import activityLogRoutes from "./routes/activityLogs.js";
+import frontUsersRoutes from "./routes/frontUsers.js";
 
 // Load environment variables
 dotenv.config();
@@ -42,16 +45,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Serve static files
+app.use('/uploads', express.static('uploads'));
+
 // Routes
 app.use('/api/hostels', hostelRoute);
 app.use("/api/rooms", roomRoute); 
 app.use("/api/auth", authRoutes); 
 app.use("/api/bookings", bookingRoutes); 
-app.use("/api/auth", authRoutes); // This would have been the next error
-app.use("/api/bookings", bookingRoutes); // This would have been the error after that
-app.use("/api/premium", hostelRoute);
 app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/settings", settingsRoutes);
+app.use("/api/logs", activityLogRoutes);
+app.use('/api/frontusers', frontUsersRoutes);
+app.use("/api/premium", hostelRoute);
  
 
 // Health check endpoint

@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import ErrorResponse from "../utils/errorResponse.js";
 import asyncHandler from "../middleware/async.js";
 import jwt from "jsonwebtoken";
+import { logActivity } from "../utils/activityLogger.js";
 
 
 export const register = asyncHandler(async (req, res, next) => {
@@ -20,6 +21,21 @@ export const register = asyncHandler(async (req, res, next) => {
     fullName,
     role: role || 'manager', 
     isActive: true
+  });
+
+  await logActivity({
+    user: user._id,
+    action: `Registered new user: ${user.fullName} (${user.role})`,
+    category: 'user',
+    details: {
+      email: user.email,
+      fullName: user.fullName,
+      role: user.role
+    },
+    userType: user.role,
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent'],
+    status: 'success'
   });
 
   // Send token response
@@ -61,11 +77,22 @@ export const login = asyncHandler(async (req, res, next) => {
     { expiresIn: "1d" } 
   );
 
-
-  // Update last login
   user.lastLogin = Date.now();
   await user.save({ validateBeforeSave: false });
 
+  await logActivity({
+    user: user._id,
+    action: `${user.role.charAt(0).toUpperCase() + user.role.slice(1)} Login`,
+    category: 'user',
+    details: {
+      email: user.email,
+      loginTime: new Date().toISOString()
+    },
+    userType: user.role,
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent'],
+    status: 'success'
+  });
 
   res
      .cookie("token", token, {
@@ -96,6 +123,20 @@ export const getMe = asyncHandler(async (req, res, next) => {
 
 
 export const logout = asyncHandler(async (req, res, next) => {
+  await logActivity({
+    user: req.user.id,
+    action: `${req.user.role.charAt(0).toUpperCase() + req.user.role.slice(1)} Logout`,
+    category: 'user',
+    details: {
+      email: req.user.email,
+      logoutTime: new Date().toISOString()
+    },
+    userType: req.user.role,
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent'],
+    status: 'success'
+  });
+
   res.cookie("token", "none", {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
@@ -106,6 +147,28 @@ export const logout = asyncHandler(async (req, res, next) => {
     data: {},
   });
 });
+
+export const changePassword = asyncHandler(async (req, res, next) => {
+  const { currentPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user.id).select('+password');
+
+  if (!user) {
+    return next(new ErrorResponse('User not found', 404));
+  }
+
+  const isMatch = await user.comparePassword(currentPassword);
+
+  if (!isMatch) {
+    return next(new ErrorResponse('Incorrect current password', 400));
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  sendTokenResponse(user, 200, res);
+});
+
 
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {

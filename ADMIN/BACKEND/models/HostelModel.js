@@ -1,99 +1,79 @@
-//hostel model
 import mongoose from 'mongoose';
-const hostelSchema= new mongoose.Schema({
-  name:{
-    type : String,
+
+const hostelSchema = new mongoose.Schema({
+  name: {
+    type: String,
     required: [true, 'Hostel name is required'],
     trim: true,
-    maxLength:[100, 'Hostel name cannot exceed 100 characters']
-
+    maxLength: [100, 'Hostel name cannot exceed 100 characters']
   },
-  description:{
+  description: {
     type: String,
-    maxLength:[1000, 'Description cannot exceed 1000 characters'],
+    maxLength: [1000, 'Description cannot exceed 1000 characters'],
     trim: true
   },
-
- 
-   image: { 
+  image: {
     type: String,
-    required: [true, 'Image is required'],
-    
+    required: [true, 'Image is required']
   },
-  
-  
-  amenities:{
+  amenities: {
     type: [String],
-    validate:{
-        validator:function(array){
-            return array.length <= 20;
-        },
-        message: 'Cannot have more than 20 amenities'
+    validate: {
+      validator: function(array) {
+        return array.length <= 20;
+      },
+      message: 'Cannot have more than 20 amenities'
     }
-    
   },
-
-  
-    HostelGender:{
+  HostelGender: {
     type: String,
     enum: ['male', 'female', 'mixed'],
-    required:[true, 'Hotel gender is required']
-    },
-   
-  distance:{
-    type:String,
+    required: [true, 'Hostel gender is required']
+  },
+  distance: {
+    type: String,
     required: [true, 'Distance from campus is required'],
     trim: true
   },
-  
-  location:{
+  location: {
     type: String,
-    required: [true, 'location area is required'],
+    required: [true, 'Location area is required'],
     trim: true
   },
-  
-  availability:{
+  availability: {
     type: Boolean,
     default: true
   },
-  rating:{
-    average:{
-        type: Number,
-        min : 0,
-        max : 5,
-        default : 0
-
+  rating: {
+    average: {
+      type: Number,
+      min: 0,
+      max: 5,
+      default: 0
     },
-    count:{
-        type:Number,
-        default: 0
+    count: {
+      type: Number,
+      default: 0
     }
   },
-  featured:{
-    type:Boolean,
+  featured: {
+    type: Boolean,
     default: false
   },
-  // ADD THIS FIELD - This is what was missing!
   rooms: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Room'
   }]
-  
-  
-
-},{
-    timestamps: true
+}, {
+  timestamps: true
 });
 
-// Add indexes for better performance
-hostelSchema.index({ price: 1 });
 hostelSchema.index({ location: 1 });
-hostelSchema.index({ verified: 1 });
 hostelSchema.index({ featured: 1 });
+hostelSchema.index({ HostelGender: 1 });
 
-// Virtual for formatted price display
 hostelSchema.virtual('formattedPrice').get(function() {
-  return `UGX ${this.price.toLocaleString()}`;
+  return `UGX ${this.price?.toLocaleString() || '0'}`;
 });
 
-export default mongoose.model("Hostel", hostelSchema)
+export default mongoose.model("Hostel", hostelSchema);

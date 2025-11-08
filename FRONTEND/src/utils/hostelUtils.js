@@ -21,7 +21,11 @@ export const getHostelImage = (hostel) => {
   if (hostel?.image) return hostel.image;
   
   if (hostel?.images && Array.isArray(hostel.images) && hostel.images.length > 0) {
-    const imageUrl = hostel.images[0];
+    const imageObj = hostel.images[0];
+    const imageUrl = typeof imageObj === 'string' ? imageObj : imageObj?.url;
+    
+    if (!imageUrl) return null;
+    
     return imageUrl.startsWith('http') 
       ? imageUrl 
       : `http://localhost:5000${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
