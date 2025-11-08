@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import Booking from './Booking.js';
-import Payment from './Payment.js';
+
 
 const userSchema = new mongoose.Schema({
     email: {
