@@ -7,8 +7,7 @@ import {
   createHostel,
   updateHostel,
   deleteHostel,
-  getHostel,
-  getMyHostels
+  getHostel
 } from '../controllers/hostelControllers.js';
 import { protect, authorize, checkOwnership } from '../middleware/auth.js';
 import Hostel from '../models/HostelModel.js';
@@ -21,28 +20,17 @@ router.get('/premiumHostel', getPremiumHostels);
 router.get('/affordable', getAffordableHostels);
 router.get('/:id', getHostel);
 
-// Protected routes
+// Protected routes - all routes below require authentication
 router.use(protect);
 
-// Get all hostels (filtered by manager if role is manager)
+// Get all hostels (automatically filtered by manager if role is manager)
 router.get('/', getAllHostels);
 
-// Get hostels for the logged-in manager
-router.get('/my-hostels', authorize('manager'), getMyHostels);
+// Create hostel (admin and manager)
+router.post('/', authorize('admin', 'manager'), createHostel);
 
-// Admin only routes
-router.use(authorize('admin'));
-router.post('/', createHostel);
-router.route('/:id')
-  .put(checkOwnership(Hostel))
-  .delete(checkOwnership(Hostel));
-
-// Manager routes for their own hostels
-router.route('/')
-  .post(authorize('manager'), createHostel);
-
-router.route('/:id')
-  .put(authorize('manager'), checkOwnership(Hostel), updateHostel)
-  .delete(authorize('manager'), checkOwnership(Hostel), deleteHostel);
+// Update and delete hostel (admin and manager with ownership check)
+router.put('/:id', authorize('admin', 'manager'), checkOwnership(Hostel), updateHostel);
+router.delete('/:id', authorize('admin', 'manager'), checkOwnership(Hostel), deleteHostel);
 
 export default router;
