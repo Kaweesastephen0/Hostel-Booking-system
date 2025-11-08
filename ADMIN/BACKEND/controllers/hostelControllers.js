@@ -212,10 +212,10 @@ export const getPremiumHostels = async(req, res) => {
         });
 
         if (premiumHostels.length > 0) {
-            console.log(`✅ Found ${premiumHostels.length} premium hostels`);
+            console.log(`Found ${premiumHostels.length} premium hostels`);
             console.log('Premium hostels details:');
             hostelsWithPrices.forEach(hostel => {
-                console.log(`   🏨 ${hostel.name}: ${hostel.premiumRoomsCount} premium rooms, Price range: ${hostel.priceRange}`);
+                console.log(`   ${hostel.name}: ${hostel.premiumRoomsCount} premium rooms, Price range: ${hostel.priceRange}`);
             });
             
             res.status(200).json({
@@ -224,7 +224,7 @@ export const getPremiumHostels = async(req, res) => {
                 data: hostelsWithPrices
             });
         } else {
-            console.log('❌ No premium hostels found');
+            console.log('No premium hostels found');
             // Let's debug why no hostels are being found
             const allRoomPrices = allHostels.flatMap(hostel => 
                 hostel.rooms?.map(room => ({ hostel: hostel.name, price: room.roomPrice })) || []
@@ -278,12 +278,12 @@ export const getAffordableHostels = async (req, res) => {
             const hasAffordableRooms = roomPrices.length > 0 && 
                                      roomPrices.every(price => price < 600000);
             
-            console.log(`🏨 ${hostel.name}: ${roomPrices.length} rooms, Max price: ${roomPrices.length > 0 ? Math.max(...roomPrices) : 0}, Affordable: ${hasAffordableRooms}`);
+            console.log(` ${hostel.name}: ${roomPrices.length} rooms, Max price: ${roomPrices.length > 0 ? Math.max(...roomPrices) : 0}, Affordable: ${hasAffordableRooms}`);
             
             return hasAffordableRooms;
         });
 
-        console.log(`💰 Found ${affordableHostels.length} affordable hostels`);
+        console.log(` Found ${affordableHostels.length} affordable hostels`);
 
         // Add price information
         const hostelsWithPrices = affordableHostels.map(hostel => {
@@ -301,9 +301,9 @@ export const getAffordableHostels = async (req, res) => {
         });
 
         // Log details for debugging
-        console.log('✅ Affordable hostels found:');
+        console.log(' Affordable hostels found:');
         hostelsWithPrices.forEach(hostel => {
-            console.log(`   🏠 ${hostel.name}: ${hostel.priceRange}`);
+            console.log(`    ${hostel.name}: ${hostel.priceRange}`);
         });
 
         if (affordableHostels.length > 0) {
@@ -313,7 +313,7 @@ export const getAffordableHostels = async (req, res) => {
                 message: `Found ${affordableHostels.length} affordable hostels (all rooms below 600,000 UGX)`
             });
         } else {
-            console.log('❌ No affordable hostels found');
+            console.log(' No affordable hostels found');
             res.status(404).json({
                 success: false, 
                 message: 'No affordable hostels found (all rooms below 600,000 UGX)',
@@ -322,7 +322,7 @@ export const getAffordableHostels = async (req, res) => {
         }
         
     } catch(error) {
-        console.log('❌ Error getting affordable hostels:', error);
+        console.log(' Error getting affordable hostels:', error);
         console.log('Error stack:', error.stack);
         res.status(500).json({
             success: false,
