@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./contactUs.module.css";
+import styles from "./contactus.module.css";
 import {
   FaWhatsapp,
   FaMapMarkerAlt,
@@ -33,9 +33,8 @@ export default function Contactus() {
         <div className={styles.infoSection}>
           <h2 className={styles.heading}>Get in Touch</h2>
           <p className={styles.text}>
-            Have questions about your booking or need help finding the right
-            hostel? Our friendly team is ready to assist you. Reach out through
-            any of the following:
+            Have questions about your booking or need help finding the right hostel?
+            Our friendly team is ready to assist you. Reach out through any of the following:
           </p>
 
           <div className={styles.contactList}>

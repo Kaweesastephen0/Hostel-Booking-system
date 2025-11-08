@@ -2,57 +2,106 @@ import React from "react";
 import styles from "./aboutus.module.css";
 import { FaHome, FaUsers, FaHandshake, FaGlobe } from "react-icons/fa";
 
-const AboutUs = () => {
+const Aboutus = () => {
   return (
     <div className={styles.aboutContainer}>
-      <div className={styles.heroSection}>
-        <h1>About MUK BOOK</h1>
-        <p>Your trusted partner in hostel booking and accommodation management.</p>
-      </div>
+      {/* Hero Section */}
+      <section className={styles.heroSection}>
+        <div className={styles.heroOverlay}>
+          <h1 className={styles.heroTitle}>About MUK BOOK</h1>
+          <p className={styles.heroSubtitle}>
+            Empowering students with seamless, secure, and smart hostel booking experiences.
+          </p>
+        </div>
+      </section>
 
-      <div className={styles.missionSection}>
-        <h2>Our Mission</h2>
-        <p>
-          To simplify hostel booking for Makerere University students by providing an easy,
-          secure, and reliable online system.
+      {/* Mission */}
+      <section className={styles.infoSection}>
+        <h2 className={styles.sectionTitle}>Our Mission</h2>
+        <p className={styles.sectionText}>
+          To revolutionize hostel booking for Makerere University students through a digital
+          platform that ensures ease, security, and reliability — helping every student find a
+          perfect home away from home.
         </p>
-      </div>
+      </section>
 
-      <div className={styles.visionSection}>
-        <h2>Our Vision</h2>
-        <p>
-          To be the leading platform in East Africa for smart, digital hostel management and
-          student housing solutions.
+      {/* Vision */}
+      <section className={styles.infoSectionAlt}>
+        <h2 className={styles.sectionTitle}>Our Vision</h2>
+        <p className={styles.sectionText}>
+          To be East Africa’s leading digital platform for modern, technology-driven hostel
+          management and student housing innovation.
         </p>
-      </div>
+      </section>
 
-      <div className={styles.valuesSection}>
-        <h2>Our Core Values</h2>
+      {/* Core Values */}
+      <section className={styles.valuesSection}>
+        <h2 className={styles.sectionTitle}>Our Core Values</h2>
         <div className={styles.valuesGrid}>
           <div className={styles.valueBox}>
             <FaHome className={styles.icon} />
             <h3>Reliability</h3>
-            <p>We provide accurate and up-to-date hostel listings to help you make informed choices.</p>
+            <p>Accurate, updated listings to help students make informed accommodation choices.</p>
           </div>
+
           <div className={styles.valueBox}>
             <FaUsers className={styles.icon} />
             <h3>Community</h3>
-            <p>We connect students with safe, social, and supportive accommodation environments.</p>
+            <p>We connect students to safe, social, and supportive living environments.</p>
           </div>
+
           <div className={styles.valueBox}>
             <FaHandshake className={styles.icon} />
             <h3>Trust</h3>
-            <p>We maintain transparent relationships between hostel owners and tenants.</p>
+            <p>Transparency between hostel owners and tenants is our top priority.</p>
           </div>
+
           <div className={styles.valueBox}>
             <FaGlobe className={styles.icon} />
             <h3>Innovation</h3>
-            <p>We use technology to make hostel booking fast, digital, and stress-free.</p>
+            <p>Harnessing technology to make booking faster, smarter, and stress-free.</p>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Team Section */}
+      <section className={styles.teamSection}>
+        <h2 className={styles.sectionTitle}>Meet Our Team</h2>
+        <p className={styles.sectionText}>
+          A passionate group of developers and innovators dedicated to transforming hostel life.
+        </p>
+
+        <div className={styles.teamGrid}>
+          <div className={styles.teamCard}>
+            <img
+              src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="Team Member"
+            />
+            <h3>Henry Kiyimba</h3>
+            <p>Founder & Lead Developer</p>
+          </div>
+
+          <div className={styles.teamCard}>
+            <img
+              src="https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="Team Member"
+            />
+            <h3>Sarah Namusoke</h3>
+            <p>Project Manager</p>
+          </div>
+
+          <div className={styles.teamCard}>
+            <img
+              src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="Team Member"
+            />
+            <h3>John Mugisha</h3>
+            <p>UI/UX Designer</p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
 
-export default AboutUs;
+export default Aboutus;
