@@ -77,7 +77,12 @@ export const login = asyncHandler(async (req, res, next) => {
     success: true,
     msg: "Login Successfull",
     token,
-    user: { id: user._id, email: user.email, fullName: user.fullName}
+    user: { 
+      id: user._id, 
+      email: user.email, 
+      fullName: user.fullName,
+      role: user.role
+    }
   });
 
 } catch{

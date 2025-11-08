@@ -5,6 +5,16 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const userRole = user?.role;
 
+  // Debug logging
+  if (allowedRoles) {
+    console.log('ProtectedRoute Debug:', {
+      allowedRoles,
+      userRole,
+      user,
+      hasAccess: allowedRoles.includes(userRole)
+    });
+  }
+
   // If no token, redirect to login
   if (!token) {
     return <Navigate to="/login" replace />;
@@ -13,6 +23,7 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
   // If allowedRoles is specified, check if user has the required role
   if (allowedRoles && allowedRoles.length > 0) {
     if (!allowedRoles.includes(userRole)) {
+      console.warn(`Access denied: User role '${userRole}' not in allowed roles:`, allowedRoles);
       // Redirect to dashboard if user doesn't have the required role
       return <Navigate to="/dashboard" replace />;
     }

@@ -38,34 +38,33 @@ const MainLayout = () => {
 function App() {
   return (
 
-    <Router>
-      <Routes>
-        {/* Public routes */}
-        <Route element={<PublicRoute />}>
-          <Route path="/login" element={<Login />} />
-        </Route>
-
-        {/* Protected routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<MainLayout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="hostels" element={<Hostels />} />
-            <Route path="rooms" element={<RoomsPage />} />
-            <Route path="bookings" element={<BookingsPage />} />
-            <Route path="bookings/:id" element={<BookingDetails />} />
-            <Route path="users" element={<ProtectedRoute allowedRoles={['admin']}><UsersPage /></ProtectedRoute>} />
-            <Route path="users/:id" element={<ProtectedRoute allowedRoles={['admin']}><UserProfile /></ProtectedRoute>} />
-            <Route path="payments" element={<PaymentsPage />} />
-            <Route path="profile" element={<Profile />} />
+      <Router>
+        <Routes>
+          {/* Public routes */}
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<Login />} />
           </Route>
-        </Route>
 
-        {/* Catch all other routes */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </Router>
+          {/* Protected routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<MainLayout />}>
+              <Route index element={<Navigate to="/dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="hostels" element={<Hostels />} />
+              <Route path="rooms" element={<RoomsPage />} />
+              <Route path="bookings" element={<BookingsPage />} />
+              <Route path="bookings/:id" element={<BookingDetails />} />
+              <Route path="users" element={<ProtectedRoute allowedRoles={['admin']}><UsersPage /></ProtectedRoute>} />
+              <Route path="users/:id" element={<ProtectedRoute allowedRoles={['admin']}><UserProfile /></ProtectedRoute>} />
+              <Route path="payments" element={<PaymentsPage />} />
+              <Route path="profile" element={<Profile />} />
+            </Route>
+          </Route>
 
+          {/* Catch all other routes */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
   );
 }
 
