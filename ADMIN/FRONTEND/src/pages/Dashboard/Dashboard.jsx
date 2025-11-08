@@ -191,7 +191,7 @@ const Dashboard = () => {
             value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalUsers}
             icon={<Users size={24} />}
           />
-        ) : ()}
+        ) : (" ")}
       </div>
 
       <div className="dashboard-analytics-section">

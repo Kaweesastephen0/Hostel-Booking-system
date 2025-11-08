@@ -206,7 +206,17 @@ const BookingForm = ({ open, onClose, onSuccess }) => {
                 <DialogTitle>Add New Booking</DialogTitle>
                 <DialogContent>
                     {createError && <Alert severity="error">{createError}</Alert>}
-                    <Box sx={{ mt: 2, maxHeight: '70vh', overflowY: 'auto', pr: 1 }}>
+                    <Box sx={{ 
+                        mt: 2, 
+                        maxHeight: '70vh', 
+                        overflowY: 'auto',
+                        pr: 1,
+                        '&::-webkit-scrollbar': {
+                            display: 'none'  
+                        },
+                        msOverflowStyle: 'none',  
+                        scrollbarWidth: 'none'  
+                    }}>
                         <Typography variant="h6" gutterBottom>Guest Information</Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
@@ -219,7 +229,7 @@ const BookingForm = ({ open, onClose, onSuccess }) => {
                                     <Select value={newBooking.gender} onChange={handleNewBookingChange('gender')} label="Gender">
                                         <MenuItem value="male">Male</MenuItem>
                                         <MenuItem value="female">Female</MenuItem>
-                                        <MenuItem value="other">Other</MenuItem>
+                                        
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -253,7 +263,7 @@ const BookingForm = ({ open, onClose, onSuccess }) => {
                         <Typography variant="h6" gutterBottom>Booking Information</Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
-                                <FormControl fullWidth margin="normal" required sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth margin="normal" required sx={{ minWidth: 160 }}>
                                     <InputLabel>Hostel Name</InputLabel>
                                     <Select
                                         value={newBooking.hostelName}
@@ -276,7 +286,7 @@ const BookingForm = ({ open, onClose, onSuccess }) => {
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <FormControl fullWidth margin="normal" required disabled={!newBooking.hostelName || loadingRooms} sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth margin="normal" required disabled={!newBooking.hostelName || loadingRooms} sx={{ minWidth: 170 }}>
                                     <InputLabel>Room Number</InputLabel>
                                     <Select
                                         value={newBooking.roomNumber}
@@ -287,15 +297,18 @@ const BookingForm = ({ open, onClose, onSuccess }) => {
                                             <MenuItem value="">Loading rooms...</MenuItem>
                                         ) : rooms.length === 0 ? (
                                             <MenuItem value="">No rooms available</MenuItem>
-                                        ) : rooms.status === 'available' ? (
-                                            rooms.map((room) => (
-                                                <MenuItem key={room._id} value={room._id}>
-                                                    {room.roomNumber} - {room.roomType} (UGx{room.bookingPrice})
-                                                </MenuItem>
-                                            ))
-                                        ) : (
-                                            <MenuItem value="">No available rooms</MenuItem>
-                                        )}
+                                        ) : (() => {
+                                            const availableRooms = rooms.filter(room => room.status === 'available');
+                                            return availableRooms.length > 0 ? (
+                                                availableRooms.map((room) => (
+                                                    <MenuItem key={room._id} value={room._id}>
+                                                        {room.roomNumber} - {room.roomType} (UGx{room.bookingPrice})
+                                                    </MenuItem>
+                                                ))
+                                            ) : (
+                                                <MenuItem value="" disabled>No available rooms</MenuItem>
+                                            );
+                                        })()}
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -310,7 +323,7 @@ const BookingForm = ({ open, onClose, onSuccess }) => {
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <FormControl fullWidth margin="normal" required sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth margin="normal" required sx={{ minWidth: 140 }}>
                                     <InputLabel>Duration</InputLabel>
                                     <Select value={newBooking.duration} onChange={handleNewBookingChange('duration')} label="Duration">
                                         <MenuItem value="daily">Daily</MenuItem>
@@ -332,7 +345,7 @@ const BookingForm = ({ open, onClose, onSuccess }) => {
                         <Typography variant="h6" gutterBottom>Payment Information</Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
-                                <FormControl fullWidth margin="normal" required sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth margin="normal" required sx={{ minWidth: 180 }}>
                                     <InputLabel>Payment Method</InputLabel>
                                     <Select value={newBooking.paymentMethod} onChange={handleNewBookingChange('paymentMethod')} label="Payment Method">
                                         <MenuItem value="cash">Cash</MenuItem>

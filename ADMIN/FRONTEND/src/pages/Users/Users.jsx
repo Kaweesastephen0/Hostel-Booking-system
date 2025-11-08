@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Typography, Chip, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel,
-         Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar } from '@mui/material';
-import { Add, Edit, Delete, Search, Block, CheckCircle } from '@mui/icons-material';
+import {
+  Box, Button, Typography, Chip, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel,
+  Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar, Tabs, Tab
+} from '@mui/material';
+import { Add, Edit, Delete, Search, Block, CheckCircle, Person, AdminPanelSettings } from '@mui/icons-material';
 import DataTable from '../../components/common/DataTable';
 import Swal from 'sweetalert2'
 const Users = () => {
@@ -16,6 +18,7 @@ const Users = () => {
   const [order, setOrder] = useState('desc');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [tabValue, setTabValue] = useState('all');
   const [fetchError, setFetchError] = useState(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newUser, setNewUser] = useState({
@@ -59,6 +62,7 @@ const Users = () => {
     setFetchError(null);
 
     try {
+      let endpoint = '/users';
       const params = new URLSearchParams({
         page: (page + 1).toString(),
         limit: rowsPerPage.toString(),
@@ -74,9 +78,16 @@ const Users = () => {
         params.append('status', statusFilter);
       }
 
+      // Set endpoint based on active tab
+      if (tabValue === 'admins') {
+        endpoint = '/users/admins';
+      } else if (tabValue === 'clients') {
+        endpoint = '/users/clients';
+      }
+
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/users?${params.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}${endpoint}?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -131,7 +142,7 @@ const Users = () => {
     } finally {
       setLoading(false);
     }
-  }, [API_BASE_URL, order, orderBy, page, rowsPerPage, searchTerm, statusFilter]);
+  }, [API_BASE_URL, order, orderBy, page, rowsPerPage, searchTerm, statusFilter, tabValue]);
 
   useEffect(() => {
     fetchUsers();
@@ -161,29 +172,39 @@ const Users = () => {
     setPage(0);
   };
 
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+    setPage(0);
+  };
+
   const handleEditUser = (user) => {
     navigate(`/users/${user.id}`);
   };
 
   const handleDeleteUser = async (user) => {
     const displayName = user.fullName || user.email || 'this user';
-     await Swal.fire({
-          title: 'Delete User?',
-          text: `Are you sure you want to delete ${displayName}? This action cannot be undone.`,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#d32f2f',
-          cancelButtonColor: '#1976d2',
-          confirmButtonText: 'Yes, delete it',
-          cancelButtonText: 'Cancel',
-        });
+    const result = await Swal.fire({
+      title: 'Delete User?',
+      text: `Are you sure you want to delete ${displayName}? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d32f2f',
+      cancelButtonColor: '#1976d2',
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
 
     updateRowActionState(user.id, 'deleting', true);
 
     try {
       const token = localStorage.getItem('token');
+      const source = user.source || 'client'; // Default to 'client' for backward compatibility
 
-      const response = await fetch(`${API_BASE_URL}/users/${user.id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/${source}/${user.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -213,8 +234,9 @@ const Users = () => {
 
     try {
       const token = localStorage.getItem('token');
+      const source = user.source || 'client'; // Default to 'client' for backward compatibility
 
-      const response = await fetch(`${API_BASE_URL}/users/${user.id}/status`, {
+      const response = await fetch(`${API_BASE_URL}/users/${source}/${user.id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -396,18 +418,46 @@ const Users = () => {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} zIndex="1">
-        <Typography variant="h5" component="h1">
-          Users Management
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={handleOpenAddDialog}
+      <Box sx={{ mb: 3 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h5" component="h1">
+            Users Management
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Add />}
+            onClick={handleOpenAddDialog}
+          >
+            Add User
+          </Button>
+        </Box>
+        
+        <Tabs 
+          value={tabValue} 
+          onChange={handleTabChange} 
+          aria-label="user tabs"
+          sx={{ mb: 2 }}
         >
-          Add User
-        </Button>
+          <Tab 
+            value="all" 
+            label="All Users" 
+            icon={<Person />} 
+            iconPosition="start" 
+          />
+          <Tab 
+            value="admins" 
+            label="Admins & Managers" 
+            icon={<AdminPanelSettings />} 
+            iconPosition="start" 
+          />
+          <Tab 
+            value="clients" 
+            label="Client Users" 
+            icon={<Person />} 
+            iconPosition="start" 
+          />
+        </Tabs>
       </Box>
 
       {fetchError && (
