@@ -11,6 +11,7 @@ import authRoutes from "./routes/authRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 
+
 // Load environment variables
 dotenv.config();
 
@@ -37,44 +38,13 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-//ensuring requests include Access-Control-Allow-Origin
-
-// app.use((req, res, next) => {
-   
-//     if ( process.env.FRONTEND_URL || process.env.FRONTEND_URI) return next();
-
-//     res.header('Access-Control-Allow-Origin', '*');
-//     res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-//     if (req.method === 'OPTIONS') return res.sendStatus(204);
-//     next();
-// });
-
 // CORS configuration
-const allowedOrigins = [
-    process.env.FRONTEND_URL,
-    process.env.FRONTEND_URI
-    
-    ]
-const corsOptions = {
-    origin: (origin, callback) => {
-        if (!origin) {
-            return callback(null, true);
-        }
-        if(allowedOrigins.includes(origin)){
-        return callback(null, true);
-        }else{
-            return callback(new Error("Not allowed by CORS"))
-        }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
@@ -140,6 +110,26 @@ app.use('/api', (req, res) => {
     });
 });
 
+// 404 handler for all other routes
+// app.use('*', (req, res) => {
+// // 404 handler
+// app.use((req, res) => {
+//     res.status(404).json({
+//         success: false,
+//         message: `Route ${req.originalUrl} not found`
+//     });
+// });
 
 const PORT = process.env.PORT;
-app.listen(PORT);
+
+app.listen(PORT, () => {
+    console.log(`Hostel Booking API started on port ${PORT}!!`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log(`Hostels API: http://localhost:${PORT}/api/hostels`);
+    console.log(`Contact API: http://localhost:${PORT}/api/contact`);
+    console.log(`Auth API: http://localhost:${PORT}/api/auth`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Hostel Booking API started on port ${PORT}!!`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log(`Hostels API: http://localhost:${PORT}/api/hostels`);
+})
