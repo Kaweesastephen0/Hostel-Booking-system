@@ -1,80 +1,71 @@
 .contactPage {
   font-family: "Poppins", sans-serif;
-  background: #f5f9ff;
+  background-color: #f9fbff;
   color: #0a2540;
   overflow-x: hidden;
 }
 
-/* Hero */
+/* Hero Section */
 .hero {
-  background: url("https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=1600")
-    center/cover no-repeat;
-  height: 65vh;
   position: relative;
+  height: 70vh;
+  background: url("https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=1600")
+    center/cover no-repeat;
   display: flex;
-  justify-content: center;
   align-items: center;
-}
-
-.heroOverlay {
-  background: rgba(0, 0, 0, 0.55);
-  padding: 60px 30px;
-  border-radius: 20px;
-  color: #fff;
+  justify-content: center;
   text-align: center;
-  animation: fadeIn 1.2s ease-in-out;
 }
 
-.heroOverlay h1 {
-  font-size: 50px;
-  font-weight: 700;
+.overlay {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 60px;
+  border-radius: 16px;
+  color: #fff;
+  animation: fadeIn 1.3s ease;
+}
+
+.overlay h1 {
+  font-size: 52px;
   margin-bottom: 10px;
+  letter-spacing: 1px;
 }
 
-.heroOverlay p {
+.overlay p {
   font-size: 18px;
   line-height: 1.6;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 /* Contact Section */
-.mainSection {
+.contactSection {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 60px;
+  align-items: flex-start;
+  gap: 50px;
   padding: 80px 20px;
-  align-items: center;
 }
 
-.sideImage {
-  width: 100%;
-  border-radius: 18px;
-  box-shadow: 0 8px 24px rgba(0, 86, 179, 0.15);
-  transition: transform 0.4s ease;
-}
-
-.sideImage:hover {
-  transform: scale(1.05);
-}
-
-.rightPanel {
-  flex: 1 1 45%;
+.contactInfo {
+  flex: 1 1 500px;
   text-align: left;
 }
 
-.rightPanel h2 {
+.contactInfo h2 {
   color: #0056b3;
-  font-size: 34px;
+  font-size: 32px;
   margin-bottom: 15px;
 }
 
-.intro {
-  margin-bottom: 20px;
-  color: #444;
-  line-height: 1.6;
+.contactInfo p {
+  color: #555;
+  margin-bottom: 25px;
+  line-height: 1.7;
 }
 
-.contactGrid {
+.cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 18px;
@@ -84,133 +75,142 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: #fff;
-  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 86, 179, 0.12);
-  transition: 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 86, 179, 0.1);
+  transition: all 0.3s ease;
 }
 
 .card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 8px 22px rgba(0, 86, 179, 0.18);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 25px rgba(0, 86, 179, 0.2);
 }
 
 .icon {
-  font-size: 26px;
+  font-size: 28px;
+  animation: float 3s ease-in-out infinite;
 }
 
 .green {
   color: #25d366;
 }
-
 .blue {
   color: #007bff;
 }
-
 .orange {
   color: #ff8c00;
 }
-
 .red {
   color: #e63946;
 }
 
+.imageWrapper img {
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 86, 179, 0.15);
+  transition: transform 0.4s ease;
+}
+
+.imageWrapper img:hover {
+  transform: scale(1.04);
+}
+
 .socials {
-  margin-top: 25px;
+  margin-top: 30px;
   display: flex;
   gap: 15px;
 }
 
 .socialIcon {
   font-size: 22px;
+  color: white;
   padding: 12px;
   border-radius: 50%;
-  color: white;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .facebook {
   background: #1877f2;
 }
-
 .instagram {
   background: linear-gradient(45deg, #feda75, #d62976, #962fbf);
 }
-
 .twitter {
   background: #1da1f2;
 }
 
 .socialIcon:hover {
-  transform: scale(1.15);
+  transform: scale(1.2);
+  opacity: 0.85;
 }
 
 /* Map Section */
 .mapSection {
   text-align: center;
   padding: 80px 20px;
+  background: #ffffff;
 }
 
 .mapSection h2 {
+  font-size: 32px;
   color: #0056b3;
-  font-size: 30px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
-.mapText {
-  color: #444;
+.mapSection p {
+  color: #555;
   margin-bottom: 25px;
 }
 
-.mapContainer {
-  width: 100%;
-  height: 480px;
+.mapBox {
+  max-width: 1000px;
+  margin: 0 auto;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 86, 179, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 86, 179, 0.2);
 }
 
 /* Footer */
-.footerBanner {
+.footer {
   position: relative;
-  height: 320px;
-  margin-top: 70px;
+  height: 300px;
+  margin-top: 60px;
 }
 
 .footerImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(55%);
+  filter: brightness(50%);
 }
 
-.overlay {
+.footerOverlay {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0, 86, 179, 0.5), rgba(0, 0, 0, 0.8));
-}
-
-.footerText {
-  position: absolute;
-  bottom: 35px;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.footerText h2 {
-  font-size: 24px;
+.footerOverlay h2 {
+  font-size: 26px;
   margin-bottom: 8px;
 }
 
-.footerText p {
-  font-size: 14px;
+.footerOverlay p {
+  font-size: 15px;
   opacity: 0.9;
 }
 
-/* Animation */
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -222,12 +222,27 @@
   }
 }
 
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
-  .heroOverlay h1 {
+  .overlay h1 {
     font-size: 36px;
   }
-  .mainSection {
+
+  .contactSection {
     padding: 60px 15px;
+  }
+
+  .mapBox iframe {
+    height: 320px;
   }
 }
