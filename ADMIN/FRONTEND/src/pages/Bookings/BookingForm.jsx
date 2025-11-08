@@ -287,16 +287,14 @@ const BookingForm = ({ open, onClose, onSuccess }) => {
                                             <MenuItem value="">Loading rooms...</MenuItem>
                                         ) : rooms.length === 0 ? (
                                             <MenuItem value="">No rooms available</MenuItem>
+                                        ) : rooms.status === 'available' ? (
+                                            rooms.map((room) => (
+                                                <MenuItem key={room._id} value={room._id}>
+                                                    {room.roomNumber} - {room.roomType} (UGx{room.bookingPrice})
+                                                </MenuItem>
+                                            ))
                                         ) : (
-                                            rooms.status === 'available' ? (
-                                                rooms.map((room) => (
-                                                    <MenuItem key={room._id} value={room._id}>
-                                                        {room.roomNumber} - {room.roomType} (UGx{room.bookingPrice})
-                                                    </MenuItem>
-                                                ))
-                                            ) : (
-                                                <MenuItem value="">No available rooms</MenuItem>
-                                            )
+                                            <MenuItem value="">No available rooms</MenuItem>
                                         )}
                                     </Select>
                                 </FormControl>
