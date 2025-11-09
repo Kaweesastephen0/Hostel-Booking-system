@@ -4,12 +4,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useNotifications } from '../../hooks/useNotifications';
 import searchService from '../../services/searchService';
 import SearchResults from './SearchResults';
-import NotificationsDropdown from './NotificationsDropdown';
 import './Navbar.css';
 
 const Navbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null);
@@ -82,6 +80,10 @@ const Navbar = () => {
     navigate(path);
   };
 
+  const handleNotificationsClick = () => {
+    navigate('/settings?tab=notifications');
+  };
+
   const getPageTitle = () => {
     const path = location.pathname.substring(1) || 'dashboard';
     return path.charAt(0).toUpperCase() + path.slice(1);
@@ -115,8 +117,9 @@ const Navbar = () => {
 
         <div className="navbar-notifications">
           <button
+            type="button"
             className="navbar-icon-btn"
-            onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+            onClick={handleNotificationsClick}
           >
             <Bell size={22} />
             {unreadCount > 0 && (
@@ -125,10 +128,6 @@ const Navbar = () => {
               </span>
             )}
           </button>
-          <NotificationsDropdown
-            isOpen={isNotificationsOpen}
-            onClose={() => setIsNotificationsOpen(false)}
-          />
         </div>
 
         <div className="navbar-profile" ref={profileRef}>

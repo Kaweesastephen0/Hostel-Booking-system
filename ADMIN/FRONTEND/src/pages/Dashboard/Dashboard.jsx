@@ -140,13 +140,13 @@ const Dashboard = () => {
           value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalBookings}
           icon={<CalendarCheck size={24} />}
         />
-        {userRole === 'admin' && (
+        {currentUser.role === 'admin' ? (
           <InfoCard
             title="Total Users"
             value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalUsers}
             icon={<Users size={24} />}
           />
-        )}
+        ) : (" ")}
       </div>
 
       <div className="dashboard-analytics-section">

@@ -5,11 +5,51 @@ import {
   Select, Alert, Snackbar, Paper, Grid
 } from '@mui/material';
 import { Add, FilterList, Search, Edit, Delete, Cancel, CheckCircle, Close, Info, Replay } from '@mui/icons-material';
+import PropTypes from 'prop-types';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
 import { format } from 'date-fns';
+import _ from 'lodash';
+
+// Reusable FilterSelect component
+const FilterSelect = ({ label, value, onChange, options }) => (
+  <Grid>
+    <FormControl fullWidth variant="outlined" size="small">
+      <InputLabel>{label}</InputLabel>
+      <Select
+        value={value}
+        onChange={onChange}
+        label={label}
+      >
+        {options.map((option) => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  </Grid>
+);
+
+// Add prop types for better development experience
+FilterSelect.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.any.isRequired,
+  onChange: PropTypes.func.isRequired,
+  options: PropTypes.arrayOf(PropTypes.shape({
+    value: PropTypes.any.isRequired,
+    label: PropTypes.string.isRequired
+  })).isRequired,
+  gridProps: PropTypes.object
+};
+
+// Default props
+FilterSelect.defaultProps = {
+  gridProps: { xs: 6, sm: 4, md: 2 }
+};
+
 import DataTable from '../../components/common/DataTable';
 import Swal from 'sweetalert2';
 import BookingForm from './BookingForm';
@@ -17,8 +57,10 @@ import './Bookings.css';
 
 let API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
+// Constants for status options
 const STATUS_OPTIONS = ['pending', 'confirmed', 'cancelled', 'completed'];
 
+// Status color mapping
 const statusColorMap = {
   pending: 'warning',
   confirmed: 'success',
@@ -26,14 +68,31 @@ const statusColorMap = {
   completed: 'primary',
 };
 
-
-
+// Date range options
 const DATE_RANGE_OPTIONS = [
   { value: 'all', label: 'All Dates' },
   { value: 'today', label: 'Today' },
   { value: 'thisWeek', label: 'This Week' },
   { value: 'thisMonth', label: 'This Month' },
   { value: 'upcoming', label: 'Upcoming' },
+];
+
+// Room type options
+const ROOM_TYPES = [
+  { value: 'all', label: 'All Types' },
+  { value: 'single', label: 'Single' },
+  { value: 'double', label: 'Double' },
+  { value: 'deluxe', label: 'Deluxe' },
+  { value: 'suite', label: 'Suite' },
+];
+
+// Payment status options
+const PAYMENT_STATUS_OPTIONS = [
+  { value: 'all', label: 'All Payments' },
+  { value: 'paid', label: 'Paid' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'partial', label: 'Partial' },
+  { value: 'refunded', label: 'Refunded' },
 ];
 
 const User = localStorage.getItem('user');
@@ -51,9 +110,8 @@ const formatDate = (value) => {
 
 const formatCurrency = (value) => {
   if (typeof value !== 'number') return value ?? '—';
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(value);
+  return `UGX ${value.toLocaleString()}`;
 };
-
 
 const Bookings = () => {
   const navigate = useNavigate();
@@ -115,13 +173,25 @@ const Bookings = () => {
     }));
   }, []);
 
-  // Handle filter changes for all filter types
+  // Handle filter changes
   const handleFilterChange = (filterName) => (event) => {
     const value = event.target.value;
-    setFilters(prev => ({
-      ...prev,
-      [filterName]: value
-    }));
+    setFilters(prev => {
+      const newFilters = {
+        ...prev,
+        [filterName]: value
+      };
+      
+      // If changing date range, reset other date-related filters
+      if (filterName === 'dateRange' && value === 'all') {
+        newFilters.startDate = undefined;
+        newFilters.endDate = undefined;
+      }
+      
+      return newFilters;
+    });
+    
+    // Reset to first page when filters change
     setPage(0);
   };
 
@@ -137,84 +207,108 @@ const Bookings = () => {
     setPage(0);
   };
 
-  // Status filter is now handled by the handleFilterChange function
+  // Helper function to build query params
+  const buildQueryParams = (filters, searchTerm, page, rowsPerPage, orderBy, order) => {
+    const params = new URLSearchParams({
+      page: (page + 1).toString(),
+      limit: rowsPerPage.toString(),
+      sort: orderBy,
+      order,
+    });
+
+    // Add search term if provided
+    if (searchTerm.trim()) {
+      params.append('search', searchTerm.trim());
+    }
+
+    // Add status filter if not 'all'
+    if (filters.status && filters.status !== 'all') {
+      params.append('status', filters.status);
+    }
+
+    // Add payment status filter if not 'all'
+    if (filters.paymentStatus && filters.paymentStatus !== 'all') {
+      params.append('paymentStatus', filters.paymentStatus);
+    }
+
+    // Add room type filter if not 'all'
+    if (filters.roomType && filters.roomType !== 'all') {
+      params.append('roomType', filters.roomType);
+    }
+
+    // Handle date range filters
+    if (filters.dateRange && filters.dateRange !== 'all') {
+      const now = new Date();
+      const startOfDay = new Date(now);
+      startOfDay.setHours(0, 0, 0, 0);
+
+      switch (filters.dateRange) {
+        case 'today': {
+          const endOfDay = new Date(startOfDay);
+          endOfDay.setHours(23, 59, 59, 999);
+          params.append('checkIn[lte]', endOfDay.toISOString());
+          params.append('checkOut[gte]', startOfDay.toISOString());
+          break;
+        }
+        case 'thisWeek': {
+          const startOfWeek = new Date(startOfDay);
+          startOfWeek.setDate(startOfDay.getDate() - startOfDay.getDay());
+          
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 6);
+          endOfWeek.setHours(23, 59, 59, 999);
+          
+          params.append('checkIn[lte]', endOfWeek.toISOString());
+          params.append('checkOut[gte]', startOfWeek.toISOString());
+          break;
+        }
+        case 'thisMonth': {
+          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+          const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+          endOfMonth.setHours(23, 59, 59, 999);
+          
+          params.append('checkIn[lte]', endOfMonth.toISOString());
+          params.append('checkOut[gte]', startOfMonth.toISOString());
+          break;
+        }
+        case 'upcoming':
+          params.append('checkIn[gte]', new Date().toISOString());
+          break;
+        default:
+          break;
+      }
+    }
+
+    return params;
+  };
+
+  // Debounced search to prevent too many API calls
+  const debouncedSearch = useCallback(
+    _.debounce((searchValue) => {
+      setSearchTerm(searchValue);
+      setPage(0);
+    }, 500),
+    []
+  );
+
+  // Fixed: Single handleSearch function
+  const handleSearch = (event) => {
+    const value = event.target.value;
+    debouncedSearch(value);
+  };
+
   const fetchBookings = useCallback(async () => {
     try {
-
       setLoading(true);
       setFetchError(null);
-      const params = new URLSearchParams({
-        page: (page + 1).toString(),
-        limit: rowsPerPage.toString(),
-        sort: orderBy,
-        order,
-      });
-
-      // Add search term
-      if (searchTerm.trim()) {
-        params.append('search', searchTerm.trim());
-      }
-
-      // Add filters to the request
-      const { status, dateRange, roomType, paymentStatus } = filters;
-
-      // Add status filter
-      if (status && status !== 'all') {
-        params.append('status', status);
-      }
-
-      // Add payment status filter
-      if (paymentStatus && paymentStatus !== 'all') {
-        params.append('paymentStatus', paymentStatus);
-      }
-
-      // Add date range filter
-      if (dateRange && dateRange !== 'all') {
-        const now = new Date();
-        const startOfDay = new Date(now.setHours(0, 0, 0, 0));
-
-        switch (dateRange) {
-          case 'today':
-            params.append('startDate', startOfDay.toISOString());
-            params.append('endDate', new Date(now.setHours(23, 59, 59, 999)).toISOString());
-            break;
-          case 'thisWeek':
-            {
-              const startOfWeek = new Date(startOfDay);
-              startOfWeek.setDate(startOfDay.getDate() - startOfDay.getDay()); // Start of current week (Sunday)
-              const endOfWeek = new Date(startOfWeek);
-              endOfWeek.setDate(startOfWeek.getDate() + 6); // End of current week (Saturday)             ``````
-
-              params.append('startDate', startOfWeek.toISOString());
-              params.append('endDate', new Date(endOfWeek.setHours(23, 59, 59, 999)).toISOString());
-              break;
-            }
-          case 'thisMonth':
-            {
-              const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-              const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-              params.append('startDate', startOfMonth.toISOString());
-              params.append('endDate', new Date(endOfMonth.setHours(23, 59, 59, 999)).toISOString());
-              break;
-            }
-          case 'upcoming':
-            params.append('startDate', new Date().toISOString());
-            break;
-          default:
-            break;
-        }
-      }
-
-      // Add room type filter
-      if (roomType && roomType !== 'all') {
-        params.append('roomType', roomType);
-      }
+      
+      // Build query params with all filters
+      const params = buildQueryParams(filters, searchTerm, page, rowsPerPage, orderBy, order);
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/bookings`, {
-
+      // Fixed: Use the built params in the API call
+      const response = await fetch(`${API_BASE_URL}/bookings?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -271,11 +365,11 @@ const Bookings = () => {
     } finally {
       setLoading(false);
     }
-  }, [filters, order, orderBy, page, rowsPerPage, searchTerm]);
+  }, [filters, searchTerm, page, rowsPerPage, orderBy, order]); // Fixed: Added all dependencies
 
   useEffect(() => {
     fetchBookings();
-  }, [fetchBookings, filters]);
+  }, [fetchBookings]);
 
   const handlePageChange = (_event, newPage) => {
     setPage(newPage);
@@ -289,11 +383,6 @@ const Bookings = () => {
   const handleSort = (property, direction) => {
     setOrderBy(property);
     setOrder(direction);
-  };
-
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-    setPage(0);
   };
 
   const handleEditBooking = useCallback((booking) => {
@@ -465,9 +554,7 @@ const Bookings = () => {
     await fetchBookings();
   };
 
-
   const columns = useMemo(() => [
-
     {
       id: 'guestName',
       label: 'Guest',
@@ -638,75 +725,55 @@ const Bookings = () => {
                     fullWidth
                   />
                 </Grid>
-                <Grid >
-                  <FormControl fullWidth variant="outlined" size="small">
-                    <InputLabel>Booking Status</InputLabel>
-                    <Select
-                      value={filters.status}
-                      onChange={handleFilterChange('status')}
-                      label="Booking Status"
-                    >
-                      <MenuItem value="all">All Statuses</MenuItem>
-                      <MenuItem value="pending">Pending</MenuItem>
-                      <MenuItem value="confirmed">Confirmed</MenuItem>
-                      <MenuItem value="cancelled">Cancelled</MenuItem>
-                      <MenuItem value="completed">Completed</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid>
-                  <FormControl fullWidth variant="outlined" size="small">
-                    <InputLabel>Date Range</InputLabel>
-                    <Select
-                      value={filters.dateRange}
-                      onChange={handleFilterChange('dateRange')}
-                      label="Date Range"
-                    >
-                      <MenuItem value="all">All Dates</MenuItem>
-                      <MenuItem value="today">Today</MenuItem>
-                      <MenuItem value="thisWeek">This Week</MenuItem>
-                      <MenuItem value="thisMonth">This Month</MenuItem>
-                      <MenuItem value="upcoming">Upcoming</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid>
-                  <FormControl fullWidth variant="outlined" size="small">
-                    <InputLabel>Room Type</InputLabel>
-                    <Select
-                      value={filters.roomType}
-                      onChange={handleFilterChange('roomType')}
-                      label="Room Type"
-                    >
-                      <MenuItem value="all">All Types</MenuItem>
-                      <MenuItem value="single">Single</MenuItem>
-                      <MenuItem value="double">Double</MenuItem>
-
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid >
-                  <FormControl fullWidth variant="outlined" size="small">
-                    <InputLabel>Payment Status</InputLabel>
-                    <Select
-                      value={filters.paymentStatus}
-                      onChange={handleFilterChange('paymentStatus')}
-                      label="Payment Status"
-                    >
-                      <MenuItem value="all">All Payments</MenuItem>
-                      <MenuItem value="paid">Paid</MenuItem>
-                      <MenuItem value="pending">Pending</MenuItem>
-                      <MenuItem value="partial">Partial</MenuItem>
-                      <MenuItem value="refunded">Refunded</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid display="flex" justifyContent="flex-end">
+                
+                {/* Filter Components */}
+                <FilterSelect 
+                  label="Status"
+                  value={filters.status}
+                  onChange={handleFilterChange('status')}
+                  options={[
+                    { value: 'all', label: 'All Statuses' },
+                    ...STATUS_OPTIONS.map(status => ({
+                      value: status,
+                      label: status.charAt(0).toUpperCase() + status.slice(1)
+                    }))
+                  ]}
+                
+                />
+                
+                <FilterSelect 
+                  label="Date Range"
+                  value={filters.dateRange}
+                  onChange={handleFilterChange('dateRange')}
+                  options={DATE_RANGE_OPTIONS}
+                
+                />
+                
+                <FilterSelect 
+                  label="Room Type"
+                  value={filters.roomType}
+                  onChange={handleFilterChange('roomType')}
+                  options={ROOM_TYPES}
+            
+                />
+                
+                <FilterSelect 
+                  label="Payment"
+                  value={filters.paymentStatus}
+                  onChange={handleFilterChange('paymentStatus')}
+                  options={PAYMENT_STATUS_OPTIONS}
+             
+                />
+                
+                {/* Clear Filters Button */}
+                <Grid sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
                     variant="outlined"
                     color="secondary"
                     onClick={clearFilters}
                     fullWidth
+                    size="small"
+                    startIcon={<Replay fontSize="small" />}
                   >
                     Clear
                   </Button>
@@ -715,9 +782,7 @@ const Bookings = () => {
             </Paper>
           </Box>
         )}
-
       </Box>
-
 
       <DataTable
         columns={columns}
@@ -782,9 +847,9 @@ const Bookings = () => {
             <Box display="flex" flexDirection="column" gap={2}>
               <Box>
                 <Typography variant="subtitle2">Guest</Typography>
-                <Typography variant="body2">{bookingDetails.guestName || '—'}</Typography>
-                <Typography variant="body2" color="textSecondary">{bookingDetails.guestEmail || '—'}</Typography>
-                <Typography variant="body2" color="textSecondary">{bookingDetails.guestPhone || '—'}</Typography>
+                <Typography variant="body2">{bookingDetails.guestName}</Typography>
+                <Typography variant="body2" color="textSecondary">{bookingDetails.guestEmail}</Typography>
+                <Typography variant="body2" color="textSecondary">{bookingDetails.guestPhone}</Typography>
               </Box>
 
               <Divider />
@@ -792,7 +857,7 @@ const Bookings = () => {
               <Box display="grid" gridTemplateColumns="repeat(2, minmax(0, 1fr))" gap={1.5}>
                 <Box>
                   <Typography variant="subtitle2" gutterBottom>Room</Typography>
-                  <Typography variant="body2">{bookingDetails.roomNumber || '—'}</Typography>
+                  <Typography variant="body2">{bookingDetails.roomNumber}</Typography>
                 </Box>
                 <Box>
                   <Typography variant="subtitle2" gutterBottom>Status</Typography>

@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {  Box, Typography, Button, Chip, Paper, Alert, Snackbar, CircularProgress, Divider, Stack, TextField, MenuItem, Select, FormControl,
-  InputLabel, Dialog,  DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Tooltip } from '@mui/material';
-import { Grid } from '@mui/material';
+import {  
+  Box, Typography, Button, Chip, Paper, Alert, Snackbar, CircularProgress, Divider, Stack, TextField, MenuItem, Select, FormControl,
+  InputLabel, Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Tooltip,
+  Grid 
+} from '@mui/material';
 import { ArrowBack, Edit, Delete, CheckCircle, Cancel, Info, Add } from '@mui/icons-material';
 import { format } from 'date-fns';
 
@@ -11,7 +13,7 @@ const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 const STATUS_OPTIONS = ['pending', 'confirmed', 'cancelled', 'completed'];
 
 const PAYMENT_STATUS_OPTIONS = ['pending', 'completed', 'failed', 'refunded'];
-const PAYMENT_METHOD_OPTIONS = ['cash', 'card', 'mobile', 'bank_transfer'];
+const PAYMENT_METHOD_OPTIONS = ['cash', 'credit_card', 'mobile_money', 'bank_transfer'];
 
 const statusColorMap = {
   pending: 'warning',
@@ -62,7 +64,7 @@ const formatDate = (value) => {
 
 const formatCurrency = (value) => {
   if (typeof value !== 'number') return value ?? '—';
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(value);
+  return `UGX ${value.toLocaleString()}`;
 };
 
 const calculatePaymentTotals = (items) =>
@@ -795,21 +797,34 @@ const BookingDetails = () => {
   }
 
   return (
-    <Box display="flex" flexDirection="column" p={4}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+    <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+      {/* Header Section */}
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: { xs: 'column', sm: 'row' },
+        justifyContent: 'space-between', 
+        alignItems: { xs: 'flex-start', sm: 'center' },
+        gap: 2,
+        mb: 3 
+      }}>
         <Box>
-          <Typography variant="h5" component="h1">
+          <Typography variant="h4" component="h1" gutterBottom>
             Booking Details
           </Typography>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body1" color="textSecondary">
             Reference: {booking.reference || booking.id}
           </Typography>
         </Box>
-        <Stack direction="row" spacing={1}>
+        <Stack 
+          direction={{ xs: 'column', sm: 'row' }} 
+          spacing={1} 
+          sx={{ width: { xs: '100%', sm: 'auto' } }}
+        >
           <Button
             variant="outlined"
             startIcon={<ArrowBack />}
             onClick={() => navigate('/bookings')}
+            sx={{ minWidth: { xs: '100%', sm: 'auto' } }}
           >
             Back to list
           </Button>
@@ -819,6 +834,7 @@ const BookingDetails = () => {
             startIcon={<Edit />}
             onClick={handleOpenEditDialog}
             disabled={updating}
+            sx={{ minWidth: { xs: '100%', sm: 'auto' } }}
           >
             Edit Booking
           </Button>
@@ -828,16 +844,26 @@ const BookingDetails = () => {
             startIcon={<Delete />}
             onClick={handleDeleteBooking}
             disabled={updating}
+            sx={{ minWidth: { xs: '100%', sm: 'auto' } }}
           >
             Delete
           </Button>
         </Stack>
       </Box>
 
+      {/* Main Content Grid */}
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: 7 }}>
-          <Paper sx={{ p: 3 }}>
-            <Stack direction="row" spacing={1} mb={2} flexWrap="wrap">
+        {/* Left Column - Booking Details */}
+        <Grid item xs={12} lg={7}>
+          <Paper sx={{ p: 3, height: 'fit-content' }}>
+            {/* Status Chips */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexWrap: 'wrap', 
+              gap: 1, 
+              mb: 2,
+              '& .MuiChip-root': { mb: 0.5 }
+            }}>
               <Chip
                 label={booking.status ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1) : 'Pending'}
                 color={statusColorMap[booking.status] || 'default'}
@@ -845,52 +871,65 @@ const BookingDetails = () => {
               />
               <Chip label={`Room: ${booking.roomNumber || '—'}`} variant="outlined" />
               {booking.nights && <Chip label={`${booking.nights} night(s)`} variant="outlined" />}
-            </Stack>
+            </Box>
 
             <Divider sx={{ my: 2 }} />
 
+            {/* Booking Information Grid */}
             <Grid container spacing={2}>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <Typography variant="subtitle2" gutterBottom>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle2" gutterBottom color="textSecondary">
                   Guest Name
                 </Typography>
-                <Typography variant="body1">{booking.guestName || '—'}</Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography variant="body1" gutterBottom>{booking.guestName || '—'}</Typography>
+                <Typography variant="body2" color="textSecondary" gutterBottom>
                   {booking.guestEmail || '—'}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
                   {booking.guestPhone || '—'}
                 </Typography>
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <Typography variant="subtitle2" gutterBottom>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle2" gutterBottom color="textSecondary">
                   Stay Dates
                 </Typography>
-                <Typography variant="body2">Check-In: {formatDate(booking.checkIn)}</Typography>
+                <Typography variant="body2" gutterBottom>Check-In: {formatDate(booking.checkIn)}</Typography>
                 <Typography variant="body2">Check-Out: {formatDate(booking.checkOut)}</Typography>
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <Typography variant="subtitle2" gutterBottom>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle2" gutterBottom color="textSecondary">
                   Amount
                 </Typography>
                 <Typography variant="body1">{formatCurrency(booking.amount)}</Typography>
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <Typography variant="subtitle2" gutterBottom>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle2" gutterBottom color="textSecondary">
                   Created / Updated
                 </Typography>
-                <Typography variant="body2">Created: {formatDate(booking.createdAt)}</Typography>
+                <Typography variant="body2" gutterBottom>Created: {formatDate(booking.createdAt)}</Typography>
                 <Typography variant="body2">Updated: {formatDate(booking.updatedAt)}</Typography>
               </Grid>
             </Grid>
 
             <Divider sx={{ my: 3 }} />
 
+            {/* Notes Section */}
             <Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
-                <Typography variant="subtitle1">Internal Notes</Typography>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                mb: 1.5,
+                flexWrap: 'wrap',
+                gap: 1
+              }}>
+                <Typography variant="h6">Internal Notes</Typography>
                 {!editingNotes ? (
-                  <Button size="small" onClick={handleStartEditNotes} startIcon={<Edit fontSize="small" />}>
+                  <Button 
+                    size="small" 
+                    onClick={handleStartEditNotes} 
+                    startIcon={<Edit fontSize="small" />}
+                  >
                     Edit
                   </Button>
                 ) : (
@@ -913,9 +952,10 @@ const BookingDetails = () => {
                   value={notesDraft}
                   onChange={handleNotesChange}
                   disabled={updating}
+                  placeholder="Add notes about this booking..."
                 />
               ) : (
-                <Paper variant="outlined" sx={{ p: 2, bgcolor: 'grey.50' }}>
+                <Paper variant="outlined" sx={{ p: 2, bgcolor: 'grey.50', minHeight: 120 }}>
                   <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
                     {booking.notes ? booking.notes : 'No notes yet.'}
                   </Typography>
@@ -925,7 +965,9 @@ const BookingDetails = () => {
           </Paper>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 5 }}>
+        {/* Right Column - Actions and Payments */}
+        <Grid item xs={12} lg={5}>
+          {/* Status Update Card */}
           <Paper sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" gutterBottom>
               Update Status
@@ -952,7 +994,7 @@ const BookingDetails = () => {
 
             <Divider sx={{ my: 3 }} />
 
-            <Typography variant="subtitle2" gutterBottom>
+            <Typography variant="subtitle1" gutterBottom>
               Quick Actions
             </Typography>
             <Stack spacing={1}>
@@ -964,6 +1006,8 @@ const BookingDetails = () => {
                   startIcon={action.icon}
                   onClick={() => handleQuickStatus(action.target)}
                   disabled={updating}
+                  fullWidth
+                  sx={{ justifyContent: 'flex-start' }}
                 >
                   {action.label}
                 </Button>
@@ -971,28 +1015,44 @@ const BookingDetails = () => {
             </Stack>
           </Paper>
 
-          <Paper sx={{ p: 3 }}>
+          {/* Metadata Card */}
+          <Paper sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" gutterBottom>
               Metadata
             </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Booking ID: {booking.id || booking._id}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Reference: {booking.reference || '—'}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Created: {formatDate(booking.createdAt)}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Updated: {formatDate(booking.updatedAt)}
-            </Typography>
+            <Stack spacing={0.5}>
+              <Typography variant="body2" color="textSecondary">
+                <strong>Booking ID:</strong> {booking.id || booking._id}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                <strong>Reference:</strong> {booking.reference || '—'}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                <strong>Created:</strong> {formatDate(booking.createdAt)}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                <strong>Updated:</strong> {formatDate(booking.updatedAt)}
+              </Typography>
+            </Stack>
           </Paper>
 
-          <Paper  sx={{ p: 3, mt: 3}}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          {/* Payments Card */}
+          <Paper sx={{ p: 3 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              mb: 2,
+              flexWrap: 'wrap',
+              gap: 1
+            }}>
               <Typography variant="h6">Payments</Typography>
-              <Button variant="outlined" startIcon={<Add />} onClick={handleOpenAddPaymentDialog}>
+              <Button 
+                variant="outlined" 
+                startIcon={<Add />} 
+                onClick={handleOpenAddPaymentDialog}
+                size="small"
+              >
                 Record Payment
               </Button>
             </Box>
@@ -1003,19 +1063,12 @@ const BookingDetails = () => {
               </Alert>
             )}
 
-            <Box  sx={{ 
+            {/* Payment Summary Chips */}
+            <Box sx={{ 
               display: 'grid', 
-              gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' }, 
+              gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, 
               gap: 1, 
-              mb: 2,
-              '& .MuiChip-root': { 
-                maxWidth: '100%',
-                '& .MuiChip-label': {
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }
-              }
+              mb: 2
             }}>
               <Chip 
                 label={`Total: ${formatCurrency(paymentTotals.total)}`} 
@@ -1043,16 +1096,17 @@ const BookingDetails = () => {
               />
             </Box>
 
+            {/* Payments List */}
             {loadingPayments ? (
               <Box display="flex" justifyContent="center" py={4}>
                 <CircularProgress size={28} />
               </Box>
             ) : payments.length === 0 ? (
-              <Typography variant="body2" color="textSecondary">
+              <Typography variant="body2" color="textSecondary" textAlign="center" py={2}>
                 No payments recorded for this booking yet.
               </Typography>
             ) : (
-              <List sx={{ maxHeight: 400, overflow: 'auto', pr: 1 }}>
+              <List sx={{ maxHeight: 400, overflow: 'auto' }}>
                 {payments.map((payment) => {
                   const statusLabel = payment.status ? 
                     payment.status.charAt(0).toUpperCase() + payment.status.slice(1) : 'Pending';
@@ -1061,21 +1115,26 @@ const BookingDetails = () => {
                     <ListItem 
                       key={payment.id || payment._id} 
                       sx={{ 
-                        flexDirection: { xs: 'column', sm: 'row' },
-                        alignItems: 'flex-start',
+                        flexDirection: 'column',
+                        alignItems: 'stretch',
                         border: '1px solid',
                         borderColor: 'divider',
                         borderRadius: 1,
                         mb: 1,
-                        p: 1.5,
-                        position: 'relative',
+                        p: 2,
                         '&:hover': {
                           bgcolor: 'action.hover',
                         },
                       }}
                     >
-                      <Box sx={{ flex: 1, minWidth: 0, mb: { xs: 1, sm: 0 } }}>
-                        <Box display="flex" alignItems="center" gap={1} mb={1}>
+                      {/* Payment Header */}
+                      <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'flex-start',
+                        mb: 1 
+                      }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                           <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>
                             {formatCurrency(payment.amount)}
                           </Typography>
@@ -1083,96 +1142,91 @@ const BookingDetails = () => {
                             label={statusLabel}
                             color={paymentStatusColorMap[payment.status] || 'default'}
                             size="small"
-                            variant="outlined"
                           />
                         </Box>
-                        
-                        <Box sx={{ 
-                          display: 'grid',
-                          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
-                          gap: 1,
-                          '& .MuiTypography-root': { fontSize: '0.8rem' }
-                        }}>
-                          <Typography variant="body2" color="text.secondary">
-                            <Box component="span" sx={{ color: 'text.primary', fontWeight: 'medium' }}>Method: </Box>
-                            {methodLabelMap[payment.method] || payment.method}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            <Box component="span" sx={{ color: 'text.primary', fontWeight: 'medium' }}>Created: </Box>
-                            {formatDate(payment.createdAt)}
-                          </Typography>
-                          {payment.paidAt && (
-                            <Typography variant="body2" color="text.secondary">
-                              <Box component="span" sx={{ color: 'text.primary', fontWeight: 'medium' }}>Paid: </Box>
-                              {formatDate(payment.paidAt)}
-                            </Typography>
-                          )}
+                        <Box sx={{ display: 'flex', gap: 0.5 }}>
+                          <Tooltip title="Edit Payment">
+                            <IconButton
+                              size="small"
+                              onClick={(event) => handleOpenEditPaymentDialog(event, payment)}
+                              disabled={paymentActionState.updatingId === payment.id}
+                            >
+                              <Edit fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete Payment">
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => handleDeletePayment(payment)}
+                              disabled={paymentActionState.deletingId === payment.id}
+                            >
+                              <Delete fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
                         </Box>
-                        
-                        {payment.notes && (
-                          <Typography variant="body2" sx={{ 
+                      </Box>
+
+                      {/* Payment Details */}
+                      <Box sx={{ 
+                        display: 'grid',
+                        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+                        gap: 1,
+                        mb: 1
+                      }}>
+                        <Typography variant="body2" color="text.secondary">
+                          <Box component="span" sx={{ fontWeight: 'medium' }}>Method: </Box>
+                          {methodLabelMap[payment.method] || payment.method}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          <Box component="span" sx={{ fontWeight: 'medium' }}>Created: </Box>
+                          {formatDate(payment.createdAt)}
+                        </Typography>
+                        {payment.paidAt && (
+                          <Typography variant="body2" color="text.secondary">
+                            <Box component="span" sx={{ fontWeight: 'medium' }}>Paid: </Box>
+                            {formatDate(payment.paidAt)}
+                          </Typography>
+                        )}
+                      </Box>
+                      
+                      {/* Payment Notes */}
+                      {payment.notes && (
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
                             mt: 1,
                             p: 1,
                             bgcolor: 'background.paper',
                             borderRadius: 1,
                             borderLeft: '3px solid',
                             borderColor: 'primary.main'
-                          }}>
-                            {payment.notes}
-                          </Typography>
-                        )}
-                        
-                        <Box sx={{ mt: 1.5, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                          {(paymentStatusActions[payment.status || 'pending'] || []).map((action) => (
-                            <Button
-                              key={action.label}
-                              size="small"
-                              variant="outlined"
-                              color={action.color}
-                              startIcon={action.icon}
-                              disabled={paymentActionState.updatingId === payment.id}
-                              onClick={() => handleUpdatePaymentStatus(payment, action.target)}
-                              sx={{ 
-                                fontSize: '0.7rem',
-                                py: 0.5,
-                                '& .MuiButton-startIcon': { mr: 0.5 }
-                              }}
-                            >
-                              {action.label}
-                            </Button>
-                          ))}
-                        </Box>
-                      </Box>
+                          }}
+                        >
+                          {payment.notes}
+                        </Typography>
+                      )}
                       
-                      <Box sx={{ 
-                        position: { xs: 'absolute', sm: 'static' },
-                        top: 8,
-                        right: 8,
-                        display: 'flex',
-                        flexDirection: { xs: 'row', sm: 'column' },
-                        gap: 0.5
-                      }}>
-                        <Tooltip title="Edit Payment">
-                          <IconButton
+                      {/* Payment Actions */}
+                      <Box sx={{ mt: 1.5, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {(paymentStatusActions[payment.status || 'pending'] || []).map((action) => (
+                          <Button
+                            key={action.label}
                             size="small"
-                            onClick={(event) => handleOpenEditPaymentDialog(event, payment)}
+                            variant="outlined"
+                            color={action.color}
+                            startIcon={action.icon}
                             disabled={paymentActionState.updatingId === payment.id}
-                            sx={{ p: 0.5 }}
+                            onClick={() => handleUpdatePaymentStatus(payment, action.target)}
+                            sx={{ 
+                              fontSize: '0.75rem',
+                              py: 0.25,
+                              minWidth: 'auto'
+                            }}
                           >
-                            <Edit fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Delete Payment">
-                          <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => handleDeletePayment(payment)}
-                            disabled={paymentActionState.deletingId === payment.id}
-                            sx={{ p: 0.5 }}
-                          >
-                            <Delete fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
+                            {action.label}
+                          </Button>
+                        ))}
                       </Box>
                     </ListItem>
                   );
@@ -1183,10 +1237,11 @@ const BookingDetails = () => {
         </Grid>
       </Grid>
 
+      {/* Dialogs */}
       <Dialog open={isAddPaymentDialogOpen} onClose={handleCloseAddPaymentDialog} fullWidth maxWidth="sm">
         <DialogTitle>Record Payment</DialogTitle>
-        <DialogContent component="form" onSubmit={handleCreatePayment} sx={{ mt: 1 }}>
-          <Stack spacing={2}>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1 }}>
             {newPaymentError && <Alert severity="error">{newPaymentError}</Alert>}
             <TextField
               label="Amount"
@@ -1228,21 +1283,25 @@ const BookingDetails = () => {
               disabled={creatingPayment}
             />
           </Stack>
-          <DialogActions sx={{ mt: 3 }}>
-            <Button onClick={handleCloseAddPaymentDialog} disabled={creatingPayment}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="contained" color="primary" onClick={handleCreatePayment} disabled={creatingPayment}>
-              {creatingPayment ? 'Saving...' : 'Save Payment'}
-            </Button>
-          </DialogActions>
         </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 0 }}>
+          <Button onClick={handleCloseAddPaymentDialog} disabled={creatingPayment}>
+            Cancel
+          </Button>
+          <Button 
+            variant="contained" 
+            onClick={handleCreatePayment} 
+            disabled={creatingPayment}
+          >
+            {creatingPayment ? 'Saving...' : 'Save Payment'}
+          </Button>
+        </DialogActions>
       </Dialog>
 
       <Dialog open={isEditPaymentDialogOpen} onClose={handleCloseEditPaymentDialog} fullWidth maxWidth="sm">
         <DialogTitle>Edit Payment</DialogTitle>
-        <DialogContent component="form" onSubmit={handleSubmitEditPayment} sx={{ mt: 1 }}>
-          <Stack spacing={2}>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1 }}>
             {editPaymentError && <Alert severity="error">{editPaymentError}</Alert>}
             <TextField
               label="Amount"
@@ -1284,21 +1343,25 @@ const BookingDetails = () => {
               disabled={savingPaymentUpdate}
             />
           </Stack>
-          <DialogActions sx={{ mt: 3 }}>
-            <Button onClick={handleCloseEditPaymentDialog} disabled={savingPaymentUpdate}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="contained" color="primary" onClick={handleSubmitEditPayment} disabled={savingPaymentUpdate}>
-              {savingPaymentUpdate ? 'Saving...' : 'Save Changes'}
-            </Button>
-          </DialogActions>
         </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 0 }}>
+          <Button onClick={handleCloseEditPaymentDialog} disabled={savingPaymentUpdate}>
+            Cancel
+          </Button>
+          <Button 
+            variant="contained" 
+            onClick={handleSubmitEditPayment} 
+            disabled={savingPaymentUpdate}
+          >
+            {savingPaymentUpdate ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </DialogActions>
       </Dialog>
 
       <Dialog open={isEditDialogOpen} onClose={handleCloseEditDialog} fullWidth maxWidth="sm">
         <DialogTitle>Edit Booking</DialogTitle>
-        <DialogContent component="form" onSubmit={handleSubmitEdit} sx={{ mt: 1 }}>
-          <Stack spacing={2}>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1 }}>
             {editError && <Alert severity="error">{editError}</Alert>}
             <TextField
               label="Guest Name"
@@ -1387,15 +1450,19 @@ const BookingDetails = () => {
               disabled={savingEdit}
             />
           </Stack>
-          <DialogActions sx={{ mt: 3 }}>
-            <Button onClick={handleCloseEditDialog} disabled={savingEdit}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="contained" onClick={handleSubmitEdit} color="primary" disabled={savingEdit}>
-              {savingEdit ? 'Saving...' : 'Save Changes'}
-            </Button>
-          </DialogActions>
         </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 0 }}>
+          <Button onClick={handleCloseEditDialog} disabled={savingEdit}>
+            Cancel
+          </Button>
+          <Button 
+            variant="contained" 
+            onClick={handleSubmitEdit} 
+            disabled={savingEdit}
+          >
+            {savingEdit ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </DialogActions>
       </Dialog>
 
       <Snackbar

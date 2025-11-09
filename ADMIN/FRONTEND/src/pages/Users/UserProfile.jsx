@@ -282,6 +282,7 @@ const UserProfile = () => {
             <FormControl fullWidth>
               <InputLabel>Role</InputLabel>
               <Select value={form.role} label="Role" onChange={handleFieldChange('role')}>
+                <MenuItem value="client">Client</MenuItem>
                 <MenuItem value="manager">Manager</MenuItem>
                 <MenuItem value="admin">Admin</MenuItem>
               </Select>

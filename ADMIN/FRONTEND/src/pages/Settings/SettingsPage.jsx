@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import GeneralSettings from './tabs/GeneralSettings';
 import UserManagement from './tabs/UserManagement';
 import NotificationsSettings from './tabs/NotificationsSettings';
@@ -13,8 +14,9 @@ import './SettingsPage.css';
 import './SettingsCards.css';
 
 const SettingsPage = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'general');
     const [state, setState] = useState({
-        activeTab: 'general',
         settings: null,
         loading: true,
         error: null,
@@ -22,7 +24,7 @@ const SettingsPage = () => {
         userLoading: true
     });
 
-    const { activeTab, settings, loading, error, user, userLoading } = state;
+    const { settings, loading, error, user, userLoading } = state;
 
     const fetchSettings = useCallback(async () => {
         try {
@@ -54,7 +56,54 @@ const SettingsPage = () => {
         init();
     }, [fetchSettings]);
 
-    const setActiveTab = (tab) => setState(prev => ({ ...prev, activeTab: tab }));
+    useEffect(() => {
+        const tabParam = searchParams.get('tab');
+        if (tabParam && tabParam !== activeTab) {
+            setActiveTab(tabParam);
+        }
+    }, [searchParams, activeTab]);
+
+    useEffect(() => {
+        if (userLoading) {
+            return;
+        }
+
+        const allowedTabs = (user && user.role === 'admin')
+            ? ['general', 'users', 'notifications', 'system', 'activity']
+            : ['general', 'notifications'];
+
+        if (!allowedTabs.includes(activeTab)) {
+            const fallback = allowedTabs[0];
+            if (activeTab !== fallback) {
+                setActiveTab(fallback);
+            }
+            const params = new URLSearchParams(searchParams);
+            if (params.get('tab') !== fallback) {
+                params.set('tab', fallback);
+                setSearchParams(params, { replace: true });
+            }
+        }
+    }, [user, userLoading, activeTab, searchParams, setSearchParams]);
+
+    useEffect(() => {
+        if (!searchParams.get('tab')) {
+            const params = new URLSearchParams(searchParams);
+            params.set('tab', activeTab);
+            setSearchParams(params, { replace: true });
+        }
+    }, [searchParams, activeTab, setSearchParams]);
+
+    const handleTabChange = (tab) => {
+        if (tab === activeTab) {
+            return;
+        }
+        setActiveTab(tab);
+        const params = new URLSearchParams(searchParams);
+        if (params.get('tab') !== tab) {
+            params.set('tab', tab);
+            setSearchParams(params, { replace: true });
+        }
+    };
 
     const handleSettingsUpdate = useCallback(() => {
         fetchSettings();
@@ -104,7 +153,7 @@ const SettingsPage = () => {
                 title="Settings" 
                 subtitle="Manage system configuration" 
             />
-            <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
+            <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
 
             <main className="settings-content">
                 {error && (

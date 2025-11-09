@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Booking from '../models/Booking.js';
+import Room from '../models/RoomModel.js';
 import asyncHandler from '../middleware/async.js';
 import { createActivityLog } from '../utils/activityLogger.js';
 
@@ -139,9 +140,16 @@ export const createBooking = asyncHandler(async (req, res) => {
       paidAt: new Date()
     }], { session });
 
-    // Update booking with payment reference
+    // Updating booking with payment reference
     booking[0].paymentReference = payment[0]._id;
     await booking[0].save({ session });
+
+    // Updating room status to 'booked' after a successful booking
+    await Room.findByIdAndUpdate(
+      roomNumber,
+      { status: 'booked' },
+      { session }
+    );
 
     // Commit the transaction
     await session.commitTransaction();
@@ -341,7 +349,30 @@ export const updateBooking = asyncHandler(async (req, res) => {
   if (guestEmail !== undefined) booking.guestEmail = guestEmail;
   if (guestPhone !== undefined) booking.guestPhone = guestPhone;
   if (roomNumber !== undefined) booking.roomNumber = roomNumber;
-  if (status !== undefined) booking.status = status;
+  
+  // Handle room status changes based on booking status
+  if (status !== undefined && status !== booking.status) {
+    // If booking is cancelled or completed, make room available
+    if (status === 'cancelled' || status === 'completed') {
+      if (booking.roomNumber) {
+        await Room.findByIdAndUpdate(
+          booking.roomNumber,
+          { status: 'available' }
+        );
+      }
+    }
+    // If booking is confirmed, mark room as booked
+    else if (status === 'confirmed') {
+      if (booking.roomNumber) {
+        await Room.findByIdAndUpdate(
+          booking.roomNumber,
+          { status: 'booked' }
+        );
+      }
+    }
+    booking.status = status;
+  }
+  
   if (checkIn !== undefined) booking.checkIn = checkIn;
   if (checkOut !== undefined) booking.checkOut = checkOut;
   if (amount !== undefined) booking.amount = amount;
@@ -394,6 +425,13 @@ export const deleteBooking = asyncHandler(async (req, res) => {
     status: booking.status,
     amount: booking.amount
   };
+  // Setting room status back to available when a booking is cancalled
+  if (booking.roomNumber) {
+    await Room.findByIdAndUpdate(
+      booking.roomNumber,
+      { status: 'available' }
+    );
+  }
 
   await booking.deleteOne();
 

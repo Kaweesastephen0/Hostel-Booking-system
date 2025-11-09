@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Typography, Chip, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel,
-         Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar } from '@mui/material';
-import { Add, Edit, Delete, Search, Block, CheckCircle } from '@mui/icons-material';
+import {
+  Box, Button, Typography, Chip, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel,
+  Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar, Tabs, Tab, Paper
+} from '@mui/material';
+import { Add, Edit, Delete, Search, Block, CheckCircle, Person, AdminPanelSettings } from '@mui/icons-material';
 import DataTable from '../../components/common/DataTable';
 import Swal from 'sweetalert2';
-import './Users.css';
 const Users = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -17,6 +18,7 @@ const Users = () => {
   const [order, setOrder] = useState('desc');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [tabValue, setTabValue] = useState('all');
   const [fetchError, setFetchError] = useState(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newUser, setNewUser] = useState({
@@ -32,6 +34,7 @@ const Users = () => {
   const [rowActionState, setRowActionState] = useState({});
 
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
+
   const passwordMismatch =
     Boolean(newUser.password) &&
     Boolean(newUser.confirmPassword) &&
@@ -66,11 +69,21 @@ const Users = () => {
     }));
   };
 
+
+
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     setFetchError(null);
 
     try {
+      // Determine the correct endpoint based on the active tab
+      let endpoint = '/users';
+      if (tabValue === 'admins') {
+        endpoint = '/users/admins';
+      } else if (tabValue === 'clients') {
+        endpoint = '/users/clients';
+      }
+
       const params = new URLSearchParams({
         page: (page + 1).toString(),
         limit: rowsPerPage.toString(),
@@ -88,7 +101,7 @@ const Users = () => {
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/users?${params.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}${endpoint}?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -113,17 +126,15 @@ const Users = () => {
 
       const normalizedUsers = rawUsers.map((user) => ({
         id: user.id || user._id,
-        fullName: user.fullName || user.name || '',
+        fullName: user.fullName || `${user.firstName || ''} ${user.surname || ''}`.trim() || 'N/A',
         email: user.email || '',
-        role: user.role || 'manager',
-        isActive:
-          typeof user.isActive === 'boolean'
-            ? user.isActive
-            : user.status
-              ? user.status === 'active'
-              : true,
+        role: user.role || (user.userType === 'client' ? 'client' : 'manager'),
+        userType: user.userType || (user.source === 'client' ? 'client' : 'admin'),
+        source: user.source || 'admin',
+        isActive: user.isActive !== undefined ? user.isActive : true,
         lastLogin: user.lastLogin,
         createdAt: user.createdAt,
+        phoneNumber: user.phoneNumber || 'N/A',
       }));
 
       const total = payload?.data?.total
@@ -143,8 +154,7 @@ const Users = () => {
     } finally {
       setLoading(false);
     }
-  }, [API_BASE_URL, order, orderBy, page, rowsPerPage, searchTerm, statusFilter]);
-
+  }, [API_BASE_URL, order, orderBy, page, rowsPerPage, searchTerm, statusFilter, tabValue]);
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
@@ -173,27 +183,37 @@ const Users = () => {
     setPage(0);
   };
 
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+    setPage(0);
+  };
+
   const handleEditUser = (user) => {
     navigate(`/users/${user.id}`);
   };
 
   const handleDeleteUser = async (user) => {
     const displayName = user.fullName || user.email || 'this user';
-     await Swal.fire({
-          title: 'Delete User?',
-          text: `Are you sure you want to delete ${displayName}? This action cannot be undone.`,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#d32f2f',
-          cancelButtonColor: '#1976d2',
-          confirmButtonText: 'Yes, delete it',
-          cancelButtonText: 'Cancel',
-        });
+    const result = await Swal.fire({
+      title: 'Delete User?',
+      text: `Are you sure you want to delete ${displayName}? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d32f2f',
+      cancelButtonColor: '#1976d2',
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
 
     updateRowActionState(user.id, 'deleting', true);
 
     try {
       const token = localStorage.getItem('token');
+
 
       const response = await fetch(`${API_BASE_URL}/users/${user.id}`, {
         method: 'DELETE',
@@ -211,11 +231,11 @@ const Users = () => {
       }
 
       showSnackbar('User deleted successfully.');
-      updateRowActionState(user.id, 'deleting', false);
       await fetchUsers();
     } catch (error) {
       console.error('Error deleting user:', error);
       showSnackbar(error.message || 'Failed to delete user.', 'error');
+    } finally {
       updateRowActionState(user.id, 'deleting', false);
     }
   };
@@ -225,8 +245,11 @@ const Users = () => {
 
     try {
       const token = localStorage.getItem('token');
+      
+      // Determine the source from the user object (default to 'admin' if not specified)
+      const source = user.source || 'admin';
 
-      const response = await fetch(`${API_BASE_URL}/users/${user.id}/status`, {
+      const response = await fetch(`${API_BASE_URL}/users/${source}/${user.id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -265,52 +288,89 @@ const Users = () => {
     }
   };
 
+  // Fixed columns format for DataTable component
   const columns = [
     {
       id: 'fullName',
-      label: 'Name',
-      minWidth: 150,
+      label: 'User',
+      minWidth: 200,
       sortable: true,
       format: (value, row) => (
-        <Box>
-          <Typography variant="subtitle2" noWrap>{value}</Typography>
-          <Typography variant="caption" color="textSecondary">{row.email}</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {row.role?.toLowerCase() === 'admin' || row.role?.toLowerCase() === 'manager' ? (
+            <AdminPanelSettings color="primary" />
+          ) : (
+            <Person color="action" />
+          )}
+          <Box>
+            <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>{value || 'N/A'}</Typography>
+            <Typography variant="caption" color="text.primary" display="block" sx={{ opacity: 0.8 }}>
+              {row.email || 'No email'}
+            </Typography>
+          </Box>
         </Box>
-      )
+      ),
     },
+
     {
       id: 'role',
       label: 'Role',
-      minWidth: 100,
+      minWidth: 120,
       sortable: true,
-      format: (value) => (
-        <Chip
-          label={value.charAt(0).toUpperCase() + value.slice(1)}
-          color={value === 'admin' ? 'primary' : 'default'}
-          size="small"
-        />
-      )
+      format: (value) => {
+        const role = value?.toLowerCase() || '';
+        return (
+          <Chip
+            label={value || 'N/A'}
+            size="small"
+            color={
+              role === 'admin'
+                ? 'primary'
+                : role === 'manager'
+                  ? 'secondary'
+                  : 'default'
+            }
+            variant="outlined"
+            sx={{ minWidth: 80 }}
+          />
+        );
+      },
     },
     {
       id: 'isActive',
       label: 'Status',
-      minWidth: 80,
+      minWidth: 100,
       sortable: true,
       format: (value) => (
         <Chip
           label={value ? 'Active' : 'Inactive'}
           color={value ? 'success' : 'default'}
           size="small"
-          variant="outlined"
+          variant={value ? 'filled' : 'outlined'}
         />
       )
     },
     {
       id: 'lastLogin',
       label: 'Last Login',
-      minWidth: 150,
+      minWidth: 160,
       sortable: true,
-      format: (value) => value ? new Date(value).toLocaleString() : 'Never'
+      format: (value) => (
+        <Typography variant="body2">
+          {value ? new Date(value).toLocaleString() : 'Never'}
+        </Typography>
+      )
+    },
+    {
+      id: 'createdAt',
+      label: 'Created',
+      minWidth: 120,
+      sortable: true,
+      format: (value) => (
+        <Typography variant="body2">
+          {value ? new Date(value).toLocaleDateString() : 'N/A'}
+        </Typography>
+      )
     },
   ];
 
@@ -323,29 +383,37 @@ const Users = () => {
       disabled: (row) => Boolean(rowActionState[row.id]?.deleting || rowActionState[row.id]?.toggling),
     },
     {
+      icon: (row) => row.isActive ? <Block fontSize="small" /> : <CheckCircle fontSize="small" />,
+      tooltip: (row) => row.isActive ? 'Deactivate User' : 'Activate User',
+      onClick: handleToggleStatus,
+      color: (row) => {
+        // Ensure we return a valid MUI color string
+        const color = row.isActive ? 'warning' : 'success';
+        return ['primary', 'secondary', 'error', 'warning', 'info', 'success'].includes(color)
+          ? color
+          : 'primary';
+      },
+      disabled: (row) => Boolean(rowActionState[row.id]?.toggling || rowActionState[row.id]?.deleting),
+    },
+    {
       icon: <Delete fontSize="small" />,
       tooltip: 'Delete User',
       onClick: handleDeleteUser,
       color: 'error',
-      disabled: (row) => Boolean(rowActionState[row.id]?.deleting),
-    },
-    {
-      getIcon: (user) => user.isActive ? <Block fontSize="small" /> : <CheckCircle fontSize="small" />,
-      getTooltip: (user) => user.isActive ? 'Deactivate User' : 'Activate User',
-      onClick: handleToggleStatus,
-      getColor: (user) => user.isActive ? 'warning' : 'success',
-      disabled: (row) => Boolean(rowActionState[row.id]?.toggling || rowActionState[row.id]?.deleting),
+      disabled: (row) => Boolean(rowActionState[row.id]?.deleting || rowActionState[row.id]?.toggling),
     },
   ];
 
   const handleOpenAddDialog = () => {
-    if (userRole === 'manager') {
-      setNewUser({ fullName: '', email: '', password: '', role: 'manager', confirmPassword: '' });
-      setCreateError(null);
-      setIsAddDialogOpen(true);
-    } else {
-      showSnackbar('Admins cannot create new users.', 'error');
-    }
+    setNewUser({
+      fullName: '',
+      email: '',
+      password: '',
+      role: 'manager',
+      confirmPassword: ''
+    });
+    setCreateError(null);
+    setIsAddDialogOpen(true);
   };
 
   const handleCloseAddDialog = () => {
@@ -366,6 +434,27 @@ const Users = () => {
 
     const { fullName, email, password, confirmPassword, role } = newUser;
 
+    // Validation
+    if (!fullName.trim()) {
+      setCreateError('Full name is required.');
+      return;
+    }
+
+    if (!email.trim()) {
+      setCreateError('Email is required.');
+      return;
+    }
+
+    if (!password) {
+      setCreateError('Password is required.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setCreateError('Password must be at least 6 characters long.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setCreateError('Passwords do not match.');
       return;
@@ -384,8 +473,8 @@ const Users = () => {
         },
         credentials: 'include',
         body: JSON.stringify({
-          fullName: fullName?.trim() ?? '',
-          email: email?.trim() ?? '',
+          fullName: fullName.trim(),
+          email: email.trim(),
           password,
           role,
         }),
@@ -399,71 +488,129 @@ const Users = () => {
 
       showSnackbar('User created successfully.');
       setIsAddDialogOpen(false);
-      setNewUser({ fullName: '', email: '', password: '', role: 'manager', confirmPassword: '' });
-      fetchUsers();
+      setNewUser({
+        fullName: '',
+        email: '',
+        password: '',
+        role: 'manager',
+        confirmPassword: ''
+      });
+      await fetchUsers();
     } catch (error) {
       console.error('Error creating user:', error);
       setCreateError(error.message || 'Failed to create user.');
-      showSnackbar(error.message || 'Failed to create user.', 'error');
     } finally {
       setCreatingUser(false);
     }
   };
 
   return (
-    <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} zIndex="1">
-        <Typography variant="h5" component="h1">
-          Users Management
-        </Typography>
-        {userRole === 'manager' && (
+    <Box sx={{ p: 3 }}>
+      {/* Header Section */}
+      <Box sx={{ mb: 3 }}>
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2,
+          flexWrap: 'wrap',
+          gap: 2
+        }}>
+          <Typography variant="h4" component="h1">
+            Users Management
+          </Typography>
           <Button
             variant="contained"
             color="primary"
             startIcon={<Add />}
             onClick={handleOpenAddDialog}
+            sx={{ minWidth: 'auto' }}
           >
             Add User
           </Button>
-        )}
+        </Box>
+
+        {/* Tabs Section */}
+        <Paper sx={{ mb: 2 }}>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            aria-label="user tabs"
+            sx={{
+              '& .MuiTab-root': {
+                minHeight: 60,
+                fontSize: '0.875rem'
+              }
+            }}
+          >
+            <Tab
+              value="all"
+              label="All Users"
+              icon={<Person />}
+              iconPosition="start"
+            />
+            <Tab
+              value="admins"
+              label="Admins & Managers"
+              icon={<AdminPanelSettings />}
+              iconPosition="start"
+            />
+            <Tab
+              value="clients"
+              label="Client Users"
+              icon={<Person />}
+              iconPosition="start"
+            />
+          </Tabs>
+        </Paper>
       </Box>
 
+      {/* Error Alert */}
       {fetchError && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {fetchError}
         </Alert>
       )}
 
-      <Box className="users-filter-container" display="flex" gap={2} mb={3} flexWrap="wrap" sx={{ p: 2 }}>
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="Search users..."
-          value={searchTerm}
-          onChange={handleSearch}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-          sx={{ minWidth: 250 }}
-        />
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 200 }}>
-          <InputLabel>Status</InputLabel>
-          <Select
-            value={statusFilter}
-            onChange={handleStatusFilterChange}
-            label="Status"
-          >
-            <MenuItem value="all">All Status</MenuItem>
-            <MenuItem value="active">Active</MenuItem>
-            <MenuItem value="inactive">Inactive</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
+      {/* Filters Section */}
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Box sx={{
+          display: 'flex',
+          gap: 2,
+          flexWrap: 'wrap',
+          alignItems: 'flex-end'
+        }}>
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Search users..."
+            value={searchTerm}
+            onChange={handleSearch}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ minWidth: 250 }}
+          />
+          <FormControl variant="outlined" size="small" sx={{ minWidth: 200 }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusFilter}
+              onChange={handleStatusFilterChange}
+              label="Status"
+            >
+              <MenuItem value="all">All Status</MenuItem>
+              <MenuItem value="active">Active</MenuItem>
+              <MenuItem value="inactive">Inactive</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </Paper>
 
+      {/* Data Table */}
       <DataTable
         columns={columns}
         rows={users}
@@ -481,76 +628,84 @@ const Users = () => {
         emptyMessage="No users found. Try adjusting your search or filters."
       />
 
+      {/* Add User Dialog */}
       <Dialog open={isAddDialogOpen} onClose={handleCloseAddDialog} fullWidth maxWidth="sm">
         <DialogTitle>Add New User</DialogTitle>
-        <DialogContent component="form" onSubmit={handleCreateUser} sx={{ mt: 1 }}>
-          <Box display="flex" flexDirection="column" gap={2}>
-            {createError && (
-              <Alert severity="error">{createError}</Alert>
-            )}
-            <TextField
-              label="Full Name"
-              value={newUser.fullName}
-              onChange={handleNewUserChange('fullName')}
-              required
-              fullWidth
-            />
-            <TextField
-              label="Email"
-              type="email"
-              value={newUser.email}
-              onChange={handleNewUserChange('email')}
-              required
-              fullWidth
-            />
-            <TextField
-              label="Password"
-              type="password"
-              value={newUser.password}
-              onChange={handleNewUserChange('password')}
-              required
-              fullWidth
-              inputProps={{ minLength: 6 }}
-            />
-            <TextField
-              label="Confirm Password"
-              type="password"
-              value={newUser.confirmPassword}
-              onChange={handleNewUserChange('confirmPassword')}
-              required
-              fullWidth
-              error={passwordMismatch}
-              helperText={passwordMismatch ? 'Passwords do not match' : ''}
-            />
-            <FormControl fullWidth>
-              <InputLabel>Role</InputLabel>
-              <Select
-                value={newUser.role}
-                onChange={handleNewUserChange('role')}
-                label="Role"
+        <DialogContent>
+          <Box component="form" onSubmit={handleCreateUser} sx={{ mt: 1 }}>
+            <Box display="flex" flexDirection="column" gap={2}>
+              {createError && (
+                <Alert severity="error">{createError}</Alert>
+              )}
+              <TextField
+                label="Full Name"
+                value={newUser.fullName}
+                onChange={handleNewUserChange('fullName')}
+                required
+                fullWidth
+                disabled={creatingUser}
+              />
+              <TextField
+                label="Email"
+                type="email"
+                value={newUser.email}
+                onChange={handleNewUserChange('email')}
+                required
+                fullWidth
+                disabled={creatingUser}
+              />
+              <TextField
+                label="Password"
+                type="password"
+                value={newUser.password}
+                onChange={handleNewUserChange('password')}
+                required
+                fullWidth
+                disabled={creatingUser}
+                inputProps={{ minLength: 6 }}
+                helperText="Password must be at least 6 characters long"
+              />
+              <TextField
+                label="Confirm Password"
+                type="password"
+                value={newUser.confirmPassword}
+                onChange={handleNewUserChange('confirmPassword')}
+                required
+                fullWidth
+                disabled={creatingUser}
+                error={passwordMismatch}
+                helperText={passwordMismatch ? 'Passwords do not match' : ''}
+              />
+              <FormControl fullWidth disabled={creatingUser}>
+                <InputLabel>Role</InputLabel>
+                <Select
+                  value={newUser.role}
+                  onChange={handleNewUserChange('role')}
+                  label="Role"
+                >
+                  <MenuItem value="manager">Manager</MenuItem>
+                  <MenuItem value="admin">Admin</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            <DialogActions sx={{ mt: 3, px: 0 }}>
+              <Button onClick={handleCloseAddDialog} disabled={creatingUser}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={creatingUser || passwordMismatch || !newUser.fullName || !newUser.email || !newUser.password || !newUser.confirmPassword}
               >
-                <MenuItem value="manager">Manager</MenuItem>
-                <MenuItem value="admin">Admin</MenuItem>
-              </Select>
-            </FormControl>
+                {creatingUser ? 'Adding...' : 'Add User'}
+              </Button>
+            </DialogActions>
           </Box>
-          <DialogActions sx={{ mt: 3 }}>
-            <Button onClick={handleCloseAddDialog} disabled={creatingUser}>
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              onClick={handleCreateUser}
-              disabled={creatingUser || passwordMismatch}
-            >
-              {creatingUser ? 'Adding...' : 'Add User'}
-            </Button>
-          </DialogActions>
         </DialogContent>
       </Dialog>
 
+      {/* Snackbar for notifications */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={4000}
