@@ -3,12 +3,12 @@ import styles from './Header.module.css';
 import { Home, UserPlus, User } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import SidebarMenu from '../sidebar/sidebar';
-//umaru
-const HostelHeader = () => {
+
+const HostelHeader = ({ onSortChange }) => {
   const navigate = useNavigate();
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName]=useState('')
+  const [userName, setUserName] = useState('');
+  const [activeSort, setActiveSort] = useState(''); // 🧠 Added active sort state
 
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -46,63 +46,74 @@ const HostelHeader = () => {
   }, []);
 
   const handleUserIconClick = () => {
-    if (isLoggedIn) {
-      navigate('/profile')
-    } else {
-      navigate('/auth');
-    }
+    if (isLoggedIn) navigate('/profile');
+    else navigate('/auth');
   };
- 
-// end umaru
+
+  // 🧠 Handles which sort option is clicked and highlights it
+  const handleSortClick = (criteria) => {
+    setActiveSort(criteria);
+    if (onSortChange) onSortChange(criteria);
+  };
 
   return (
-    <>
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-          <div className={styles.userIcons}>
-            <SidebarMenu />
-          </div>
-          
+    <header className={styles.header}>
+      <div className={styles.headerContent}>
+        <div className={styles.userIcons}>
+          <SidebarMenu />
+        </div>
 
-          <div className={styles.sortOptions}>
-            <div className={styles.sortOption}>
-              <div className={styles.sortLabel}>sort by</div>
-              <div className={styles.sortValue}>price</div>
-            </div>
-            <div className={styles.sortOption}>
-              <div className={styles.sortLabel}>sort by</div>
-              <div className={styles.sortValue}>distance</div>
-            </div>
-            <div className={styles.sortOption}>
-              <div className={styles.sortLabel}>sort by</div>
-              <div className={styles.sortValue}>Amenity</div>
-            </div>
+        {/* Sort Options */}
+        <div className={styles.sortOptions}>
+          <div
+            className={`${styles.sortOption} ${activeSort === 'price' ? styles.activeSort : ''}`}
+            onClick={() => handleSortClick('price')}
+          >
+            <div className={styles.sortLabel}>Sort by</div>
+            <div className={styles.sortValue}>Price</div>
           </div>
 
-          <div className={styles.branding}>
-            <div className={styles.topBranding}>
-              <Home className={styles.brandIcon} size={24} /><Link className={styles.brandNameLink} to="/">MUK-Book</Link>
-            </div>
-            
-            <h5 className={styles.brandPhone}>
-                  <a href="tel:+256709167919">Tel: +256709167919</a>
-                </h5>
+          <div
+            className={`${styles.sortOption} ${activeSort === 'distance' ? styles.activeSort : ''}`}
+            onClick={() => handleSortClick('distance')}
+          >
+            <div className={styles.sortLabel}>Sort by</div>
+            <div className={styles.sortValue}>Distance</div>
           </div>
 
-          <div className={styles.userIcons} onClick={handleUserIconClick}>
-            {/* {isLoggedIn ? <User size={32} /> : <UserPlus size={32} />} */}
-            {isLoggedIn ? (
+          <div
+            className={`${styles.sortOption} ${activeSort === 'amenity' ? styles.activeSort : ''}`}
+            onClick={() => handleSortClick('amenity')}
+          >
+            <div className={styles.sortLabel}>Sort by</div>
+            <div className={styles.sortValue}>Amenity</div>
+          </div>
+        </div>
+
+        {/* Branding Section */}
+        <div className={styles.branding}>
+          <div className={styles.topBranding}>
+            <Home className={styles.brandIcon} size={24} />
+            <Link className={styles.brandNameLink} to="/">MUK-Book</Link>
+          </div>
+          <h5 className={styles.brandPhone}>
+            <a href="tel:+256709167919">Tel: +256709167919</a>
+          </h5>
+        </div>
+
+        {/* User Profile/Login */}
+        <div className={styles.userIcons} onClick={handleUserIconClick}>
+          {isLoggedIn ? (
             <>
               <span className={styles.userName}>{userName}</span>
               <User size={32} />
             </>
           ) : (
             <UserPlus size={32} />
-            )}
-          </div>
+          )}
         </div>
-      </header>
-    </>
+      </div>
+    </header>
   );
 };
 
