@@ -1,21 +1,12 @@
+
 import frontUser from '../models/User.js';
 import crypto from 'crypto';
-import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 
-// Configure SendGrid SMTP transporter (reusable)
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    host: 'smtp.sendgrid.net',
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: 'apikey', // SendGrid SMTP username is always 'apikey'
-      pass: process.env.SENDGRID_API_KEY
-    }
-  });
-};
+// Initialize SendGrid
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 //token creation
 const generateToken = (id) => {
@@ -26,6 +17,7 @@ const generateToken = (id) => {
     expiresIn: process.env.JWT_EXPIRE
   });
 };
+
 //user registration checking if email, studentnumber and nin if already exists
 export const register = async (req, res) => {
   try {
@@ -62,19 +54,6 @@ export const register = async (req, res) => {
     });
 
     if (user) {
-      const transporter = createTransporter();
-
-      try {
-        // Verification is not strictly necessary for SendGrid's SMTP relay,
-        // but it's good practice to ensure the transporter is configured correctly.
-        await transporter.verify();
-        console.log('Email server is ready to send messages');
-      } catch (verifyError) {
-        console.error('Email verification failed:', verifyError.message);
-        // In a production environment, you might want to log this error
-        // and potentially disable email sending features or alert an admin.
-      }
-
       const loginUrl = `${process.env.FRONTEND_URL}/auth`;
 
       const welcomeMessage = `
@@ -123,17 +102,19 @@ export const register = async (req, res) => {
         </html>
       `;
 
+      const msg = {
+        to: user.email,
+        from: process.env.SENDGRID_FROM_EMAIL,
+        subject: `Welcome to ${process.env.APP_NAME} - Registration Successful`,
+        html: welcomeMessage,
+        text: `Welcome to ${process.env.APP_NAME}!\n\nHello ${user.firstName} ${user.surname},\n\nThank you for registering with ${process.env.APP_NAME} Hostel Booking System!\n\nYour account has been successfully created.`
+      };
+
       try {
-        await transporter.sendMail({
-          from: process.env.SENDGRID_FROM_EMAIL, // Use SendGrid's configured sender email
-          to: user.email,
-          subject: `Welcome to ${process.env.APP_NAME} - Registration Successful`,
-          html: welcomeMessage,
-          text: `Welcome to ${process.env.APP_NAME}!\n\nHello ${user.firstName} ${user.surname},\n\nThank you for registering with ${process.env.APP_NAME} Hostel Booking System!\n\nYour account has been successfully created.`
-        });
+        await sgMail.send(msg);
         console.log('Welcome email sent successfully');
       } catch (emailError) {
-        console.error('Failed to send welcome email:', emailError.message);
+        console.error('Failed to send welcome email:', emailError);
       }
 
       const token = generateToken(user._id);
@@ -158,6 +139,7 @@ export const register = async (req, res) => {
       });
     }
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({ message: 'An error occurred during registration' });
   }
 };
@@ -197,6 +179,7 @@ export const login = async (req, res) => {
       res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ message: 'An error occurred during login' });
   }
 };
@@ -218,25 +201,9 @@ export const forgotPassword = async (req, res) => {
       .update(resetToken)
       .digest('hex');
 
-    user.resetPasswordExpire = Date.now() + parseInt(process.env.RESET_TOKEN_EXPIRE );
+    user.resetPasswordExpire = Date.now() + parseInt(process.env.RESET_TOKEN_EXPIRE);
 
     await user.save();
-
-    const transporter = createTransporter();
-
-    try {
-      await transporter.verify();
-      console.log('Email server is ready to send messages');
-    } catch (verifyError) {
-      console.error('Email server verification failed:', verifyError.message);
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpire = undefined;
-      await user.save();
-      return res.status(500).json({
-        message: 'Email service configuration error. Please contact administrator.',
-        error: process.env.NODE_ENV === 'development' ? 'Email service unavailable' : undefined
-      });
-    }
 
     const message = `
       <!DOCTYPE html>
@@ -264,7 +231,7 @@ export const forgotPassword = async (req, res) => {
               <p>Your reset code is:</p>
               <div class="code">${resetToken}</div>
             </div>
-            <p><strong>This code will expire in ${parseInt(process.env.RESET_TOKEN_EXPIRE ) / 60000} minutes.</strong></p>
+            <p><strong>This code will expire in ${parseInt(process.env.RESET_TOKEN_EXPIRE) / 60000} minutes.</strong></p>
             <p>If you didn't request this password reset, please ignore this email and your password will remain unchanged.</p>
           </div>
           <div class="footer">
@@ -275,22 +242,23 @@ export const forgotPassword = async (req, res) => {
       </html>
     `;
 
-    try {
-      await transporter.sendMail({
-        from: process.env.SENDGRID_FROM_EMAIL, // Use SendGrid's configured sender email
-        to: user.email,
-        subject: `Password Reset Code - ${process.env.APP_NAME}`,
-        html: message,
-        text: `Password Reset Request\n\nYou requested a password reset for your ${process.env.APP_NAME} account.\n\nYour reset code is: ${resetToken}\n\nThis code will expire in ${parseInt(process.env.RESET_TOKEN_EXPIRE) / 60000} minutes.\n\nIf you didn't request this, please ignore this email.`
-      });
+    const msg = {
+      to: user.email,
+      from: process.env.SENDGRID_FROM_EMAIL,
+      subject: `Password Reset Code - ${process.env.APP_NAME}`,
+      html: message,
+      text: `Password Reset Request\n\nYou requested a password reset for your ${process.env.APP_NAME} account.\n\nYour reset code is: ${resetToken}\n\nThis code will expire in ${parseInt(process.env.RESET_TOKEN_EXPIRE) / 60000} minutes.\n\nIf you didn't request this, please ignore this email.`
+    };
 
+    try {
+      await sgMail.send(msg);
       console.log('Password reset email sent successfully');
       res.status(200).json({
         message: 'Reset code sent to email',
         success: true
       });
     } catch (emailError) {
-      console.error('Failed to send email:', emailError.message);
+      console.error('Failed to send email:', emailError);
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
@@ -301,7 +269,7 @@ export const forgotPassword = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('Forgot password error:', error.message);
+    console.error('Forgot password error:', error);
     res.status(500).json({ message: 'An error occurred during password reset' });
   }
 };
@@ -333,6 +301,7 @@ export const resetPassword = async (req, res) => {
 
     res.status(200).json({ message: 'Password reset successful' });
   } catch (error) {
+    console.error('Reset password error:', error);
     res.status(500).json({ message: 'An error occurred during password reset' });
   }
 };
@@ -427,6 +396,7 @@ export const updateProfile = async (req, res) => {
       lastLogin: user.lastLogin
     });
   } catch (error) {
+    console.error('Update profile error:', error);
     res.status(500).json({ message: 'An error occurred during profile update' });
   }
 };
@@ -462,6 +432,7 @@ export const changePassword = async (req, res) => {
 
     res.json({ message: 'Password changed successfully' });
   } catch (error) {
+    console.error('Change password error:', error);
     res.status(500).json({ message: 'An error occurred during password change' });
   }
 };
@@ -477,6 +448,7 @@ export const logout = async (req, res) => {
 
     res.json({ message: 'Logged out successfully' });
   } catch (error) {
+    console.error('Logout error:', error);
     res.status(500).json({ message: 'An error occurred during logout' });
   }
 };
