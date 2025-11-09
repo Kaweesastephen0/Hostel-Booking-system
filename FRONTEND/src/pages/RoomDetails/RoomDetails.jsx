@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import styles from "./RoomDetails.module.css";
+import Swal from "sweetalert2";
 import {
   MoveLeft,
   Share2,
@@ -29,11 +30,79 @@ import {
 const RoomDetails = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [room, setRoom] = useState(null);
   const [otherRooms, setOtherRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imagesLoaded, setImagesLoaded] = useState({});
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Handle book now button click
+  const handleBookNow = () => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    
+    if (!user || !user.token) {
+      // If no user in session, redirect to login
+      navigate(`/login?redirect=booking&roomId=${roomId}`);
+      return;
+    }
+    
+    // If user is authenticated, navigate to booking page with room details
+    if (room) {
+      navigate('/booking', { 
+        state: { 
+          roomId: room._id,
+          roomType: room.roomType,
+          price: room.roomPrice,
+          hostelName: room.hostelId?.name || 'Hostel',
+          roomNumber: room.roomNumber
+        }
+      });
+    } else {
+      setError('Room details not loaded yet. Please try again.');
+    }
+  };
+
+  // Check for redirect after login
+  useEffect(() => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    const isAuth = !!(user && user.token);
+    setIsAuthenticated(isAuth);
+    
+    const params = new URLSearchParams(location.search);
+    const redirect = params.get('redirect');
+    
+    if (redirect === 'booking' && isAuth && room) {
+      // Clean up the URL first
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+      
+      // Then navigate to booking
+      navigate('/booking', { 
+        state: { 
+          roomId: room._id,
+          roomType: room.roomType,
+          price: room.roomPrice,
+          hostelName: room.hostelId?.name || 'Hostel',
+          roomNumber: room.roomNumber
+        }
+      });
+    }
+  }, [location, room]); // Add room as a dependency
+
+  // Show error message if there's an error
+  useEffect(() => {
+    if (error) {
+      Swal.fire({
+        title: 'Error!',
+        text: error,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    }
+  }, [error]);
+
 
   // Fetch room when ID changes
   useEffect(() => {
@@ -217,7 +286,12 @@ const RoomDetails = () => {
         <div className={styles.inner3}>
           <Clock /> Posted: {new Date(room.createdAt).toLocaleDateString()}
         </div>
-        <button className={styles.bookButton}>Book Now</button>
+        <button 
+          className={styles.bookButton}
+          onClick={handleBookNow}
+        >
+          Book Now
+        </button>
       </div>
 
       {/* Amenities */}

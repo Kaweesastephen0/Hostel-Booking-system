@@ -1,642 +1,471 @@
-import styles from './Booking.module.css'
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import {
-  User, Users, Calendar, Briefcase, IdCard, Phone, Mail, MapPin, Home, Hash,
-  Bed, Clock, CreditCard, DollarSign, AlertCircle, Loader
-} from 'lucide-react'
-import hostelService from '../../services/hostelService';
-import Swal from "sweetalert2";
+  User, Home, MapPin, Calendar, Clock,
+  CreditCard, CheckCircle, ArrowLeft, ArrowRight, Mail, Phone,
+  UserCircle, Bed, Smartphone
+} from 'lucide-react';
+import styles from './Booking.module.css';
+
+const steps = [
+  {
+    id: 'personal',
+    title: 'Personal Details',
+    bgImage: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'
+  },
+  {
+    id: 'accommodation',
+    title: 'Accommodation',
+    bgImage: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'
+  },
+  {
+    id: 'payment',
+    title: 'Payment',
+    bgImage: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'
+  },
+  {
+    id: 'confirmation',
+    title: 'Confirmation',
+    bgImage: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'
+  },
+];
 
 const Booking = () => {
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [formErrors, setFormErrors] = useState({});
-  const [status, setStatus] = useState("");
-  const [pageLoading, setPageLoading] = useState(true);
+  // State
+  const [currentStep, setCurrentStep] = useState(0);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    idNumber: '',
+    checkIn: '',
+    hostel: 'Main Hostel',
+    roomNumber: '',
+    roomType: 'Single',
+    duration: '1',
+    paymentMethod: 'bank',
+    cardNumber: '',
+  });
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    const initializePage = async () => {
-      try {
-        // Add any initial data loading here
-        // For example: await hostelService.getInitialData();
-        setPageLoading(false);
-      } catch (error) {
-        console.error('Error loading page:', error);
-        setFormErrors({ general: 'Failed to load page data' });
-        setPageLoading(false);
-      }
-    };
+  // Navigation between steps
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, steps.length - 1));
+  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 0));
 
-    initializePage();
-  }, []);
-
-  const [form, setForm] = useState({
-    fullName: '',
-    gender: '',
-    age: '',
-    occupation: '',
-    idNumber: '',
-    phone: '',
-    email: '',
-    location: '',
-    hostelName: 'Hostel name',
-    roomNumber: '001',
-    roomType: 'Double',
-    duration: '',
-    checkIn: '',
-    paymentMethod: '',
-    bookingFee: 50000,
-    paymentNumber: ''
-  });
-
-  // Real-time validation on input change
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-
-    // Perform validation for the changed field
-    validateField(name, value);
-  };
-
-  // Validate a single field
-  const validateField = (name, value) => {
-    const newErrors = { ...fieldErrors };
-
-    // Clear previous error for this field
-    delete newErrors[name];
-
-    if (!value && !['occupation'].includes(name)) {
-      setFieldErrors(newErrors);
-      return;
-    }
-
-    // Field-specific validation
-    switch (name) {
-      case 'email':
-        if (!/^\S+@\S+\.\S+$/.test(value)) {
-          newErrors.email = 'Please enter a valid email address';
-        }
-        break;
-      case 'phone':
-        if (!/^[0-9\-+()\s]+$/.test(value)) {
-          newErrors.phone = 'Please enter a valid phone number';
-        } else if (value.replace(/\D/g, '').length < 10) {
-          newErrors.phone = 'Phone number is too short';
-        }
-        break;
-      case 'age':
-        if (isNaN(value) || value < 1 || value > 100) {
-          newErrors.age = 'Please enter a valid age (1-100)';
-        }
-        break;
-      case 'duration':
-        if (isNaN(value) || value < 1) {
-          newErrors.duration = 'Duration must be at least 1 day';
-        }
-        break;
-      case 'paymentNumber':
-        if (!/^\d+$/.test(value)) {
-          newErrors.paymentNumber = 'Please enter a valid number';
-        } else if (value.length < 10) {
-          newErrors.paymentNumber = 'Number is too short';
-        }
-        break;
-      default:
-        break;
-    }
-
-    setFieldErrors(newErrors);
-  };
-
-  // Check if a field is valid (has no errors and has a value)
-  const isFieldValid = (name, value = form[name]) => {
-    if (!value) return false;
-
-    // Skip validation for optional fields
-    if (name === 'occupation') return true;
-
-    // Check if the field has any validation errors
-    if (fieldErrors[name]) return false;
-
-    // Additional checks for specific fields
-    switch (name) {
-      case 'email':
-        return /^\S+@\S+\.\S+$/.test(value);
-      case 'phone':
-        return /^[0-9\-+()\s]+$/.test(value) && value.replace(/\D/g, '').length >= 10;
-      case 'age':
-        const age = parseInt(value, 10);
-        return !isNaN(age) && age >= 1 && age <= 100;
-      case 'duration':
-        return !isNaN(value) && value >= 1;
-      case 'paymentNumber':
-        return /^\d+$/.test(value) && value.length >= 10;
-      default:
-        return true;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
-  // Get the appropriate input class based on validation state
-  const getInputClass = (name, value = form[name]) => {
-    if (!value) return '';
-    return isFieldValid(name, value) ? 'valid' : fieldErrors[name] ? 'error' : '';
-  };
-
-  // Form submission validation
+  // Form validation
   const validateForm = () => {
     const newErrors = {};
-    let isValid = true;
-
-    // Required fields validation
-    const requiredFields = [
-      'fullName', 'gender', 'age', 'idNumber', 'phone', 'email',
-      'location', 'duration', 'checkIn', 'paymentMethod', 'paymentNumber'
-    ];
-
-    requiredFields.forEach(field => {
-      if (!form[field]?.trim()) {
-        newErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')} is required`;
-        isValid = false;
-      } else if (!isFieldValid(field)) {
-        // If field has a value but fails validation
-        isValid = false;
+    if (currentStep === 0) {
+      if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+      if (!formData.email) newErrors.email = 'Email is required';
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        newErrors.email = 'Please enter a valid email';
       }
-    });
-
-    // Check-in date validation
-    if (form.checkIn) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const checkInDate = new Date(form.checkIn);
-      if (checkInDate < today) {
-        newErrors.checkIn = 'Check-in date cannot be in the past';
-        isValid = false;
-      }
+      if (!formData.phone) newErrors.phone = 'Phone number is required';
     }
-
-    setFieldErrors(prev => ({ ...prev, ...newErrors }));
-    return isValid;
+    if (currentStep === 1) {
+      if (!formData.checkIn) newErrors.checkIn = 'Check-in date is required';
+      if (!formData.roomNumber) newErrors.roomNumber = 'Room number is required';
+    }
+    if (currentStep === 2 && formData.paymentMethod === 'card' && !formData.cardNumber) {
+      newErrors.cardNumber = 'Card number is required';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatus("");
-    setFieldErrors({});
-    setFormErrors({});
-
-    // Client-side validation
-    if (!validateForm()) {
+    e?.preventDefault();
+    if (!validateForm()) return;
+    if (currentStep < steps.length - 1) {
+      nextStep();
       return;
     }
-
-    setLoading(true);
     setIsSubmitting(true);
-
     try {
-      const res = await hostelService.createBooking(form);
-
-      // Show success message
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Booking Successful!",
-        text: `Your booking has been confirmed. Reference: ${res.booking?.id || ''}`,
-        showConfirmButton: true,
-        timer: 5000
-      });
-
-      // Reset form on successful submission
-      setForm({
-        fullName: '',
-        gender: '',
-        age: '',
-        occupation: '',
-        idNumber: '',
-        phone: '',
-        email: '',
-        location: '',
-        hostelName: 'Hostel name',
-        roomNumber: '001',
-        roomType: 'Double',
-        duration: '',
-        checkIn: '',
-        paymentMethod: '',
-        bookingFee: 50000,
-        paymentNumber: ''
-      });
-
-      setStatus('Booking created successfully!');
-    } catch (err) {
-      // Handle field-specific errors
-      if (err.response?.data?.errors) {
-        setFieldErrors(err.response.data.errors);
-
-        // Show general error message if there are form-level errors
-        if (err.response.data.message) {
-          setFormErrors({ general: err.response.data.message });
-
-          Swal.fire({
-            position: "top-end",
-            icon: "error",
-            title: err.response.data.message,
-            showConfirmButton: false,
-            timer: 3000
-          });
-        }
-      } else {
-        // Handle other errors
-        setFormErrors({
-          general: err.message || 'An error occurred. Please try again.'
-        });
-
-        Swal.fire({
-          position: "top-end",
-          icon: "error",
-          title: "An error occurred. Please try again.",
-          showConfirmButton: false,
-          timer: 3000
-        });
-      }
+      // Add your submission logic here
+      console.log('Form submitted:', formData);
+      nextStep();
+    } catch (error) {
+      console.error('Submission error:', error);
     } finally {
-      setLoading(false);
       setIsSubmitting(false);
     }
   };
 
-  if (pageLoading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <Loader className={styles.loadingSpinner} size={40} />
-        <p>Loading booking form...</p>
-      </div>
-    );
-  }
+  // Calculate total price in UGX
+  const calculateTotal = () => {
+    // Convert prices to UGX (assuming 1 USD = 3800 UGX as an example rate)
+    const pricePerNightUGX = formData.roomType === 'Single' ? 2500 * 3800 :
+      formData.roomType === 'Double' ? 4500 * 3800 : 1500 * 3800;
+    const total = pricePerNightUGX * (parseInt(formData.duration) || 0);
+    return total.toLocaleString('en-US');
+  };
+  
+  // Get price per night in UGX for display
+  const getPricePerNight = () => {
+    return formData.roomType === 'Single' ? '9,500,000' :
+      formData.roomType === 'Double' ? '17,100,000' : '5,700,000';
+  };
+
+  // Set background image based on current step
+  useEffect(() => {
+    document.body.style.backgroundImage = `url(${steps[currentStep].bgImage})`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundAttachment = 'fixed';
+    document.body.style.transition = 'background-image 0.5s ease-in-out';
+    document.body.style.paddingTop = '80px';
+    return () => {
+      document.body.style.backgroundImage = '';
+      document.body.style.paddingTop = '';
+    };
+  }, [currentStep]);
+
+  // Render step content
+  const renderStepContent = (step) => {
+    switch (step) {
+      case 0: // Personal Details
+        return (
+          <div className={styles.formSection}>
+            <h2>Personal Information</h2>
+            <div className={styles.formGroup}>
+              <label htmlFor="fullName">Full Name</label>
+              <div className={styles.inputWithIcon}>
+                <UserCircle size={20} className={styles.inputIcon} />
+                <input
+                  type="text"
+                  id="fullName"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className={`${styles.formInput} ${errors.fullName ? styles.errorInput : ''}`}
+                  placeholder="Your full name"
+                />
+              </div>
+              {errors.fullName && <span className={styles.error}>{errors.fullName}</span>}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="email">Email Address</label>
+              <div className={styles.inputWithIcon}>
+                <Mail size={20} className={styles.inputIcon} />
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`${styles.formInput} ${errors.email ? styles.errorInput : ''}`}
+                  placeholder="your@email.com"
+                />
+              </div>
+              {errors.email && <span className={styles.error}>{errors.email}</span>}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="phone">Phone Number</label>
+              <div className={styles.inputWithIcon}>
+                <Phone size={20} className={styles.inputIcon} />
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className={`${styles.formInput} ${errors.phone ? styles.errorInput : ''}`}
+                  placeholder="+254 700 000000"
+                />
+              </div>
+              {errors.phone && <span className={styles.error}>{errors.phone}</span>}
+            </div>
+          </div>
+        );
+      case 1: // Accommodation
+        return (
+          <div className={styles.formSection}>
+            <h2>Accommodation Details</h2>
+            <div className={styles.formGroup}>
+              <label>Room Type</label>
+              <div className={styles.roomOptions}>
+                {['Single', 'Double'].map((type) => (
+                  <label key={type} className={styles.roomOption}>
+                    <input
+                      type="radio"
+                      name="roomType"
+                      value={type}
+                      checked={formData.roomType === type}
+                      onChange={handleChange}
+                    />
+                    <span>
+                      <Bed size={20} className={styles.optionIcon} />
+                      {type}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="hostel">Select Hostel</label>
+              <div className={styles.inputWithIcon}>
+                <Home size={20} className={styles.inputIcon} />
+                <select
+                  id="hostel"
+                  name="hostel"
+                  value={formData.hostel}
+                  onChange={handleChange}
+                  className={styles.formInput}
+                >
+                  <option value="Main Hostel">Main Hostel</option>
+                  <option value="North Wing">North Wing</option>
+                  <option value="South Wing">South Wing</option>
+                  <option value="East Wing">East Wing</option>
+                </select>
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="roomNumber">Room Number</label>
+              <div className={styles.inputWithIcon}>
+                <Home size={20} className={styles.inputIcon} />
+                <input
+                  type="text"
+                  id="roomNumber"
+                  name="roomNumber"
+                  value={formData.roomNumber}
+                  onChange={handleChange}
+                  placeholder="e.g., 101A"
+                  className={`${styles.formInput} ${errors.roomNumber ? styles.errorInput : ''}`}
+                />
+              </div>
+              {errors.roomNumber && <span className={styles.error}>{errors.roomNumber}</span>}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="checkIn">Check-in Date</label>
+              <div className={styles.inputWithIcon}>
+                <Calendar size={20} className={styles.inputIcon} />
+                <input
+                  type="date"
+                  id="checkIn"
+                  name="checkIn"
+                  value={formData.checkIn}
+                  onChange={handleChange}
+                  min={new Date().toISOString().split('T')[0]}
+                  className={`${styles.formInput} ${errors.checkIn ? styles.errorInput : ''}`}
+                />
+              </div>
+              {errors.checkIn && <span className={styles.error}>{errors.checkIn}</span>}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="duration">Duration (Nights)</label>
+              <div className={styles.inputWithIcon}>
+                <Clock size={20} className={styles.inputIcon} />
+                <input
+                  type="number"
+                  id="duration"
+                  name="duration"
+                  min="1"
+                  value={formData.duration}
+                  onChange={handleChange}
+                  className={`${styles.formInput} ${errors.duration ? styles.errorInput : ''}`}
+                />
+              </div>
+              {errors.duration && <span className={styles.error}>{errors.duration}</span>}
+            </div>
+          </div>
+        );
+      case 2: // Payment
+        return (
+          <div className={styles.formSection}>
+            <h2>Payment Information</h2>
+            
+            <div className={styles.paymentMethods}>
+              <label className={`${styles.paymentMethod} ${formData.paymentMethod === 'bank' ? styles.active : ''}`}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="bank"
+                  checked={formData.paymentMethod === 'bank'}
+                  onChange={handleChange}
+                />
+                <div className={styles.paymentDetails}>
+                  <span><CreditCard size={18} className={styles.paymentIcon} /> Bank Transfer</span>
+                  <small>Make payment via bank transfer</small>
+                </div>
+              </label>
+
+              <label className={`${styles.paymentMethod} ${formData.paymentMethod === 'card' ? styles.active : ''}`}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="card"
+                  checked={formData.paymentMethod === 'card'}
+                  onChange={handleChange}
+                />
+                <div className={styles.paymentDetails}>
+                  <span><CreditCard size={18} className={styles.paymentIcon} /> Credit/Debit Card</span>
+                  <small>Pay with your Visa/Mastercard</small>
+                </div>
+              </label>
+            </div>
+
+            {formData.paymentMethod === 'card' && (
+              <div className={styles.formGroup}>
+                <label htmlFor="cardNumber">Card Number</label>
+                <div className={styles.inputWithIcon}>
+                  <CreditCard size={20} className={styles.inputIcon} />
+                  <input
+                    type="text"
+                    id="cardNumber"
+                    name="cardNumber"
+                    value={formData.cardNumber}
+                    onChange={handleChange}
+                    placeholder="1234 5678 9012 3456"
+                    className={`${styles.formInput} ${errors.cardNumber ? styles.errorInput : ''}`}
+                  />
+                  <img 
+                    src="/visa-mastercard.png" 
+                    alt="Visa/Mastercard" 
+                    className={styles.cardLogo}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+                {errors.cardNumber && <span className={styles.error}>{errors.cardNumber}</span>}
+              </div>
+            )}
+
+            <div className={styles.bankDetails}>
+              <h4>Bank Transfer Details</h4>
+              <div className={styles.bankInfo}>
+                <p><strong>Bank Name:</strong> Centenary Bank Uganda</p>
+                <p><strong>Account Name:</strong> Hostel Booking System</p>
+                <p><strong>Account Number:</strong> 3100000000000</p>
+                <p><strong>Swift Code:</strong> CBUGUGKA</p>
+                <p><strong>Branch:</strong> Kampala Road</p>
+              </div>
+              <div className={styles.note}>
+                <p>Please include your full name as the payment reference. Your booking will be confirmed once payment is received.</p>
+              </div>
+            </div>
+          </div>
+        );
+      case 3: // Confirmation
+        return (
+          <div className={styles.confirmation}>
+            <CheckCircle size={64} className={styles.successIcon} />
+            <h3>Booking Confirmed!</h3>
+            <p>
+              Thank you for your booking! We've sent a confirmation to your email.
+              Please check your inbox for details about your reservation.
+            </p>
+
+            <div className={styles.bookingDetails}>
+              <h4>Booking Details</h4>
+              <div className={styles.detailItem}>
+                <span>Booking Reference:</span>
+                <strong>BKG-{Math.random().toString(36).substr(2, 8).toUpperCase()}</strong>
+              </div>
+              <div className={styles.detailItem}>
+                <span>Name:</span>
+                <strong>{formData.fullName}</strong>
+              </div>
+              <div className={styles.detailItem}>
+                <span>Room Type:</span>
+                <strong>{formData.roomType} Room</strong>
+              </div>
+              <div className={styles.detailItem}>
+                <span>Check-in:</span>
+                <strong>{formData.checkIn || 'Not specified'}</strong>
+              </div>
+              <div className={styles.detailItem}>
+                <span>Duration:</span>
+                <strong>{formData.duration} night{formData.duration !== '1' ? 's' : ''}</strong>
+              </div>
+              <div className={styles.detailItem}>
+                <span>Total Amount:</span>
+                <strong>Ksh {calculateTotal()}</strong>
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className={styles.booking}>
-      <h1 className={styles.title}>Make your Booking</h1>
-      <div className={styles.form}>
+    <div className={styles.bookingContainer}>
+      <div className={styles.bookingCard}>
+        {/* Progress Steps */}
+        <div className={styles.progressSteps}>
+          {steps.map((step, index) => (
+            <div
+              key={step.id}
+              className={`${styles.step} ${currentStep >= index ? styles.active : ''} ${currentStep === index ? styles.current : ''}`}
+            >
+              <div className={styles.stepNumber}>{index + 1}</div>
+              <div className={styles.stepTitle}>{step.title}</div>
+            </div>
+          ))}
+        </div>
 
-        {formErrors.general && (
-          <div className={styles.formError}>
-            <AlertCircle size={18} />
-            <span>{formErrors.general}</span>
+        {/* Form Content */}
+        <div className={styles.formContainer}>
+          {renderStepContent(currentStep)}
+        </div>
+
+        {/* Navigation Buttons */}
+        {currentStep < steps.length - 1 ? (
+          <div className={styles.buttonGroup}>
+            {currentStep > 0 && (
+              <button
+                type="button"
+                onClick={prevStep}
+                className={styles.secondaryButton}
+                disabled={isSubmitting}
+              >
+                <ArrowLeft size={18} /> Back
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className={styles.primaryButton}
+              disabled={isSubmitting}
+            >
+              {currentStep === steps.length - 2 ? 'Complete Booking' : 'Continue'}
+              <ArrowRight size={18} />
+            </button>
+          </div>
+        ) : (
+          <div className={styles.buttonGroup}>
+            <button
+              type="button"
+              onClick={() => setCurrentStep(0)}
+              className={styles.primaryButton}
+            >
+              Make Another Booking
+            </button>
           </div>
         )}
-
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.pDetails}>
-            <h1>Personal Details</h1>
-
-            <div className={styles.details}>
-              <div className={styles.p2}>
-                <label htmlFor="fullName">Full Name (as on ID)</label>
-                <div className={`${styles.inputWrapper} ${fieldErrors.fullName ? 'error' : ''}`}>
-                  <User className={styles.inputIcon} size={20} />
-                  <input
-                    type="text"
-                    id="fullName"
-                    name="fullName"
-                    value={form.fullName}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                    className={`${getInputClass('fullName')}`}
-                    required
-                  />
-                  {fieldErrors.fullName && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle size={16} />
-                      <span>{fieldErrors.fullName}</span>
-                    </div>
-                  )}
-                </div>
-
-                <label htmlFor="gender">Gender</label>
-                <div className={`${styles.inputWrapper} ${fieldErrors.gender ? 'error' : ''}`}>
-                  <Users className={styles.inputIcon} size={20} />
-                  <select
-                    name="gender"
-                    id="gender"
-                    value={form.gender}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select your gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-
-                  </select>
-                  {fieldErrors.gender && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle size={16} />
-                      <span>{fieldErrors.gender}</span>
-                    </div>
-                  )}
-                </div>
-
-                <label htmlFor="age">Age</label>
-                <div className={`${styles.inputWrapper} ${fieldErrors.age ? 'error' : ''}`}>
-                  <Calendar className={styles.inputIcon} size={20} />
-                  <input
-                    type="number"
-                    id="age"
-                    name="age"
-                    value={form.age}
-                    onChange={handleChange}
-                    placeholder="Enter your age"
-                    min="1"
-                    max="100"
-                    className={`${getInputClass('age')}`}
-                    required
-                  />
-                  {fieldErrors.age && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle size={16} />
-                      <span>{fieldErrors.age}</span>
-                    </div>
-                  )}
-                </div>
-
-                <label htmlFor="idNumber">ID/Passport Number</label>
-                <div className={`${styles.inputWrapper} ${fieldErrors.idNumber ? 'error' : ''}`}>
-                  <IdCard className={styles.inputIcon} size={20} />
-                  <input
-                    type="text"
-                    id="idNumber"
-                    name="idNumber"
-                    value={form.idNumber}
-                    onChange={handleChange}
-                    placeholder="Enter your ID/Passport number"
-                    className={`${getInputClass('idNumber')}`}
-                    required
-                  />
-                  {fieldErrors.idNumber && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle size={16} />
-                      <span>{fieldErrors.idNumber}</span>
-                    </div>
-                  )}
-                </div>
-
-                <label htmlFor="phone">Phone Number</label>
-                <div className={`${styles.inputWrapper} ${fieldErrors.phone ? 'error' : ''}`}>
-                  <Phone className={styles.inputIcon} size={20} />
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                    placeholder="Enter your phone number"
-                    className={`${getInputClass('phone')}`}
-                    required
-                  />
-                  {fieldErrors.phone && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle size={16} />
-                      <span>{fieldErrors.phone}</span>
-                    </div>
-                  )}
-                </div>
-
-                <label htmlFor="email">Email Address</label>
-                <div className={`${styles.inputWrapper} ${fieldErrors.email ? 'error' : ''}`}>
-                  <Mail className={styles.inputIcon} size={20} />
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="Enter your email address"
-                    className={`${getInputClass('email')}`}
-                    required
-                  />
-                  {fieldErrors.email && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle size={16} />
-                      <span>{fieldErrors.email}</span>
-                    </div>
-                  )}
-                </div>
-
-                <label htmlFor="occupation">Occupation (Optional)</label>
-                <div className={`${styles.inputWrapper} ${fieldErrors.occupation ? 'error' : ''}`}>
-                  <Briefcase className={styles.inputIcon} size={20} />
-                  <input
-                    type="text"
-                    id="occupation"
-                    name="occupation"
-                    value={form.occupation}
-                    onChange={handleChange}
-                    placeholder="Enter your occupation"
-                    className={`${getInputClass('occupation')}`}
-                  />
-                  {fieldErrors.occupation && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle size={16} />
-                      <span>{fieldErrors.occupation}</span>
-                    </div>
-                  )}
-                </div>
-
-                <label htmlFor="location">Current Location</label>
-                <div className={`${styles.inputWrapper} ${fieldErrors.location ? 'error' : ''}`}>
-                  <MapPin className={styles.inputIcon} size={20} />
-                  <input
-                    type="text"
-                    id="location"
-                    name="location"
-                    value={form.location}
-                    onChange={handleChange}
-                    placeholder="Enter current location"
-                    className={`${getInputClass('location')}`}
-                    required
-                  />
-                  {fieldErrors.location && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle size={16} />
-                      <span>{fieldErrors.location}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.rDetails}>
-            <h1>Room Details</h1>
-            <div className={styles.details}>
-              <div className={styles.p2}>
-                <label htmlFor="hostelName">Hostel Name</label>
-                <div className={styles.inputWrapper}>
-                  <Home className={styles.inputIcon} size={20} />
-                  <input
-                    type="text"
-                    id="hostelName"
-                    name="hostelName"
-                    value={form.hostelName}
-                    disabled
-                  />
-                </div>
-
-                <label htmlFor="roomType">Room Type</label>
-                <div className={styles.inputWrapper}>
-                  <Bed className={styles.inputIcon} size={20} />
-                  <input
-                    type="text"
-                    id="roomType"
-                    name="roomType"
-                    value={form.roomType}
-                    disabled
-                  />
-                </div>
-
-                <label htmlFor="roomNumber">Room Number</label>
-                <div className={styles.inputWrapper}>
-                  <Hash className={styles.inputIcon} size={20} />
-                  <input
-                    type="text"
-                    id="roomNumber"
-                    name="roomNumber"
-                    value={form.roomNumber}
-                    disabled
-                  />
-                </div>
-
-                <label htmlFor="duration">Duration (days)</label>
-                <div className={`${styles.inputWrapper} ${fieldErrors.duration ? 'error' : ''}`}>
-                  <Clock className={styles.inputIcon} size={20} />
-                  <input
-                    type="number"
-                    id="duration"
-                    name="duration"
-                    value={form.duration}
-                    onChange={handleChange}
-                    placeholder="Enter duration in days"
-                    min="1"
-                    className={`${getInputClass('duration')}`}
-                    required
-                  />
-                  {fieldErrors.duration && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle size={16} />
-                      <span>{fieldErrors.duration}</span>
-                    </div>
-                  )}
-                </div>
-
-                <label htmlFor="checkIn">Check-in Date</label>
-                <div className={`${styles.inputWrapper} ${fieldErrors.checkIn ? 'error' : ''}`}>
-                  <Calendar className={styles.inputIcon} size={20} />
-                  <input
-                    type="date"
-                    id="checkIn"
-                    name="checkIn"
-                    value={form.checkIn}
-                    onChange={handleChange}
-                    min={new Date().toISOString().split('T')[0]}
-                    className={`${getInputClass('checkIn')}`}
-                    required
-                  />
-                  {fieldErrors.checkIn && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle size={16} />
-                      <span>{fieldErrors.checkIn}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.rDetails} style={{ borderLeft: "5px solid rgb(140, 66, 230)" }}>
-            <h1>Payment Details</h1>
-            <div className={styles.details}>
-              <div className={styles.p2}>
-                <label htmlFor="paymentMethod">Payment Method</label>
-                <div className={`${styles.inputWrapper} ${fieldErrors.paymentMethod ? 'error' : ''}`}>
-                  <CreditCard className={styles.inputIcon} size={20} />
-                  <select
-                    id="paymentMethod"
-                    name="paymentMethod"
-                    value={form.paymentMethod}
-                    onChange={handleChange}
-                    className={`${getInputClass('paymentMethod')}`}
-                    required
-                  >
-                    <option value="">Select payment method</option>
-                    <option value="Mobile Money">Mobile Money</option>
-                    <option value="Credit Card">Credit Card</option>
-                  </select>
-                  {fieldErrors.paymentMethod && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle size={16} />
-                      <span>{fieldErrors.paymentMethod}</span>
-                    </div>
-                  )}
-                </div>
-
-                <label htmlFor="bookingFee">Booking Fee</label>
-                <div className={styles.inputWrapper}>
-                  <DollarSign className={styles.inputIcon} size={20} />
-                  <input
-                    type="number"
-                    id="bookingFee"
-                    name="bookingFee"
-                    value={form.bookingFee}
-                    disabled
-                  />
-                </div>
-
-                <label htmlFor="paymentNumber">Payment Number/ Card Number</label>
-                <div className={`${styles.inputWrapper} ${fieldErrors.paymentNumber ? 'error' : ''}`}>
-                  <Hash className={styles.inputIcon} size={20} />
-                  <input
-                    type="text"
-                    id="paymentNumber"
-                    name="paymentNumber"
-                    value={form.paymentNumber}
-                    onChange={handleChange}
-                    placeholder="Enter card number"
-                    className={`${getInputClass('paymentNumber')}`}
-                    required
-                  />
-                  {fieldErrors.paymentNumber && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle size={16} />
-                      <span>{fieldErrors.paymentNumber}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className={styles.submitButton}
-            disabled={isSubmitting}
-            style={{ opacity: isSubmitting ? 0.7 : 1 }}
-          >
-            <CreditCard size={24} />
-            {isSubmitting ? 'Processing...' : 'Complete Booking'}
-          </button>
-
-          {status && !formErrors.general && (
-            <p style={{
-              textAlign: 'center',
-              marginTop: '1rem',
-              color: status.includes('error') ? '#ef4444' : '#10b981',
-              fontWeight: 500
-            }}>
-              {status}
-            </p>
-          )}
-        </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Booking
+export default Booking;
