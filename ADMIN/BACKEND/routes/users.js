@@ -8,12 +8,13 @@ import {
   deleteUser,
   createUser,
   getUserById,
-  updateUser
+  updateUser,
+
 } from '../controllers/userController.js';
 
 const router = express.Router();
 
-// All routes are protected and admin-only
+// All other routes are protected and admin-only
 router.use(protect);
 router.use(admin);
 

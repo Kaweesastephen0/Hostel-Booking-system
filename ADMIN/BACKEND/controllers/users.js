@@ -73,6 +73,7 @@ export const getUsers = asyncHandler(async (req, res) => {
     order = 'desc',
     search = '',
     status,
+    role,
   } = req.query;
 
   const pageNumber = parsePositiveInt(page, 1);
@@ -81,39 +82,101 @@ export const getUsers = asyncHandler(async (req, res) => {
   const sortDirection = order === 'asc' ? 1 : -1;
   const sortField = typeof sort === 'string' && sort.trim() ? sort : 'createdAt';
 
-  const query = {};
+  try {
+    let adminQuery = {};
+    let clientQuery = {};
+    
+    // Build search conditions
+    const searchCondition = search && typeof search === 'string' ? {
+      $or: [
+        { fullName: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+      ]
+    } : {};
 
-  if (search && typeof search === 'string') {
-    query.$or = [
-      { fullName: { $regex: search, $options: 'i' } },
-      { email: { $regex: search, $options: 'i' } },
-    ];
-  }
+    // Build status conditions
+    const statusCondition = status === 'active' 
+      ? { isActive: true } 
+      : status === 'inactive' 
+        ? { isActive: false } 
+        : {};
 
-  if (status === 'active') {
-    query.isActive = true;
-  } else if (status === 'inactive') {
-    query.isActive = false;
-  }
+    // For admin users (User model)
+    adminQuery = { ...searchCondition, ...statusCondition };
+    
+    // For client users (FrontUser model)
+    clientQuery = { ...searchCondition, ...statusCondition };
 
-  const [users, total] = await Promise.all([
-    User.find(query)
-      .sort({ [sortField]: sortDirection })
-      .skip(skip)
-      .limit(limitNumber)
-      .lean(),
-    User.countDocuments(query),
-  ]);
+    // Fetch users from both models in parallel
+    const [adminUsers, clientUsers, adminCount, clientCount] = await Promise.all([
+      // Admin/Manager users
+      User.find(adminQuery)
+        .sort({ [sortField]: sortDirection })
+        .skip(skip)
+        .limit(limitNumber)
+        .lean(),
+      
+      // Client users (from FrontUser model)
+      FrontUser.find(clientQuery)
+        .sort({ [sortField]: sortDirection })
+        .skip(skip)
+        .limit(limitNumber)
+        .lean(),
+      
+      // Counts
+      User.countDocuments(adminQuery),
+      FrontUser.countDocuments(clientQuery)
+    ]);
+
+    // Format admin users
+    const formattedAdminUsers = adminUsers.map(user => ({
+      ...user,
+      role: user.role || 'manager',
+      userType: 'admin',
+      source: 'admin'
+    }));
+
+    // Format client users
+    const formattedClientUsers = clientUsers.map(user => ({
+      ...user,
+      role: 'client',
+      userType: 'client',
+      source: 'client',
+      fullName: user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim()
+    }));
+
+    // Combine and sort all users
+    const allUsers = [...formattedAdminUsers, ...formattedClientUsers];
+    
+    // Apply client-side sorting if needed (since we can't sort combined results in DB)
+    allUsers.sort((a, b) => {
+      const aValue = a[sortField] || '';
+      const bValue = b[sortField] || '';
+      if (aValue < bValue) return sortDirection * -1;
+      if (aValue > bValue) return sortDirection * 1;
+      return 0;
+    });
+
+    // Apply pagination
+    const paginatedUsers = allUsers.slice(0, limitNumber);
+    const total = adminCount + clientCount;
 
   res.status(200).json({
     success: true,
     data: {
-      users: users.map(formatUserResponse),
+      users: paginatedUsers,
       total,
       page: pageNumber,
       limit: limitNumber,
     },
   });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching users',
+      error: error.message
+    });
 });
 
 export const getUserById = asyncHandler(async (req, res) => {
