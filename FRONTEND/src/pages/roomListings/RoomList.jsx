@@ -54,9 +54,8 @@ export default function RoomsList() {
       }
     };
 
-    if (hostelId) {
-      fetchRooms();
-    } else {
+    if (hostelId) fetchRooms();
+    else {
       setError('No hostel ID provided');
       setLoading(false);
     }
@@ -97,11 +96,7 @@ export default function RoomsList() {
     e.stopPropagation();
     setFavorites(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
+      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
       return newSet;
     });
   };
@@ -133,9 +128,7 @@ export default function RoomsList() {
           {/* Results Skeleton */}
           <div className={styles.results}>
             <div className={styles.resultsHeaderSkeleton}></div>
-            {[1, 2, 3].map(i => (
-              <div key={i} className={styles.roomCardSkeleton}></div>
-            ))}
+            {[1, 2, 3].map(i => <div key={i} className={styles.roomCardSkeleton}></div>)}
           </div>
         </div>
       </div>
