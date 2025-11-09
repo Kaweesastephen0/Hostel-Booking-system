@@ -1,145 +1,85 @@
 import React from "react";
 import styles from "./contactus.module.css";
-import {
-  FaWhatsapp,
-  FaMapMarkerAlt,
-  FaEnvelope,
-  FaPhoneAlt,
-  FaFacebook,
-  FaInstagram,
-  FaTwitter,
-} from "react-icons/fa";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 export default function Contactus() {
   return (
     <div className={styles.contactPage}>
       {/* Hero Section */}
       <section className={styles.hero}>
-        <div className={styles.overlay}>
-          <h1>Contact MUK BOOK</h1>
-          <p>
-            Let’s help you find a perfect hostel near Makerere University —
-            safe, affordable, and reliable.
-          </p>
+        <div className={styles.overlay}></div>
+        <div className={styles.heroContent}>
+          <h1>Let Connect With Us</h1>
+          <p>We’re here to help you anytime. Reach us for any inquiries or collaborations.</p>
         </div>
       </section>
 
       {/* Contact Info Section */}
-      <section className={styles.contactSection}>
-        <div className={styles.contactInfo}>
-          <h2>Get in Touch</h2>
-          <p>
-            Our support team is available 24/7 to help with your bookings,
-            listings, or any hostel-related inquiries.
-          </p>
-
-          <div className={styles.cards}>
-            <div className={styles.card}>
-              <FaWhatsapp className={`${styles.icon} ${styles.green}`} />
-              <div>
-                <h3>WhatsApp</h3>
-                <a
-                  href="https://wa.me/256759546308"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  +256 759 546 308
-                </a>
-              </div>
-            </div>
-
-            <div className={styles.card}>
-              <FaEnvelope className={`${styles.icon} ${styles.blue}`} />
-              <div>
-                <h3>Email</h3>
-                <a href="mailto:support@mukbook.com">support@mukbook.com</a>
-              </div>
-            </div>
-
-            <div className={styles.card}>
-              <FaPhoneAlt className={`${styles.icon} ${styles.orange}`} />
-              <div>
-                <h3>Phone</h3>
-                <a href="tel:+256759546308">+256 759 546 308</a>
-              </div>
-            </div>
-
-            <div className={styles.card}>
-              <FaMapMarkerAlt className={`${styles.icon} ${styles.red}`} />
-              <div>
-                <h3>Location</h3>
-                <p>Kikoni, Makerere — Kampala, Uganda</p>
-              </div>
-            </div>
+      <section className={styles.infoSection}>
+        <h2>Our Office</h2>
+        <div className={styles.infoGrid}>
+          <div className={styles.infoCard}>
+            <MapPin size={36} />
+            <h3>Address</h3>
+            <p>Makerere, Kampala, Uganda</p>
           </div>
-
-          <div className={styles.socials}>
-            <a
-              href="https://facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${styles.socialIcon} ${styles.facebook}`}
-            >
-              <FaFacebook />
-            </a>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${styles.socialIcon} ${styles.instagram}`}
-            >
-              <FaInstagram />
-            </a>
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${styles.socialIcon} ${styles.twitter}`}
-            >
-              <FaTwitter />
-            </a>
+          <div className={styles.infoCard}>
+            <Phone size={36} />
+            <h3>Call Us</h3>
+            <p>+256 759546308</p>
           </div>
-        </div>
-
-        <div className={styles.imageWrapper}>
-          <img
-            src="https://images.pexels.com/photos/3288103/pexels-photo-3288103.jpeg?auto=compress&cs=tinysrgb&w=1600"
-            alt="Customer support"
-          />
+          <div className={styles.infoCard}>
+            <Mail size={36} />
+            <h3>Email</h3>
+            <p>mukbok@yourcompany.com</p>
+          </div>
+          <div className={styles.infoCard}>
+            <Clock size={36} />
+            <h3>Working Hours</h3>
+            <p>Mon - Fri: 9:00 AM - 6:00 PM</p>
+          </div>
         </div>
       </section>
 
-      {/* Google Street Map */}
+      {/* Gallery Section */}
+      <section className={styles.gallerySection}>
+        <h2>Our Environment</h2>
+        <div className={styles.gallery}>
+          <img src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg" alt="Office" />
+          <img src="https://images.pexels.com/photos/3184312/pexels-photo-3184312.jpeg" alt="Meeting Room" />
+          <img src="https://images.pexels.com/photos/3182826/pexels-photo-3182826.jpeg" alt="Team" />
+        </div>
+      </section>
+
+      {/* Map Section */}
       <section className={styles.mapSection}>
-        <h2>Find Us in Kampala</h2>
-        <p>
-          Visit us near Makerere University or explore our location using Google Street View.
-        </p>
-        <div className={styles.mapBox}>
+        <h2>Find Us on Google Maps</h2>
+        <div className={styles.mapContainer}>
           <iframe
-            title="Makerere University Street View"
-            src="https://www.google.com/maps/embed?pb=!4v1730668800000!6m8!1m7!1sCAoSLEFGMVFpcE55MmJDaWhYUzYyT3FJOWdtNmNsM2JQRHdBNy1QRG9uVWtDSkty!2m2!1d0.332845964069035!2d32.57254317574396!3f0!4f0!5f0.7820865974627469"
+            title="Company Location"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.748696685988!2d32.57533887403925!3d0.33225756404600617!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177dbb63fefb1d37%3A0x226c62d6b8255d5d!2sMakerere%20University!5e0!3m2!1sen!2sug!4v1695560803143!5m2!1sen!2sug"
             width="100%"
-            height="480"
+            height="450"
             style={{ border: 0 }}
-            allowFullScreen
+            allowFullScreen=""
             loading="lazy"
           ></iframe>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className={styles.footer}>
+      {/* Floating WhatsApp Button */}
+      <a
+        href="https://wa.me/256700000000?text=Hello%20there!%20I%27d%20like%20to%20inquire%20about%20your%20services."
+        className={styles.whatsappFloat}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <img
-          src="https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=1600"
-          alt="Hostel background"
-          className={styles.footerImage}
+          src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+          alt="WhatsApp"
+          className={styles.whatsappIcon}
         />
-        <div className={styles.footerOverlay}>
-          <h2>Your Hostel Experience, Simplified</h2>
-          <p>© 2025 MUK BOOK — Designed for Students by Students</p>
-        </div>
-      </footer>
+      </a>
     </div>
   );
 }
