@@ -2,7 +2,21 @@ import frontUser from '../models/User.js';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
-import cookieParser from 'cookie-parser'; // Import cookie-parser
+import cookieParser from 'cookie-parser';
+
+// Configure SendGrid SMTP transporter (reusable)
+const createTransporter = () => {
+  return nodemailer.createTransport({
+    host: 'smtp.sendgrid.net',
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: 'apikey', // SendGrid SMTP username is always 'apikey'
+      pass: process.env.SENDGRID_API_KEY
+    }
+  });
+};
+
 //token creation
 const generateToken = (id) => {
   if (!process.env.JWT_SECRET) {
@@ -48,24 +62,17 @@ export const register = async (req, res) => {
     });
 
     if (user) {
-      const transporter = nodemailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        port: parseInt(process.env.EMAIL_PORT),
-        secure: process.env.EMAIL_SECURE === 'true',
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
-        },
-        tls: {
-          rejectUnauthorized: false
-        }
-      });
+      const transporter = createTransporter();
 
       try {
+        // Verification is not strictly necessary for SendGrid's SMTP relay,
+        // but it's good practice to ensure the transporter is configured correctly.
         await transporter.verify();
         console.log('Email server is ready to send messages');
       } catch (verifyError) {
-        console.error('Email verification failed');
+        console.error('Email verification failed:', verifyError.message);
+        // In a production environment, you might want to log this error
+        // and potentially disable email sending features or alert an admin.
       }
 
       const loginUrl = `${process.env.FRONTEND_URL}/auth`;
@@ -118,7 +125,7 @@ export const register = async (req, res) => {
 
       try {
         await transporter.sendMail({
-          from: `"${process.env.APP_NAME}" <${process.env.EMAIL_USER}>`,
+          from: process.env.SENDGRID_FROM_EMAIL, // Use SendGrid's configured sender email
           to: user.email,
           subject: `Welcome to ${process.env.APP_NAME} - Registration Successful`,
           html: welcomeMessage,
@@ -126,7 +133,7 @@ export const register = async (req, res) => {
         });
         console.log('Welcome email sent successfully');
       } catch (emailError) {
-        console.error('Failed to send welcome email');
+        console.error('Failed to send welcome email:', emailError.message);
       }
 
       const token = generateToken(user._id);
@@ -215,24 +222,13 @@ export const forgotPassword = async (req, res) => {
 
     await user.save();
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT),
-      secure: process.env.EMAIL_SECURE === 'true',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      },
-      tls: {
-        rejectUnauthorized: false
-      }
-    });
+    const transporter = createTransporter();
 
     try {
       await transporter.verify();
       console.log('Email server is ready to send messages');
     } catch (verifyError) {
-      console.error('Email server verification failed');
+      console.error('Email server verification failed:', verifyError.message);
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
@@ -280,8 +276,8 @@ export const forgotPassword = async (req, res) => {
     `;
 
     try {
-      const info = await transporter.sendMail({
-        from: `"${process.env.APP_NAME}" <${process.env.EMAIL_USER}>`,
+      await transporter.sendMail({
+        from: process.env.SENDGRID_FROM_EMAIL, // Use SendGrid's configured sender email
         to: user.email,
         subject: `Password Reset Code - ${process.env.APP_NAME}`,
         html: message,
@@ -294,18 +290,18 @@ export const forgotPassword = async (req, res) => {
         success: true
       });
     } catch (emailError) {
-      console.error('Failed to send email');
+      console.error('Failed to send email:', emailError.message);
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
 
       return res.status(500).json({
         message: 'Failed to send reset code. Please try again later.',
-        error: process.env.NODE_ENV === 'development' ? 'Email delivery failed' : undefined
+        error: process.env.NODE_ENV === 'development' ? emailError.message : undefined
       });
     }
   } catch (error) {
-    console.error('Forgot password error');
+    console.error('Forgot password error:', error.message);
     res.status(500).json({ message: 'An error occurred during password reset' });
   }
 };
