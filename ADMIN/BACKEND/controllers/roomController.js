@@ -1,12 +1,66 @@
 import express from 'express';
 import roomModel from '../models/RoomModel.js';
 import { createActivityLog } from '../utils/activityLogger.js';
+import Hostel from '../models/HostelModel.js';
+import asyncHandler from '../middleware/async.js';
 
 export const getAllRooms = async(req, res) => {
     try {
-        const rooms = await roomModel.find({})
-            .populate('hostelId') 
-            .lean();
+        let rooms;
+        
+        if (req.managerFilter) {
+            // For managers: use aggregation to filter by room's manager OR hostel's manager
+            const managerId = req.managerFilter.manager;
+            
+            rooms = await roomModel.aggregate([
+                {
+                    $lookup: {
+                        from: 'hostels',
+                        localField: 'hostelId',
+                        foreignField: '_id',
+                        as: 'hostelId'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$hostelId',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $match: {
+                        $or: [
+                            { manager: managerId },
+                            { 'hostelId.manager': managerId }
+                        ]
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        roomNumber: 1,
+                        roomType: 1,
+                        roomGender: 1,
+                        roomPrice: 1,
+                        hostelId: 1,
+                        manager: 1,
+                        bookingPrice: 1,
+                        roomDescription: 1,
+                        roomImages: 1,
+                        maxOccupancy: 1,
+                        primaryRoomImage: 1,
+                        isAvailable: 1,
+                        createdAt: 1,
+                        updatedAt: 1
+                    }
+                }
+            ]);
+        } else {
+            // For admins: return all rooms
+            rooms = await roomModel.find({})
+                .populate('hostelId') 
+                .lean();
+        }
         
         if (rooms.length > 0) {
             console.log(`found ${rooms.length} rooms`);
@@ -120,9 +174,8 @@ export const getRoomById = async(req, res) => {
             data: room,
             message: "Room found successfully"
         });
-
     } catch(error) {
-        console.log("Server error", error);
+        console.log("Server error:", error);
         res.status(500).json({
             success: false,
             message: "Server error",
@@ -131,146 +184,130 @@ export const getRoomById = async(req, res) => {
     }
 }
 
-export const createRoom = async(req, res) => {
-    try {
-        const newRoom = new roomModel(req.body);
-        await newRoom.save();
+/**
+ * @desc    Get rooms by hostel
+ * @route   GET /api/rooms/hostel/:hostelId
+ * @access  Public
+ */
+export const getRoomsByHostel = asyncHandler(async (req, res) => {
+  const rooms = await roomModel.find({ hostelId: req.params.hostelId }).populate('hostelId', 'name');
 
-        await createActivityLog(
-            req,
-            `Created room: ${newRoom.roomNumber}`,
-            'room',
-            {
-                roomId: newRoom._id,
-                roomNumber: newRoom.roomNumber,
-                roomType: newRoom.roomType,
-                hostelId: newRoom.hostelId,
-                maxOccupancy: newRoom.maxOccupancy,
-                price: newRoom.roomPrice
-            }
-        );
+  res.status(200).json({
+    success: true,
+    count: rooms.length,
+    data: rooms,
+  });
+});
 
-        res.status(201).json({
-            success: true,
-            data: newRoom,
-            message: "Room created successfully"
-        });
+/**
+ * @desc    Create a new room
+ * @route   POST /api/rooms
+ * @access  Private (Admin, Manager)
+ */
+export const createRoom = asyncHandler(async (req, res) => {
+  // The hostelId should be in the request body
+  const { hostelId } = req.body;
 
-    } catch(error) {
-        console.log("Server error", error);
-        res.status(500).json({
-            success: false,
-            message: "Server error",
-            error: error.message
-        });
-    }
-}
+  // Check if the hostel exists
+  const hostel = await Hostel.findById(hostelId);
+  if (!hostel) {
+    return res.status(404).json({
+      success: false,
+      message: `Hostel not found with id of ${hostelId}`
+    });
+  }
 
-export const updateRoom = async(req, res) => {
-    try {
-        const { id } = req.params;
-        const roomData = req.body;
-        
-        if (!id) {
-            return res.status(400).json({
-                success: false,
-                message: "Room ID is required"
-            });
-        }
+  // Automatically set manager to current user if not provided
+  const roomData = {
+    ...req.body,
+    manager: req.body.manager || req.user._id
+  };
 
-        const oldRoom = await roomModel.findById(id);
-        const updatedRoom = await roomModel.findByIdAndUpdate(id, roomData, { new: true });
+  const room = await roomModel.create(roomData);
 
-        if (!updatedRoom) {
-            return res.status(404).json({
-                success: false,
-                message: "Room not found"
-            });
-        }
+  // Log the activity
+  if (req.user) {
+    await createActivityLog(
+      req.user._id,
+      `Created room: ${room.roomNumber}`,
+      'room',
+      {
+        roomId: room._id,
+        roomNumber: room.roomNumber,
+        hostelId: hostel._id,
+        hostelName: hostel.name
+      }
+    );
+  }
 
-        await createActivityLog(
-            req,
-            `Updated room: ${updatedRoom.roomNumber}`,
-            'room',
-            {
-                roomId: updatedRoom._id,
-                roomNumber: updatedRoom.roomNumber,
-                oldData: {
-                    roomType: oldRoom.roomType,
-                    price: oldRoom.roomPrice,
-                    maxOccupancy: oldRoom.maxOccupancy
-                },
-                newData: {
-                    roomType: updatedRoom.roomType,
-                    price: updatedRoom.roomPrice,
-                    maxOccupancy: updatedRoom.maxOccupancy
-                },
-                changes: roomData
-            }
-        );
+  res.status(201).json({
+    success: true,
+    data: room
+  });
+});
 
-        res.status(200).json({
-            success: true,
-            data: updatedRoom,
-            message: "Room updated successfully"
-        });
+/**
+ * @desc    Update a room
+ * @route   PUT /api/rooms/:id
+ * @access  Private (Admin, Manager)
+ */
+export const updateRoom = asyncHandler(async (req, res) => {
+  let room = await roomModel.findById(req.params.id);
 
-    } catch(error) {
-        console.log("Server error", error);
-        res.status(500).json({
-            success: false,
-            message: "Server error",
-            error: error.message
-        });
-    }
-}
+  if (!room) {
+    return res.status(404).json({
+      success: false,
+      message: `Room not found with id of ${req.params.id}`
+    });
+  }
 
-export const deleteRoom = async(req, res) => {
-    try {
-        const { id } = req.params;
-        
-        if (!id) {
-            return res.status(400).json({
-                success: false,
-                message: "Room ID is required"
-            });
-        }
+  const oldData = { roomNumber: room.roomNumber, roomType: room.roomType, roomPrice: room.roomPrice };
 
-        const deletedRoom = await roomModel.findByIdAndDelete(id);
+  room = await roomModel.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true
+  });
 
-        if (!deletedRoom) {
-            return res.status(404).json({
-                success: false,
-                message: "Room not found"
-            });
-        }
+  // Log the activity
+  if (req.user) {
+    await createActivityLog(
+      req.user._id,
+      `Updated room: ${room.roomNumber}`,
+      'room',
+      { roomId: room._id, oldData, newData: { roomNumber: room.roomNumber, roomType: room.roomType, roomPrice: room.roomPrice }, changes: req.body }
+    );
+  }
 
-        await createActivityLog(
-            req,
-            `Deleted room: ${deletedRoom.roomNumber}`,
-            'room',
-            {
-                roomId: deletedRoom._id,
-                roomNumber: deletedRoom.roomNumber,
-                roomType: deletedRoom.roomType,
-                hostelId: deletedRoom.hostelId,
-                maxOccupancy: deletedRoom.maxOccupancy,
-                price: deletedRoom.roomPrice
-            }
-        );
+  res.status(200).json({ success: true, data: room, message: 'Room updated successfully' });
+});
 
-        res.status(200).json({
-            success: true,
-            data: deletedRoom,
-            message: "Room deleted successfully"
-        });
+/**
+ * @desc    Delete a room
+ * @route   DELETE /api/rooms/:id
+ * @access  Private (Admin, Manager)
+ */
+export const deleteRoom = asyncHandler(async (req, res) => {
+  const room = await roomModel.findById(req.params.id);
 
-    } catch(error) {
-        console.log("Server error", error);
-        res.status(500).json({
-            success: false,
-            message: "Server error",
-            error: error.message
-        });
-    }
-}
+  if (!room) {
+    return res.status(404).json({
+      success: false,
+      message: `Room not found with id of ${req.params.id}`
+    });
+  }
+
+  const roomDataForLog = {
+    roomId: room._id,
+    roomNumber: room.roomNumber,
+    hostelId: room.hostelId
+  };
+
+  await room.deleteOne();
+
+  // Log the activity
+  if (req.user) {
+    await createActivityLog(req.user._id, `Deleted room: ${room.roomNumber}`, 'room', roomDataForLog);
+  }
+
+  res.status(200).json({ success: true, data: {}, message: 'Room deleted successfully' });
+});

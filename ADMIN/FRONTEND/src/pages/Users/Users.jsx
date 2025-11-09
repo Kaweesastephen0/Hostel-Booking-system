@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Typography, Chip, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel,
          Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar } from '@mui/material';
 import { Add, Edit, Delete, Search, Block, CheckCircle } from '@mui/icons-material';
 import DataTable from '../../components/common/DataTable';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import './Users.css';
 const Users = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -30,11 +31,22 @@ const Users = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [rowActionState, setRowActionState] = useState({});
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
   const passwordMismatch =
     Boolean(newUser.password) &&
     Boolean(newUser.confirmPassword) &&
     newUser.password !== newUser.confirmPassword;
+
+  const currentUser = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    } catch (err) {
+      console.error('Failed to parse user from storage', err);
+      return {};
+    }
+  }, []);
+
+  const userRole = currentUser?.role || 'manager';
 
   const showSnackbar = (message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
@@ -76,7 +88,7 @@ const Users = () => {
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/users?${params.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}/users?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -183,7 +195,7 @@ const Users = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/users/${user.id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/${user.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -214,7 +226,7 @@ const Users = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/users/${user.id}/status`, {
+      const response = await fetch(`${API_BASE_URL}/users/${user.id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -327,9 +339,13 @@ const Users = () => {
   ];
 
   const handleOpenAddDialog = () => {
-    setNewUser({ fullName: '', email: '', password: '', role: 'manager', confirmPassword: '' });
-    setCreateError(null);
-    setIsAddDialogOpen(true);
+    if (userRole === 'manager') {
+      setNewUser({ fullName: '', email: '', password: '', role: 'manager', confirmPassword: '' });
+      setCreateError(null);
+      setIsAddDialogOpen(true);
+    } else {
+      showSnackbar('Admins cannot create new users.', 'error');
+    }
   };
 
   const handleCloseAddDialog = () => {
@@ -360,7 +376,7 @@ const Users = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/users`, {
+      const response = await fetch(`${API_BASE_URL}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -400,14 +416,16 @@ const Users = () => {
         <Typography variant="h5" component="h1">
           Users Management
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={handleOpenAddDialog}
-        >
-          Add User
-        </Button>
+        {userRole === 'manager' && (
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Add />}
+            onClick={handleOpenAddDialog}
+          >
+            Add User
+          </Button>
+        )}
       </Box>
 
       {fetchError && (
@@ -416,7 +434,7 @@ const Users = () => {
         </Alert>
       )}
 
-      <Box display="flex" gap={2} mb={3} flexWrap="wrap">
+      <Box className="users-filter-container" display="flex" gap={2} mb={3} flexWrap="wrap" sx={{ p: 2 }}>
         <TextField
           variant="outlined"
           size="small"

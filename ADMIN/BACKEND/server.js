@@ -12,6 +12,7 @@ import paymentRoutes from "./routes/payments.js";
 import settingsRoutes from "./routes/settings.js";
 import activityLogRoutes from "./routes/activityLogs.js";
 import frontUsersRoutes from "./routes/frontUsers.js";
+import searchRoutes from "./routes/search.js";
 
 // Load environment variables
 dotenv.config();
@@ -58,6 +59,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/logs", activityLogRoutes);
 app.use('/api/frontusers', frontUsersRoutes);
+app.use("/api/search", searchRoutes);
 app.use("/api/premium", hostelRoute);
  
 
@@ -100,7 +102,7 @@ app.all('/', (req, res) => {
 
 const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(` Hostel Booking API started on port ${PORT}!!`);
     console.log(` Health check: http://localhost:${PORT}/api/health`);
     console.log(` Hostels API: http://localhost:${PORT}/api/hostels`);

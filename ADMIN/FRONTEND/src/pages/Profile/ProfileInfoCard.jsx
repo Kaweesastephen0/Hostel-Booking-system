@@ -1,11 +1,11 @@
 import React from 'react';
-import { User, Mail, Phone, Cake, MapPin, CheckCircle, Upload } from 'lucide-react';
+import { User, Mail, Phone, Cake, MapPin, Upload, Edit, X } from 'lucide-react';
 
 // Internalized components from the original implementation
 
-const AvatarUploader = ({ currentAvatar }) => (
+const AvatarUploader = ({ currentAvatar, onFileChange }) => (
   <div className="avatar-uploader">
-    <div className="avatar-preview-container">
+    <div className="avatar-preview-container" onClick={() => document.getElementById('avatar-input-file')?.click()}>
       <img src={currentAvatar || 'https://via.placeholder.com/150'} alt="Profile Avatar" className="avatar-preview" />
       <button type="button" className="upload-overlay" onClick={() => document.getElementById('avatar-input-file')?.click()}>
         <Upload size={24} />
@@ -13,6 +13,7 @@ const AvatarUploader = ({ currentAvatar }) => (
       </button>
     </div>
   </div>
+  
 );
 
 const RoleBadge = ({ role }) => {
@@ -50,31 +51,65 @@ const ProfileSectionCard = ({ title, children }) => (
 );
 
 
-const ProfileInfoCard = ({ user, onFileChange, isEditing, onUserChange }) => {
+const ProfileInfoCard = ({ user, onFileChange, isEditing, onUserChange, onUpdateProfile, setIsEditing }) => {
   return (
     <>
       <div className="profile-card profile-overview-card">
-        <AvatarUploader currentAvatar={user.avatar} />
+        <AvatarUploader currentAvatar={user.avatar} onFileChange={onFileChange} />
         <input type="file" id="avatar-input-file" onChange={onFileChange} accept="image/*" style={{ display: 'none' }} />
         <h3>{user.fullName}</h3>
         <RoleBadge role={user.role} />
-        <div className="info-item status-info">
-          <strong>Status:</strong>
-          <span className={`status-pill status-${user.status.toLowerCase()}`}>{user.status}</span>
-        </div>
       </div>
 
       <div className="profile-card">
-        <h2 className="profile-section-title">Account Information</h2>
-        <div className="account-info">
-          <div className="info-item"><User size={16} /><span>{user.fullName}</span></div>
-          <div className="info-item"><Mail size={16} /><span>{user.email}</span></div>
-          <div className="info-item"><Phone size={16} /><span>{user.phone}</span></div>
-          <div className="info-item"><Cake size={16} /><span>{user.dob ? new Date(user.dob).toLocaleDateString() : 'N/A'}</span></div>
-          <div className="info-item"><MapPin size={16} /><span>{user.address}</span></div>
-          <div className="info-item"><strong>Joined:</strong><span>{user.dateJoined ? new Date(user.dateJoined).toLocaleDateString() : 'N/A'}</span></div>
-          <div className="info-item"><strong>Last Login:</strong><span>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'N/A'}</span></div>
+        <div className="profile-section-header">
+          <h2 className="profile-section-title">Account Information</h2>
+          {!isEditing ? (
+            <button className="btn btn-icon" onClick={() => setIsEditing(true)}>
+              <Edit size={16} />
+            </button>
+          ) : (
+            <button className="btn btn-icon" onClick={() => setIsEditing(false)}>
+              <X size={16} />
+            </button>
+          )}
         </div>
+        <form onSubmit={onUpdateProfile}>
+          <div className="form-group">
+            <label htmlFor="fullName"><User size={16} /> Full Name</label>
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              value={user.fullName}
+              onChange={onUserChange}
+              disabled={!isEditing}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email"><Mail size={16} /> Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={user.email}
+              onChange={onUserChange}
+              disabled={!isEditing}
+              required
+            />
+          </div>
+          {isEditing && (
+            <div className="form-actions">
+              <button type="submit" className="btn btn-primary">
+                Save Changes
+              </button>
+              <button type="button" className="btn btn-secondary" onClick={() => setIsEditing(false)}>
+                Cancel
+              </button>
+            </div>
+          )}
+        </form>
       </div>
     </>
   );

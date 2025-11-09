@@ -6,7 +6,7 @@ const roomSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Room name is required'],
         trim: true,
-        maxLength: [100, 'Room name cannot exceed 100 characters']
+        maxLength: [100, 'Room cannot exceed 100 characters']
     },
     roomType: {
         type: String,
@@ -24,27 +24,31 @@ const roomSchema = new mongoose.Schema({
         min: [0, 'Price cannot be negative']
     },
     hostelId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Hostel',
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Hostel', 
         required: [true, 'Hostel Id is required']
+    },
+    manager: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false
     },
     bookingPrice: {
         type: Number,
-        required: [true, 'Booking price is required'],
+        required: [true, 'Booking price is needed'],
         min: [0, 'Booking price cannot be negative']
     },
     roomDescription: {
         type: String,
         required: [true, 'Room description is required'],
-        maxLength: [500, 'Description cannot exceed 500 characters']
+        maxLength: [200, 'Description cannot exceed 200 characters']
     },
     maxOccupancy: {
         type: Number,
-        required: [true, 'Maximum occupancy is required'],
+        required: [true, 'Maximum number of people per room is highly needed'],
         min: [1, 'Max occupancy must be at least 1']
     },
-    // ✅ Use same image schema as Hostel model
-    images: [{
+    roomImages: [{
         url: {
             type: String,
             required: true
@@ -54,52 +58,41 @@ const roomSchema = new mongoose.Schema({
             default: false
         }
     }],
-    availability: {
-        type: Boolean,
-        default: true
+    status: {
+        type: String,
+        enum: ['available', 'occupied', 'maintenance'],
+        default: 'available'
     },
-    featured: {
-        type: Boolean,
-        default: false
-    }
 }, {
     timestamps: true
 });
 
-// ✅ Indexes for faster lookups
+// Add indexes for faster retrieval
 roomSchema.index({ hostelId: 1 });
 roomSchema.index({ roomNumber: 1 });
 roomSchema.index({ roomType: 1 });
 roomSchema.index({ roomGender: 1 });
 roomSchema.index({ createdAt: -1 });
 roomSchema.index({ hostelId: 1, roomType: 1 });
-roomSchema.index({ featured: 1 });
+roomSchema.index({ isShownFirst: -1 });
 
-// ✅ Virtual: Primary image (same logic as hostelModel)
-roomSchema.virtual('primaryImage').get(function() {
-    const primaryImg = this.images?.find(img => img.isPrimary);
-    return primaryImg?.url || this.images?.[0]?.url || '';
+// Virtual to get primary room image
+roomSchema.virtual('primaryRoomImage').get(function() {
+    const primaryImg = this.roomImages?.find(img => img.isPrimary);
+    return primaryImg?.url || this.roomImages?.[0]?.url || '';
 });
 
-// ✅ Virtual: All images sorted (primary first)
-roomSchema.virtual('sortedImages').get(function() {
-    if (!this.images || this.images.length === 0) return [];
+// Virtual to get all room images sorted (primary first)
+roomSchema.virtual('sortedRoomImages').get(function() {
+    if (!this.roomImages || this.roomImages.length === 0) return [];
     
-    const primary = this.images.filter(img => img.isPrimary);
-    const others = this.images.filter(img => !img.isPrimary);
+    const primary = this.roomImages.filter(img => img.isPrimary);
+    const others = this.roomImages.filter(img => !img.isPrimary);
     
     return [...primary, ...others];
 });
 
-// ✅ Virtual: Link back to parent hostel
-roomSchema.virtual('hostel', {
-    ref: 'Hostel',
-    localField: 'hostelId',
-    foreignField: '_id',
-    justOne: true
-});
-
-// ✅ Ensure virtuals are included in JSON and Object outputs
+// Ensure virtuals are included in JSON
 roomSchema.set('toJSON', { virtuals: true });
 roomSchema.set('toObject', { virtuals: true });
 

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import {
   Box, Button, Typography, Chip, TextField, InputAdornment, MenuItem, FormControl, InputLabel,
-  Select, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar, Grid, Paper
+  Select, Alert, Snackbar, Paper, Grid
 } from '@mui/material';
 import { Add, FilterList, Search, Edit, Delete, Cancel, CheckCircle, Close, Info, Replay } from '@mui/icons-material';
 import Drawer from '@mui/material/Drawer';
@@ -12,8 +12,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { format } from 'date-fns';
 import DataTable from '../../components/common/DataTable';
 import Swal from 'sweetalert2';
+import BookingForm from './BookingForm';
+import './Bookings.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+let API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'cancelled', 'completed'];
 
@@ -23,6 +25,8 @@ const statusColorMap = {
   cancelled: 'error',
   completed: 'primary',
 };
+
+
 
 const DATE_RANGE_OPTIONS = [
   { value: 'all', label: 'All Dates' },
@@ -37,40 +41,6 @@ const User = localStorage.getItem('user');
 if (User === null) {
   <Navigate to="/login" />
 }
-const defaultBookingForm = {
-  // Guest Information
-  fullName: '',
-  gender: '',
-  age: '',
-  occupation: '',
-  idNumber: '',
-  phone: '',
-  email: '',
-  location: '',
-
-  // Booking Information
-  hostelName: '',
-  roomNumber: '',
-  roomType: '',
-  duration: '',
-  checkIn: '',
-
-  // Payment Information
-  paymentMethod: '',
-  bookingFee: '',
-  paymentNumber: '',
-
-  // System Fields
-  status: 'pending',
-};
-
-const durationMap = {
-  daily: 1,
-  weekly: 7,
-  monthly: 30,
-  quarterly: 90,
-  yearly: 365
-};
 
 const formatDate = (value) => {
   if (!value) return '—';
@@ -84,15 +54,21 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(value);
 };
 
-const toDateInputValue = (value) => {
-  if (!value) return '';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  return date.toISOString().slice(0, 10);
-};
 
 const Bookings = () => {
   const navigate = useNavigate();
+
+  const currentUser = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    } catch (err) {
+      console.error('Failed to parse user from storage', err);
+      return {};
+    }
+  }, []);
+
+  const userRole = currentUser?.role || 'manager';
+
 
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -109,15 +85,11 @@ const Bookings = () => {
     paymentStatus: 'all',
   });
 
-
   const [showFilters, setShowFilters] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [rowActionState, setRowActionState] = useState({});
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newBooking, setNewBooking] = useState(defaultBookingForm);
-  const [createError, setCreateError] = useState(null);
-  const [creatingBooking, setCreatingBooking] = useState(false);
 
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -125,15 +97,15 @@ const Bookings = () => {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [detailsError, setDetailsError] = useState(null);
 
-  const showSnackbar = (message, severity = 'success') => {
+  const showSnackbar = useCallback((message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
-  };
+  }, []);
 
   const handleCloseSnackbar = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
-  const updateRowActionState = (id, key, value) => {
+  const updateRowActionState = useCallback((id, key, value) => {
     setRowActionState((prev) => ({
       ...prev,
       [id]: {
@@ -141,7 +113,7 @@ const Bookings = () => {
         [key]: value,
       },
     }));
-  };
+  }, []);
 
   // Handle filter changes for all filter types
   const handleFilterChange = (filterName) => (event) => {
@@ -165,11 +137,12 @@ const Bookings = () => {
     setPage(0);
   };
 
+  // Status filter is now handled by the handleFilterChange function
   const fetchBookings = useCallback(async () => {
-    setLoading(true);
-    setFetchError(null);
-
     try {
+
+      setLoading(true);
+      setFetchError(null);
       const params = new URLSearchParams({
         page: (page + 1).toString(),
         limit: rowsPerPage.toString(),
@@ -190,6 +163,11 @@ const Bookings = () => {
         params.append('status', status);
       }
 
+      // Add payment status filter
+      if (paymentStatus && paymentStatus !== 'all') {
+        params.append('paymentStatus', paymentStatus);
+      }
+
       // Add date range filter
       if (dateRange && dateRange !== 'all') {
         const now = new Date();
@@ -201,21 +179,25 @@ const Bookings = () => {
             params.append('endDate', new Date(now.setHours(23, 59, 59, 999)).toISOString());
             break;
           case 'thisWeek':
-            const startOfWeek = new Date(startOfDay);
-            startOfWeek.setDate(startOfDay.getDate() - startOfDay.getDay()); // Start of current week (Sunday)
-            const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 6); // End of current week (Saturday)
+            {
+              const startOfWeek = new Date(startOfDay);
+              startOfWeek.setDate(startOfDay.getDate() - startOfDay.getDay()); // Start of current week (Sunday)
+              const endOfWeek = new Date(startOfWeek);
+              endOfWeek.setDate(startOfWeek.getDate() + 6); // End of current week (Saturday)             ``````
 
-            params.append('startDate', startOfWeek.toISOString());
-            params.append('endDate', new Date(endOfWeek.setHours(23, 59, 59, 999)).toISOString());
-            break;
+              params.append('startDate', startOfWeek.toISOString());
+              params.append('endDate', new Date(endOfWeek.setHours(23, 59, 59, 999)).toISOString());
+              break;
+            }
           case 'thisMonth':
-            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            {
+              const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+              const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-            params.append('startDate', startOfMonth.toISOString());
-            params.append('endDate', new Date(endOfMonth.setHours(23, 59, 59, 999)).toISOString());
-            break;
+              params.append('startDate', startOfMonth.toISOString());
+              params.append('endDate', new Date(endOfMonth.setHours(23, 59, 59, 999)).toISOString());
+              break;
+            }
           case 'upcoming':
             params.append('startDate', new Date().toISOString());
             break;
@@ -229,20 +211,16 @@ const Bookings = () => {
         params.append('roomType', roomType);
       }
 
-      // Add payment status filter
-      if (paymentStatus && paymentStatus !== 'all') {
-        params.append('paymentStatus', paymentStatus);
-      }
-
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
+      const response = await fetch(`${API_BASE_URL}/bookings`, {
+
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        credentials: 'include',
+        credentials: 'include'
       });
 
       const payload = await response.json().catch(() => ({}));
@@ -352,7 +330,7 @@ const Bookings = () => {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${booking.id}`, {
         method: 'DELETE',
         headers: headers,
         credentials: 'include',
@@ -372,7 +350,7 @@ const Bookings = () => {
     } finally {
       updateRowActionState(booking.id, 'deleting', false);
     }
-  }, [updateRowActionState, showSnackbar, fetchBookings, API_BASE_URL]);
+  }, [updateRowActionState, showSnackbar, fetchBookings]);
 
   const handleUpdateStatus = useCallback(async (booking, targetStatus) => {
     if (!targetStatus || targetStatus === booking.status) return;
@@ -389,7 +367,7 @@ const Bookings = () => {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${booking.id}`, {
         method: 'PUT',
         headers: headers,
         credentials: 'include',
@@ -402,30 +380,17 @@ const Bookings = () => {
         throw new Error(payload.message || 'Failed to update booking status.');
       }
 
-      const updatedBooking = payload?.data?.booking;
-      const nextStatus = updatedBooking?.status || targetStatus;
-
-      setBookings((prev) =>
-        prev.map((item) =>
-          item.id === booking.id
-            ? {
-              ...item,
-              status: nextStatus,
-            }
-            : item
-        )
-      );
-
-      showSnackbar(`Booking marked as ${nextStatus}.`);
+      showSnackbar(`Booking status updated to ${targetStatus}.`);
+      await fetchBookings();
     } catch (error) {
       console.error('Error updating booking status:', error);
       showSnackbar(error.message || 'Failed to update booking status.', 'error');
     } finally {
       updateRowActionState(booking.id, 'updating', false);
     }
-  }, [API_BASE_URL, showSnackbar, updateRowActionState]);
+  }, [updateRowActionState, showSnackbar, fetchBookings]);
 
-  const handleOpenDetails = async (booking) => {
+  const handleOpenDetails = useCallback(async (booking) => {
     setSelectedBooking(booking);
     setBookingDetails(null);
     setDetailsError(null);
@@ -433,7 +398,7 @@ const Bookings = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${booking.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -456,7 +421,7 @@ const Bookings = () => {
     } finally {
       setLoadingDetails(false);
     }
-  };
+  }, []);
 
   const handleCloseDetails = () => {
     setSelectedBooking(null);
@@ -484,152 +449,25 @@ const Bookings = () => {
   }), []);
 
   const openAddDialog = () => {
-    setNewBooking(defaultBookingForm);
-    setCreateError(null);
-    setIsAddDialogOpen(true);
+    if (userRole === 'manager') {
+      setIsAddDialogOpen(true);
+    } else {
+      showSnackbar('Admins cannot create new bookings.', 'error');
+    }
   };
 
   const closeAddDialog = () => {
-    if (creatingBooking) return;
     setIsAddDialogOpen(false);
   };
 
-  const handleNewBookingChange = (field) => (event) => {
-    setNewBooking((prev) => ({
-      ...prev,
-      [field]: event.target.value,
-    }));
+  const handleBookingSuccess = async (message) => {
+    showSnackbar(message);
+    await fetchBookings();
   };
 
-  const handleCreateBooking = async (event) => {
-    event.preventDefault();
-    setCreateError(null);
-
-    // Destructure and validate required fields
-    const {
-      fullName, gender, age, idNumber, phone, email, location,
-      hostelName, roomNumber, roomType, duration, checkIn,
-      paymentMethod, bookingFee, paymentNumber
-    } = newBooking;
-
-    // Validate required fields
-    const requiredFields = [
-      { field: 'fullName', label: 'Guest name' },
-      { field: 'roomNumber', label: 'Room number' },
-      { field: 'checkIn', label: 'Check-in date' },
-      { field: 'duration', label: 'Duration' },
-      { field: 'bookingFee', label: 'Amount' },
-    ];
-
-    const missingField = requiredFields.find(({ field }) => !newBooking[field]?.toString().trim());
-    if (missingField) {
-      setCreateError(`${missingField.label} is required`);
-      return;
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setCreateError('Please enter a valid email address');
-      return;
-    }
-
-    // Validate age is a positive number
-    const ageValue = parseInt(age, 10);
-    if (isNaN(ageValue) || ageValue <= 0) {
-      setCreateError('Age must be a positive number');
-      return;
-    }
-
-    // Validate booking fee is a positive number
-    const bookingFeeValue = parseFloat(bookingFee);
-    if (isNaN(bookingFeeValue) || bookingFeeValue <= 0) {
-      setCreateError('Booking fee must be a positive number');
-      return;
-    }
-
-    const durationDays = durationMap[duration];
-    if (!durationDays) {
-      setCreateError('Please select a valid duration');
-      return;
-    }
-
-    setCreatingBooking(true);
-
-    try {
-      const token = localStorage.getItem('token');
-      const payload = {
-        fullName,
-        gender,
-        age: ageValue,
-        occupation: newBooking.occupation,
-        idNumber,
-        phone,
-        email,
-        location,
-        hostelName,
-        roomNumber,
-        roomType,
-        duration: durationDays,
-        checkIn,
-        paymentMethod,
-        bookingFee: bookingFeeValue,
-        paymentNumber,
-        status: newBooking.status,
-      };
-
-      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        credentials: 'include',
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to create booking.');
-      }
-
-      showSnackbar('Booking created successfully.');
-      await fetchBookings();
-      closeAddDialog();
-    } catch (error) {
-      console.error('Error creating booking:', error);
-      setCreateError(error.message || 'Failed to create booking.');
-    } finally {
-      setCreatingBooking(false);
-    }
-  };
-
-  // const handleBookingUpdated = (updatedBooking) => {
-  //   fetchBookings();
-  //   setSnackbar({
-  //     open: true,
-  //     message: 'Booking updated successfully',
-  //     severity: 'success'
-  //   });
-  // };
-
-  // const handleError = (error) => {
-  //   console.error('Error:', error);
-  //   setSnackbar({
-  //     open: true,
-  //     message: error.message || 'An error occurred',
-  //     severity: 'error'
-  //   });
-  // };
 
   const columns = useMemo(() => [
-    // {
-    //   id: 'reference',
-    //   label: 'Reference',
-    //   minWidth: 50,
-    //   format: (value, row) => value || row.id || '—',
-    // },
+
     {
       id: 'guestName',
       label: 'Guest',
@@ -767,21 +605,23 @@ const Bookings = () => {
             >
               {showFilters ? 'Hide Filters' : 'Show Filters'}
             </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<Add />}
-              onClick={openAddDialog}
-            >
-              New Booking
-            </Button>
+            {userRole === 'manager' && (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Add />}
+                onClick={openAddDialog}
+              >
+                New Booking
+              </Button>
+            )}
           </Box>
         </Box>
         {showFilters && (
           <Box>
-            <Paper sx={{ p: 2 }}>
+            <Paper className="bookings-filter-container" sx={{ p: 2 }}>
               <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} md={3}>
+                <Grid>
                   <TextField
                     variant="outlined"
                     size="small"
@@ -798,13 +638,13 @@ const Bookings = () => {
                     fullWidth
                   />
                 </Grid>
-                <Grid item xs={12} md={2}>
-                  <FormControl variant="outlined" size="small" fullWidth>
-                    <InputLabel>Status</InputLabel>
+                <Grid >
+                  <FormControl fullWidth variant="outlined" size="small">
+                    <InputLabel>Booking Status</InputLabel>
                     <Select
                       value={filters.status}
                       onChange={handleFilterChange('status')}
-                      label="Status"
+                      label="Booking Status"
                     >
                       <MenuItem value="all">All Statuses</MenuItem>
                       <MenuItem value="pending">Pending</MenuItem>
@@ -814,7 +654,7 @@ const Bookings = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={2}>
+                <Grid>
                   <FormControl fullWidth variant="outlined" size="small">
                     <InputLabel>Date Range</InputLabel>
                     <Select
@@ -830,7 +670,7 @@ const Bookings = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={2}>
+                <Grid>
                   <FormControl fullWidth variant="outlined" size="small">
                     <InputLabel>Room Type</InputLabel>
                     <Select
@@ -845,7 +685,7 @@ const Bookings = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={2}>
+                <Grid >
                   <FormControl fullWidth variant="outlined" size="small">
                     <InputLabel>Payment Status</InputLabel>
                     <Select
@@ -861,7 +701,7 @@ const Bookings = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={1} display="flex" justifyContent="flex-end">
+                <Grid display="flex" justifyContent="flex-end">
                   <Button
                     variant="outlined"
                     color="secondary"
@@ -896,242 +736,11 @@ const Bookings = () => {
         emptyMessage="No bookings found. Try adjusting your search or filters."
       />
 
-      <Dialog open={isAddDialogOpen} onClose={closeAddDialog} maxWidth="md" fullWidth>
-        <form onSubmit={handleCreateBooking}>
-          <DialogTitle>Add New Booking</DialogTitle>
-          <DialogContent>
-            {createError && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {createError}
-              </Alert>
-            )}
-            <Box sx={{ mt: 2, maxHeight: '70vh', overflowY: 'auto', pr: 1 }}>
-              <Typography variant="h6" gutterBottom>Guest Information</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Full Name"
-                    value={newBooking.fullName}
-                    onChange={handleNewBookingChange('fullName')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <FormControl fullWidth margin="normal" required>
-                    <InputLabel>Gender</InputLabel>
-                    <Select
-                      value={newBooking.gender}
-                      onChange={handleNewBookingChange('gender')}
-                      label="Gender"
-                    >
-                      <MenuItem value="male">Male</MenuItem>
-                      <MenuItem value="female">Female</MenuItem>
-                      <MenuItem value="other">Other</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Age"
-                    type="number"
-                    value={newBooking.age}
-                    onChange={handleNewBookingChange('age')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="ID/STN Number"
-                    value={newBooking.idNumber}
-                    onChange={handleNewBookingChange('idNumber')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Phone Number"
-                    value={newBooking.phone}
-                    onChange={handleNewBookingChange('phone')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    type="email"
-                    value={newBooking.email}
-                    onChange={handleNewBookingChange('email')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Location/Address"
-                    value={newBooking.location}
-                    onChange={handleNewBookingChange('location')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Occupation"
-                    value={newBooking.occupation}
-                    onChange={handleNewBookingChange('occupation')}
-                    margin="normal"
-                  />
-                </Grid>
-              </Grid>
-
-              <Divider sx={{ my: 3 }} />
-              <Typography variant="h6" gutterBottom>Booking Information</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Hostel Name"
-                    value={newBooking.hostelName}
-                    onChange={handleNewBookingChange('hostelName')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Room Number"
-                    value={newBooking.roomNumber}
-                    onChange={handleNewBookingChange('roomNumber')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <FormControl fullWidth margin="normal" required>
-                    <InputLabel>Room Type</InputLabel>
-                    <Select
-                      value={newBooking.roomType}
-                      onChange={handleNewBookingChange('roomType')}
-                      label="Room Type"
-                    >
-                      <MenuItem value="single">Single</MenuItem>
-                      <MenuItem value="double">Double</MenuItem>
-                      <MenuItem value="dormitory">Dormitory</MenuItem>
-                      <MenuItem value="suite">Suite</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <FormControl fullWidth margin="normal" required>
-                    <InputLabel>Duration</InputLabel>
-                    <Select
-                      value={newBooking.duration}
-                      onChange={handleNewBookingChange('duration')}
-                      label="Duration"
-                    >
-                      <MenuItem value="daily">Daily</MenuItem>
-                      <MenuItem value="weekly">Weekly</MenuItem>
-                      <MenuItem value="monthly">Monthly</MenuItem>
-                      <MenuItem value="quarterly">Quarterly</MenuItem>
-                      <MenuItem value="yearly">Yearly</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Check-in Date"
-                    type="date"
-                    value={newBooking.checkIn}
-                    onChange={handleNewBookingChange('checkIn')}
-                    margin="normal"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    required
-                  />
-                </Grid>
-              </Grid>
-
-              <Divider sx={{ my: 3 }} />
-              <Typography variant="h6" gutterBottom>Payment Information</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <FormControl fullWidth margin="normal" required>
-                    <InputLabel>Payment Method</InputLabel>
-                    <Select
-                      value={newBooking.paymentMethod}
-                      onChange={handleNewBookingChange('paymentMethod')}
-                      label="Payment Method"
-                    >
-                      <MenuItem value="cash">Cash</MenuItem>
-                      <MenuItem value="mobile_money">Mobile Money</MenuItem>
-                      <MenuItem value="bank_transfer">Bank Transfer</MenuItem>
-                      <MenuItem value="credit_card">Credit Card</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Booking Fee"
-                    type="number"
-                    value={newBooking.bookingFee}
-                    onChange={handleNewBookingChange('bookingFee')}
-                    margin="normal"
-                    InputProps={{
-                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                    }}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Payment Reference/Number"
-                    value={newBooking.paymentNumber}
-                    onChange={handleNewBookingChange('paymentNumber')}
-                    margin="normal"
-                    required
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-          </DialogContent>
-          <DialogActions sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
-            <Button
-              onClick={closeAddDialog}
-              disabled={creatingBooking}
-              variant="outlined"
-              color="inherit"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              color="primary"
-              variant="contained"
-              disabled={creatingBooking}
-              startIcon={creatingBooking ? <CircularProgress size={20} /> : null}
-              sx={{ minWidth: 150 }}
-            >
-              {creatingBooking ? 'Creating...' : 'Create Booking'}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+      <BookingForm 
+        open={isAddDialogOpen} 
+        onClose={closeAddDialog} 
+        onSuccess={handleBookingSuccess} 
+      />
 
       <Snackbar
         open={snackbar.open}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit, Trash2, Image as ImageIcon, Bed, Users, DollarSign } from 'lucide-react';
+import { Edit, Trash2, Bed, Users } from 'lucide-react';
 import { capitalize } from '../../utils/stringUtils';
 import './RoomTable.css';
 
@@ -25,7 +25,6 @@ const RoomTable = ({ rooms, onEdit, onDelete }) => {
       <table className="rooms-table">
         <thead>
           <tr>
-            <th>Image</th>
             <th>Room Number</th>
             <th>Hostel</th>
             <th>Type</th>
@@ -40,15 +39,6 @@ const RoomTable = ({ rooms, onEdit, onDelete }) => {
         <tbody>
           {rooms.map(room => (
             <tr key={room._id} className="room-row">
-              <td>
-                <div className="room-image-cell">
-                  {room.image ? (
-                    <img src={room.image} alt={room.roomNumber} className="room-thumbnail" />
-                  ) : (
-                    <ImageIcon size={24} />
-                  )}
-                </div>
-              </td>
               <td className="room-number">
                 <div className="room-number-cell">
                   {room.roomNumber || 'N/A'}
@@ -75,13 +65,11 @@ const RoomTable = ({ rooms, onEdit, onDelete }) => {
               </td>
               <td className="price-cell">
                 <div className="price-info">
-                  <DollarSign size={14} />
                   <span>{(room.roomPrice || 0).toLocaleString()}</span>
                 </div>
               </td>
               <td className="price-cell">
                 <div className="price-info">
-                  <DollarSign size={14} />
                   <span>{(room.bookingPrice || 0).toLocaleString()}</span>
                 </div>
               </td>

@@ -5,6 +5,7 @@ import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/st
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { SidebarProvider } from './context/SidebarContext';
+import { NotificationsProvider } from './context/NotificationsProvider';
 import Sidebar from './components/sidebar/Sidebar';
 import Navbar from './components/navbar/Navbar';
 import UsersPage from './pages/Users/Users';
@@ -50,55 +51,59 @@ const muiTheme = createTheme({
  */
 const MainLayout = () => {
   return (
-    <div className="app-layout">
-      <Sidebar />
-      <main className="main-content">
-        <Navbar />
-        <div className="page-content">
-          <Outlet />
+    <NotificationsProvider>
+      <SidebarProvider>
+        <div className="app-layout">
+          <Sidebar />
+          <main className="main-content">
+            <Navbar />
+            <div className="page-content">
+              <Outlet />
+            </div>
+          </main>
         </div>
-      </main>
-    </div>
+      </SidebarProvider>
+    </NotificationsProvider>
   );
 };
 
 function App() {
+  const isAuthenticated = Boolean(localStorage.getItem('token'));
+
   return (
     <MaterialTailwindProvider>
       <MuiThemeProvider theme={muiTheme}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <SidebarProvider>
-            <Router>
-              <Routes>
-                {/* Public routes */}
-                <Route element={<PublicRoute />}>
-                  <Route path="/login" element={<Login />} />
-                </Route>
+          <Router>
+            <Routes>
+              {/* Public routes */}
+              <Route element={<PublicRoute />}>
+                <Route path="/login" element={<Login />} />
+              </Route>
 
-                {/* Protected routes */}
-                <Route element={<ProtectedRoute />}>
-                  <Route element={<MainLayout />}>
-                    <Route index element={<Navigate to="/dashboard" replace />} />
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="hostels" element={<Hostels />} />
-                    <Route path="hostels/new" element={<Hostels isCreateMode={true} />} />
-                    <Route path="rooms" element={<RoomsPage />} />
-                    <Route path="rooms/new" element={<RoomsPage isCreateMode={true} />} />
-                    <Route path="bookings" element={<BookingsPage />} />
-                    <Route path="bookings/:id" element={<BookingDetails />} />
-                    <Route path="users" element={<UsersPage />} />
-                    <Route path="users/:id" element={<UserProfile />} />
-                    <Route path="payments" element={<PaymentsPage />} />
-                    <Route path="profile" element={<Profile />} />
-                    <Route path="settings" element={<SettingsPage />} />
-                  </Route>
+              {/* Protected routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route element={<MainLayout />}>
+                  <Route index element={<Navigate to="/dashboard" replace />} />
+                  <Route path="dashboard" element={<Dashboard />} />
+                  <Route path="hostels" element={<Hostels />} />
+                  <Route path="hostels/new" element={<Hostels isCreateMode={true} />} />
+                  <Route path="rooms" element={<RoomsPage />} />
+                  <Route path="rooms/new" element={<RoomsPage isCreateMode={true} />} />
+                  <Route path="bookings" element={<BookingsPage />} />
+                  <Route path="bookings/:id" element={<BookingDetails />} />
+                  <Route path="users" element={<UsersPage />} />
+                  <Route path="users/:id" element={<UserProfile />} />
+                  <Route path="payments" element={<PaymentsPage />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="settings" element={<SettingsPage />} />
                 </Route>
+              </Route>
 
-                {/* Catch all other routes */}
-                <Route path="*" element={<Navigate to="/login" replace />} />
-              </Routes>
-            </Router>
-          </SidebarProvider>
+              {/* Catch all other routes */}
+              <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />} />
+            </Routes>
+          </Router>
         </LocalizationProvider>
       </MuiThemeProvider>
     </MaterialTailwindProvider>

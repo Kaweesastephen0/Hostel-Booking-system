@@ -37,11 +37,12 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import DataTable from '../../components/common/DataTable';
+import './Payments.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
 const PAYMENT_STATUS_OPTIONS = ['pending', 'completed', 'failed', 'refunded'];
-const PAYMENT_METHOD_OPTIONS = ['cash', 'card', 'mobile', 'bank_transfer'];
+const PAYMENT_METHOD_OPTIONS = ['cash', 'card', 'mobile_money', 'bank_transfer'];
 
 const statusColorMap = {
   pending: 'warning',
@@ -67,7 +68,7 @@ const statusActionTarget = {
 const methodLabelMap = {
   cash: 'Cash',
   card: 'Card',
-  mobile: 'Mobile Money',
+  mobile_money: 'Mobile Money',
   bank_transfer: 'Bank Transfer',
 };
 
@@ -78,6 +79,8 @@ const defaultPaymentForm = {
   status: 'pending',
   notes: '',
 };
+
+
 
 const defaultEditForm = {
   amount: '',
@@ -138,6 +141,9 @@ const Payments = () => {
   const [editError, setEditError] = useState(null);
   const [savingEdit, setSavingEdit] = useState(false);
 
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userRole = user?.role || 'manager';
+
   const showSnackbar = (message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
   };
@@ -182,7 +188,7 @@ const Payments = () => {
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/payments?${params.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}/payments?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -262,7 +268,7 @@ const Payments = () => {
 
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings?${params.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -388,7 +394,7 @@ const Payments = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/payments`, {
+      const response = await fetch(`${API_BASE_URL}/payments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -424,7 +430,7 @@ const Payments = () => {
     }
   };
 
-  const handleOpenDetails = async (payment) => {
+  const handleOpenDetails = useCallback(async (payment) => {
     setSelectedPayment(payment);
     setPaymentDetails(null);
     setDetailsError(null);
@@ -432,7 +438,7 @@ const Payments = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${payment.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -476,7 +482,7 @@ const Payments = () => {
     } finally {
       setLoadingDetails(false);
     }
-  };
+  });
 
   const handleCloseDetails = () => {
     setSelectedPayment(null);
@@ -484,7 +490,7 @@ const Payments = () => {
     setDetailsError(null);
   };
 
-  const handleUpdateStatus = async (payment, targetStatus) => {
+  const handleUpdateStatus = useCallback(async (payment, targetStatus) => {
     if (!targetStatus || targetStatus === payment.status) return;
 
     updateRowActionState(payment.id, 'updating', true);
@@ -492,7 +498,7 @@ const Payments = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${payment.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -542,9 +548,9 @@ const Payments = () => {
     } finally {
       updateRowActionState(payment.id, 'updating', false);
     }
-  };
+  }, []);
 
-  const handleDeletePayment = async (payment) => {
+  const handleDeletePayment = useCallback(async (payment) => {
     const displayName = payment.reference || payment.bookingGuestName || payment.bookingRoomNumber || 'this payment';
 
     if (!window.confirm(`Are you sure you want to delete ${displayName}? This action cannot be undone.`)) {
@@ -555,7 +561,7 @@ const Payments = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/${payment.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${payment.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -582,7 +588,7 @@ const Payments = () => {
     } finally {
       updateRowActionState(payment.id, 'deleting', false);
     }
-  };
+  });
 
   const handleOpenEditDialog = () => {
     const source = paymentDetails || selectedPayment;
@@ -629,7 +635,7 @@ const Payments = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/payments/${source.id}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/${source.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -832,14 +838,16 @@ const Payments = () => {
         <Typography variant="h5" component="h1">
           Payments Management
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={openAddDialog}
-        >
-          Record Payment
-        </Button>
+        {(userRole === 'manager' || userRole === 'admin') && (
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Add />}
+            onClick={openAddDialog}
+          >
+            Record Payment
+          </Button>
+        )}
       </Box>
 
       {fetchError && (
@@ -848,7 +856,7 @@ const Payments = () => {
         </Alert>
       )}
 
-      <Box display="flex" gap={2} mb={3} flexWrap="wrap">
+      <Box className="payments-filter-container" sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap', p: 2 }}>
         <TextField
           variant="outlined"
           size="small"

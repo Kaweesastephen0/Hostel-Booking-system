@@ -2,6 +2,92 @@ import ActivityLog from '../models/ActivityLog.js';
 import ErrorResponse from '../utils/errorResponse.js';
 import asyncHandler from '../middleware/async.js';
 
+const CATEGORY_ACTION_MAP = {
+    booking: '/bookings',
+    payment: '/payments',
+    user: '/users',
+    hostel: '/hostels',
+    room: '/rooms',
+    settings: '/settings',
+    system: '/settings'
+};
+
+const CATEGORY_TYPE_MAP = {
+    booking: 'booking',
+    payment: 'payment',
+    user: 'user',
+    hostel: 'hostel',
+    room: 'room',
+    settings: 'settings',
+    system: 'warning'
+};
+
+const ROLE_CATEGORY_ACCESS = {
+    admin: Object.keys(CATEGORY_ACTION_MAP),
+    manager: ['booking', 'hostel', 'room', 'settings', 'system']
+};
+
+const buildType = (category, status) => {
+    if (status === 'warning' || status === 'failed') {
+        return 'warning';
+    }
+    return CATEGORY_TYPE_MAP[category] || 'system';
+};
+
+const extractMessage = (details, fallback) => {
+    if (!details) {
+        return fallback;
+    }
+    if (typeof details === 'string') {
+        return details;
+    }
+    if (details.message) {
+        return String(details.message);
+    }
+    if (details.description) {
+        return String(details.description);
+    }
+    const summaryKeys = ['reference', 'status', 'guestName', 'hostelName', 'roomNumber', 'email'];
+    const parts = summaryKeys
+        .map((key) => details[key])
+        .filter((value) => value !== undefined && value !== null)
+        .map((value) => String(value));
+    if (parts.length > 0) {
+        return parts.join(' • ');
+    }
+    const values = Object.values(details).filter((value) => typeof value === 'string' || typeof value === 'number');
+    if (values.length > 0) {
+        return values.slice(0, 2).map((value) => String(value)).join(' • ');
+    }
+    return fallback;
+};
+
+const buildActionUrl = (category, details) => {
+    if (category === 'booking' && details?.bookingId) {
+        return `/bookings/${details.bookingId}`;
+    }
+    if (category === 'payment' && details?.paymentId) {
+        return `/payments/${details.paymentId}`;
+    }
+    if (category === 'user' && details?.userId) {
+        return `/users/${details.userId}`;
+    }
+    if (category === 'hostel' && details?.hostelId) {
+        return `/hostels/${details.hostelId}`;
+    }
+    if (category === 'room' && details?.roomId) {
+        return `/rooms/${details.roomId}`;
+    }
+    return CATEGORY_ACTION_MAP[category] || '/dashboard';
+};
+
+const getAccessibleCategories = (role) => {
+    if (!role) {
+        return ROLE_CATEGORY_ACCESS.manager;
+    }
+    return ROLE_CATEGORY_ACCESS[role] || ROLE_CATEGORY_ACCESS.manager;
+};
+
 // @desc    Get all activity logs
 // @route   GET /api/v1/logs
 // @access  Private/Admin
@@ -150,5 +236,43 @@ export const clearOldLogs = asyncHandler(async (req, res, next) => {
         data: {
             deletedCount: result.deletedCount
         }
+    });
+});
+
+export const getUserNotifications = asyncHandler(async (req, res, next) => {
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const role = req.user?.role || 'manager';
+    const categories = getAccessibleCategories(role);
+    const criteria = {
+        category: { $in: categories },
+        $or: [
+            { user: req.user._id },
+            { userType: role },
+            { userType: 'system' }
+        ]
+    };
+
+    const logs = await ActivityLog.find(criteria)
+        .sort({ createdAt: -1 })
+        .limit(limit);
+
+    const notifications = logs.map((log) => {
+        const details = log.details || {};
+        const title = log.action;
+        const message = extractMessage(details, log.action);
+        return {
+            id: String(log._id),
+            title,
+            message,
+            type: buildType(log.category, log.status),
+            timestamp: log.createdAt,
+            read: false,
+            actionUrl: buildActionUrl(log.category, details)
+        };
+    });
+
+    res.status(200).json({
+        success: true,
+        data: notifications
     });
 });

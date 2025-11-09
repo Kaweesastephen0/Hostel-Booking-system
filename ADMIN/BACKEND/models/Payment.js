@@ -14,7 +14,7 @@ const paymentSchema = new mongoose.Schema(
     },
     method: {
       type: String,
-      enum: ['cash', 'card', 'mobile', 'bank_transfer'],
+      enum: ['cash', 'mobile_money', 'bank_transfer', 'credit_card'],
       default: 'cash',
     },
     status: {
@@ -53,3 +53,4 @@ paymentSchema.pre('save', function (next) {
 const Payment = mongoose.models.Payment || mongoose.model('Payment', paymentSchema);
 
 export default Payment;
+

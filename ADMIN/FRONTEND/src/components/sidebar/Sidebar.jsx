@@ -24,15 +24,22 @@ const Sidebar = () => {
   const { isCollapsed, setIsCollapsed } = useSidebar();
   const navigate = useNavigate();
 
-  const navItems = [
-    { to: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
-    { to: '/hostels', icon: <Building size={20} />, label: 'Hostels' },
-    { to: '/rooms', icon: <BedDouble size={20} />, label: 'Rooms' },
-    { to: '/bookings', icon: <CalendarCheck size={20} />, label: 'Bookings' },
-    { to: '/payments', icon: <Wallet size={20} />, label: 'Payments' },
-    { to: '/users', icon: <Users size={20} />, label: 'Users' },
-    { to: '/settings', icon: <Settings size={20} />, label: 'Settings' },
+  // Get user role from localStorage
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userRole = user?.role || 'manager';
+
+  const allNavItems = [
+    { to: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard', roles: ['admin', 'manager'] },
+    { to: '/hostels', icon: <Building size={20} />, label: 'Hostels', roles: ['admin', 'manager'] },
+    { to: '/rooms', icon: <BedDouble size={20} />, label: 'Rooms', roles: ['admin', 'manager'] },
+    { to: '/bookings', icon: <CalendarCheck size={20} />, label: 'Bookings', roles: ['admin', 'manager'] },
+    { to: '/payments', icon: <Wallet size={20} />, label: 'Payments', roles: ['admin', 'manager'] },
+    { to: '/users', icon: <Users size={20} />, label: 'Users', roles: ['admin'] },
+    { to: '/settings', icon: <Settings size={20} />, label: 'Settings', roles: ['admin', 'manager'] },
   ];
+
+  // Filter nav items based on user role
+  const navItems = allNavItems.filter(item => item.roles.includes(userRole));
 
   const handleLogout = () => {
     localStorage.removeItem('user');

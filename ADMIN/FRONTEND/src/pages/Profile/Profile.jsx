@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Loader2, Lock } from 'lucide-react';
+import { Loader2, Lock, User, Mail, Shield, Calendar, Clock } from 'lucide-react';
 import ProfileInfoCard from "../../components/profile/ProfileInfoCard";
 import ProfileSettingsCard from './ProfileSettingsCard';
 import userService from "../../services/userService";
@@ -14,7 +14,8 @@ const ProfilePage = () => {
     role: '',
     isActive: true,
     lastLogin: null,
-    createdAt: null
+    createdAt: null,
+    avatar: null
   });
 
   const [password, setPassword] = useState({
@@ -24,6 +25,7 @@ const ProfilePage = () => {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
@@ -70,6 +72,22 @@ const ProfilePage = () => {
       return;
     }
     
+    if (!user.fullName.trim()) {
+      showSnackbar('Full name is required', 'error');
+      return;
+    }
+    
+    if (!user.email.trim()) {
+      showSnackbar('Email is required', 'error');
+      return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(user.email)) {
+      showSnackbar('Please enter a valid email address', 'error');
+      return;
+    }
+    
     try {
       await userService.updateProfile({
         id: user.id,
@@ -77,7 +95,7 @@ const ProfilePage = () => {
         email: user.email
       });
       setIsEditing(false);
-      showSnackbar('Profile updated successfully.');
+      showSnackbar('Profile updated successfully.', 'success');
     } catch (err) {
       setError(err.message || 'Failed to update profile');
       console.error('Profile update error:', err);
@@ -87,19 +105,38 @@ const ProfilePage = () => {
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
+    
+    if (!password.currentPassword.trim()) {
+      showSnackbar('Current password is required', 'error');
+      return;
+    }
+    
+    if (!password.newPassword.trim()) {
+      showSnackbar('New password is required', 'error');
+      return;
+    }
+    
+    if (password.newPassword.length < 6) {
+      showSnackbar('New password must be at least 6 characters', 'error');
+      return;
+    }
+    
     if (password.newPassword !== password.confirmNewPassword) {
-      setError("New passwords don't match!");
+      showSnackbar("New passwords don't match!", 'error');
       return;
     }
 
     try {
+      setIsChangingPassword(true);
       await userService.changePassword(password.currentPassword, password.newPassword);
       setPassword({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
-      showSnackbar('Password changed successfully.');
+      showSnackbar('Password changed successfully.', 'success');
     } catch (err) {
       setError(err.message || 'Failed to change password');
       console.error('Password change error:', err);
       showSnackbar(err.message || 'Failed to change password', 'error');
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -143,20 +180,46 @@ const ProfilePage = () => {
   };
 
   if (isLoading) {
-    return <div className="profile-page-container">Loading profile...</div>;
+    return (
+      <div className="profile-page-container">
+        <div className="loading-container">
+          <Loader2 size={40} className="spinning-loader" />
+          <p>Loading your profile...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="profile-page-container">
+      <div className="profile-header-section">
+        <div className="profile-header-content">
+          <h1>Account Settings</h1>
+          <p className="profile-subtitle">Manage your profile information and security</p>
+        </div>
+        <div className="profile-role-badge">
+          <Shield size={18} />
+          <span>{user.role.toUpperCase()}</span>
+        </div>
+      </div>
+
       <div className="profile-grid">
         <div className="profile-grid__left">
-          <ProfileInfoCard user={user} onFileChange={handleFileChange} isEditing={isEditing} onUserChange={handleUserChange} onUpdateProfile={handleUpdateProfile} />
+          <ProfileInfoCard 
+            user={user} 
+            onFileChange={handleFileChange} 
+            isEditing={isEditing} 
+            onUserChange={handleUserChange} 
+            onUpdateProfile={handleUpdateProfile}
+            setIsEditing={setIsEditing}
+          />
         </div>
         <div className="profile-grid__right">
           <ProfileSettingsCard
             user={user}
             password={password}
             isEditing={isEditing}
+            isChangingPassword={isChangingPassword}
             onPasswordChange={handlePasswordChange}
             onUpdateProfile={handleUpdateProfile}
             onChangePassword={handleChangePassword}

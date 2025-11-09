@@ -5,12 +5,42 @@
   gap: 1rem;
 }
 
-.users-table-wrapper { overflow-x: auto; }
+.users-table-wrapper { 
+  overflow-x: auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
 .users-table { width: 100%; border-collapse: collapse; }
-.users-table th, .users-table td { padding: 0.6rem 0.8rem; border-bottom: 1px solid #e5e7eb; text-align: left; }
-.users-table thead th { background: #f8fafc; font-weight: 600; }
-.actions-cell button { margin-right: 0.5rem; background: transparent; border: none; cursor: pointer; }
-.actions-cell button.danger { color: #dc2626; }
+.users-table th, .users-table td { padding: 1rem 1.5rem; border-bottom: 1px solid #e2e8f0; text-align: left; }
+.users-table thead th { background: #f8fafc; font-weight: 600; color: #64748b; }
+.actions-cell button { 
+  margin-right: 0.5rem; 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none; 
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.actions-cell button.edit-btn { 
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+.actions-cell button.edit-btn:hover {
+  background-color: #c7d2fe;
+}
+.actions-cell button.danger { 
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+.actions-cell button.danger:hover {
+  background-color: #fecaca;
+}
 
 /* View Modal Styling */
 .user-view {

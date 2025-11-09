@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Building,
   BedDouble,
@@ -40,15 +40,18 @@ const recentBookingsColumns = [
   },
 ];
 
-const getGreeting = () => {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good Morning';
-  if (hour < 18) return 'Good Afternoon';
-  return 'Good Evening';
-};
-
 const Dashboard = () => {
   const navigate = useNavigate();
+
+  const currentUser = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    } catch {
+      return {};
+    }
+  }, []);
+
+  const userRole = currentUser?.role || 'manager';
 
   const [totals, setTotals] = useState({
     totalHostels: 0,
@@ -57,92 +60,41 @@ const Dashboard = () => {
     totalUsers: 0
   });
   const [recentBookings, setRecentBookings] = useState([]);
-  const [bookingChartData, setBookingChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const handleAction = (action) => {
-    switch (action) {
-      case 'add-hostel':
-        navigate('/hostels/new');
-        break;
-      case 'add-room':
-        navigate('/rooms/new');
-        break;
-      case 'add-user':
-        navigate('/users/new');
-        break;
-      case 'settings':
-        navigate('/settings');
-        break;
-      case 'create-report':
-        navigate('/reports/new');
-        break;
-      case 'view-reports':
-        navigate('/reports');
-        break;
-      default:
-        console.log('Unknown action:', action);
-    }
-  };
-
   useEffect(() => {
-    // fetchDashboardData is defined below and used here to populate dashboard
     fetchDashboardData();
   }, []);
 
-  // Extracted data load function so modals can refresh after create actions
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const dashboardTotals = await dashboardService.getTotals();
+      const [dashboardTotals, bookings] = await Promise.all([
+        dashboardService.getTotals(),
+        dashboardService.getRecentBookings()
+      ]);
       setTotals(dashboardTotals);
-
-      const response = await fetch('http://localhost:5000/api/bookings?limit=5&sort=-createdAt');
-      const data = await response.json();
-      if (data.success && Array.isArray(data.data?.bookings)) {
-        const mappedBookings = data.data.bookings.map(booking => ({
-          reference: booking.reference || `BK-${booking._id?.slice(-6)}` || 'N/A',
-          guestName: booking.guestName || 'Unknown Guest',
-          hostelName: booking.hostelName || 'N/A',
-          createdAt: booking.createdAt || new Date().toISOString(),
-          status: booking.status || 'pending'
-        }));
-        setRecentBookings(mappedBookings);
-      } else {
-        setRecentBookings([]);
-      }
-
-      const months = Array.from({ length: 7 }, (_, i) => {
-        const d = new Date();
-        d.setMonth(d.getMonth() - i);
-        return d.toLocaleString('default', { month: 'short' });
-      }).reverse();
-
-      setBookingChartData(months.map(name => ({ name, bookings: Math.floor(Math.random() * 100) })));
-
+      setRecentBookings(bookings);
+      setError(null);
     } catch (err) {
-      console.error('Dashboard data error:', err);
       setError(err.message || 'Failed to load dashboard data');
+      setRecentBookings([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // The user name will come from an auth context
-  const userName = "Raymond";
-
   if (error) {
     return (
       <div className="dashboard-error">
         <p>Error loading dashboard: {error}</p>
-        <button onClick={() => window.location.reload()} className="btn btn-primary">
+        <button onClick={fetchDashboardData} className="btn btn-primary">
           Retry
         </button>
       </div>
     );
   }
-
   return (
     <div className="dashboard-content-area">
       <Header
@@ -150,22 +102,26 @@ const Dashboard = () => {
         subtitle="Here's what's happening with your hostels today."
         showGreeting={true}
       >
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Building size={16} />}
-          onClick={() => navigate('/hostels/new')}
-        >
-          Add Hostel
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<BedDouble size={16} />}
-          onClick={() => navigate('/rooms/new')}
-        >
-          Add Room
-        </Button>
+        {userRole === 'manager' && (
+          <>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Building size={16} />}
+              onClick={() => navigate('/hostels/new')}
+            >
+              Add Hostel
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<BedDouble size={16} />}
+              onClick={() => navigate('/rooms/new')}
+            >
+              Add Room
+            </Button>
+          </>
+        )}
       </Header>
 
       <div className="dashboard-summary-cards">
@@ -184,11 +140,13 @@ const Dashboard = () => {
           value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalBookings}
           icon={<CalendarCheck size={24} />}
         />
-        <InfoCard
-          title="Total Users"
-          value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalUsers}
-          icon={<Users size={24} />}
-        />
+        {userRole === 'admin' && (
+          <InfoCard
+            title="Total Users"
+            value={loading ? <Loader2 className="animate-spin" size={24} /> : totals.totalUsers}
+            icon={<Users size={24} />}
+          />
+        )}
       </div>
 
       <div className="dashboard-analytics-section">

@@ -1,138 +1,203 @@
 import React, { useState } from 'react';
-import { KeyRound, Trash2, User, Lock, AlertTriangle } from 'lucide-react';
-import ConfirmationModal from './ConfirmationModal';
-
-const PasswordStrengthMeter = ({ password }) => {
-  const getStrength = (pass) => {
-    let score = 0;
-    if (!pass) return score;
-    if (pass.length >= 8) score++; // NOSONAR
-    if (pass.length >= 12) score++;
-    if (/[A-Z]/.test(pass)) score++;
-    if (/[0-9]/.test(pass)) score++;
-    if (/[^A-Za-z0-9]/.test(pass)) score++;
-    return Math.min(score, 5);
-  };
-
-  const strength = getStrength(password);
-  const strengthLabels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-
-  return (
-    <div className="password-strength-meter">
-      <div className="strength-bar-container">
-        <div className={`strength-bar strength-level-${strength}`}></div>
-      </div>
-      {password && (
-        <span className={`strength-label strength-label-${strength}`}>
-          {strengthLabels[strength]}
-        </span>
-      )}
-    </div>
-  );
-};
+import { Key, Shield, Eye, EyeOff, AlertTriangle, User, Calendar } from 'lucide-react';
 
 const ProfileSettingsCard = ({
   user,
   password,
   isEditing,
+  isChangingPassword,
   onPasswordChange,
-  onUpdateProfile,
   onChangePassword,
   onDeleteAccount,
-  setIsEditing
 }) => {
-  const [activeTab, setActiveTab] = useState('personal');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
 
-  const handleDeleteClick = () => setIsModalOpen(true);
-
-  const handleConfirmDelete = () => {
-    onDeleteAccount();
-    setIsModalOpen(false);
+  const togglePasswordVisibility = (field) => {
+    setShowPassword((prev) => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
   };
 
-  const tabs = [
-    { id: 'personal', label: 'Personal Info', icon: <User size={18} /> },
-    { id: 'security', label: 'Password & Security', icon: <Lock size={18} /> },
-    { id: 'danger', label: 'Danger Zone', icon: <AlertTriangle size={18} /> },
-  ];
+  const passwordsMatch = password.newPassword && password.confirmNewPassword && password.newPassword === password.confirmNewPassword;
+  const passwordsEmpty = !password.newPassword && !password.confirmNewPassword;
 
   return (
-    <div className="profile-card">
-      <div className="settings-tabs-nav">
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
+    <div className="profile-settings-container">
+      <div className="settings-card password-card">
+        <div className="settings-header">
+          <div className="settings-title">
+            <Key size={24} className="settings-icon" />
+            <div>
+              <h3>Security</h3>
+              <p>Change your password regularly to keep your account secure</p>
+            </div>
+          </div>
+        </div>
+
+        <form onSubmit={onChangePassword} className="password-form">
+          <div className="form-group password-group">
+            <label htmlFor="currentPassword">
+              <Shield size={16} />
+              Current Password
+            </label>
+            <div className="password-input-wrapper">
+              <input
+                id="currentPassword"
+                type={showPassword.current ? 'text' : 'password'}
+                name="currentPassword"
+                value={password.currentPassword}
+                onChange={onPasswordChange}
+                className="form-input"
+                placeholder="Enter your current password"
+                disabled={isChangingPassword}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => togglePasswordVisibility('current')}
+                tabIndex="-1"
+              >
+                {showPassword.current ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+
+          <div className="form-group password-group">
+            <label htmlFor="newPassword">
+              <Shield size={16} />
+              New Password
+            </label>
+            <div className="password-input-wrapper">
+              <input
+                id="newPassword"
+                type={showPassword.new ? 'text' : 'password'}
+                name="newPassword"
+                value={password.newPassword}
+                onChange={onPasswordChange}
+                className="form-input"
+                placeholder="Enter a new password (min. 6 characters)"
+                disabled={isChangingPassword}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => togglePasswordVisibility('new')}
+                tabIndex="-1"
+              >
+                {showPassword.new ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {password.newPassword && password.newPassword.length < 6 && (
+              <span className="form-hint error">Password must be at least 6 characters</span>
+            )}
+          </div>
+
+          <div className="form-group password-group">
+            <label htmlFor="confirmNewPassword">
+              <Shield size={16} />
+              Confirm Password
+            </label>
+            <div className="password-input-wrapper">
+              <input
+                id="confirmNewPassword"
+                type={showPassword.confirm ? 'text' : 'password'}
+                name="confirmNewPassword"
+                value={password.confirmNewPassword}
+                onChange={onPasswordChange}
+                className="form-input"
+                placeholder="Re-enter your new password"
+                disabled={isChangingPassword}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => togglePasswordVisibility('confirm')}
+                tabIndex="-1"
+              >
+                {showPassword.confirm ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {!passwordsEmpty && !passwordsMatch && (
+              <span className="form-hint error">Passwords do not match</span>
+            )}
+            {passwordsMatch && (
+              <span className="form-hint success">Passwords match ✓</span>
+            )}
+          </div>
+
+          <button 
+            type="submit" 
+            className="btn btn-primary btn-full"
+            disabled={isChangingPassword || !password.currentPassword || !passwordsMatch}
           >
-            {tab.icon}
-            <span>{tab.label}</span>
+            {isChangingPassword ? 'Updating...' : 'Update Password'}
           </button>
-        ))}
+        </form>
       </div>
 
-      <div className="settings-tabs-content">
-        {activeTab === 'personal' && (
-          <div className="tab-pane">
-            <h2 className="profile-section-title">Edit Personal Information</h2>
-            <form onSubmit={onUpdateProfile}>
-              <div className="form-grid">
-                {/* Form fields for personal info */}
-                <div className="form-group"><label htmlFor="fullName">Full Name</label><input type="text" id="fullName" name="fullName" defaultValue={user.fullName} disabled={!isEditing} required /></div>
-                <div className="form-group"><label htmlFor="email">Email</label><input type="email" id="email" name="email" defaultValue={user.email} disabled={!isEditing} required /></div>
-                <div className="form-group"><label htmlFor="phone">Phone Number</label><input type="tel" id="phone" name="phone" defaultValue={user.phone} disabled={!isEditing} /></div>
-              </div>
-              <div className="profile-actions">
-                {isEditing ? (
-                  <>
-                    <button type="submit" className="btn btn-primary">Save Changes</button>
-                    <button type="button" className="btn btn-secondary" onClick={() => setIsEditing(false)}>Cancel</button>
-                  </>
-                ) : (
-                  <button type="button" className="btn btn-primary" onClick={() => setIsEditing(true)}>Edit Profile</button>
-                )}
-              </div>
-            </form>
+      <div className="settings-card account-info-card">
+        <div className="settings-header">
+          <div className="settings-title">
+            <Shield size={24} className="settings-icon" />
+            <div>
+              <h3>Account Information</h3>
+              <p>View your account details</p>
+            </div>
           </div>
-        )}
+        </div>
 
-        {activeTab === 'security' && (
-          <div className="tab-pane">
-            <h2 className="profile-section-title">Password & Security</h2>
-            <form onSubmit={onChangePassword}>
-              <div className="form-grid">
-                <div className="form-group"><label htmlFor="currentPassword">Current Password</label><input type="password" id="currentPassword" name="currentPassword" value={password.currentPassword} onChange={onPasswordChange} required /></div>
-                <div className="form-group"><label htmlFor="newPassword">New Password</label><input type="password" id="newPassword" name="newPassword" value={password.newPassword} onChange={onPasswordChange} minLength="8" required /><PasswordStrengthMeter password={password.newPassword} /></div>
-                <div className="form-group"><label htmlFor="confirmNewPassword">Confirm New Password</label><input type="password" id="confirmNewPassword" name="confirmNewPassword" value={password.confirmNewPassword} onChange={onPasswordChange} minLength="8" required /></div>
-              </div>
-              <div className="profile-actions"><button type="submit" className="btn btn-primary"><KeyRound size={16} /> Change Password</button></div>
-            </form>
+        <div className="account-info">
+          <div className="info-row">
+            <span className="info-label"><User size={16} /> Account Type</span>
+            <span className="info-value">
+              <span className={`badge badge-${user.role}`}>
+                {user.role.toUpperCase()}
+              </span>
+            </span>
           </div>
-        )}
+          {/* <div className="info-row">
+            <span className="info-label">Status</span>
+            <span className="info-value">
+              <span className="badge badge-active">Active</span>
+            </span>
+          </div> */}
+          <div className="info-row">
+            <span className="info-label">Account Created</span>
+            <span className="info-value">
+              {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+            </span>
+          </div>
+        </div>
+      </div>
 
-        {activeTab === 'danger' && (
-          <div className="tab-pane">
-            <h2 className="profile-section-title">Danger Zone</h2>
-            <div className="danger-zone">
-              <div className="danger-zone-item">
-                <h4>Deactivate Account</h4>
-                <p>Deactivating your account will suspend it until you log back in. Your data will not be deleted.</p>
-                <button className="btn btn-danger" onClick={handleDeleteClick}><Trash2 size={16} /> Deactivate Account</button>
+      {user.role === 'manager' && (
+        <div className="settings-card danger-zone-card">
+          <div className="settings-header danger">
+            <div className="settings-title">
+              <AlertTriangle size={24} className="settings-icon danger" />
+              <div>
+                <h3>Danger Zone</h3>
+                <p>Irreversible actions</p>
               </div>
             </div>
           </div>
-        )}
-      </div>
-
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        title="Deactivate Account"
-        message="Are you sure you want to deactivate your account? This action can be reversed by logging in again."
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setIsModalOpen(false)}
-        confirmText="Deactivate"
-      />
+          <p className="danger-description">
+            Contact the admin if you need to delete your account. This action cannot be undone.
+          </p>
+          <button 
+            type="button"
+            className="btn btn-danger"
+            disabled
+          >
+            Delete Account (Contact Admin)
+          </button>
+        </div>
+      )}
     </div>
   );
 };

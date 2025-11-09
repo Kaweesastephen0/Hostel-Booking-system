@@ -59,7 +59,7 @@ export const createUser = asyncHandler(async (req, res) => {
   });
 
   await createActivityLog(
-    req,
+    req.user._id,
     `Created user: ${user.fullName} (${role})`,
     'user',
     {
@@ -199,7 +199,7 @@ export const updateUser = asyncHandler(async (req, res) => {
   const updatedUser = await user.save();
 
   await createActivityLog(
-    req,
+    req.user._id,
     `Updated user: ${updatedUser.fullName}`,
     'user',
     {
@@ -242,7 +242,7 @@ export const deleteUser = asyncHandler(async (req, res) => {
   await user.deleteOne();
 
   await createActivityLog(
-    req,
+    req.user._id,
     `Deleted user: ${user.fullName}`,
     'user',
     userData
@@ -276,7 +276,7 @@ export const toggleUserStatus = asyncHandler(async (req, res) => {
   const updatedUser = await user.save({ validateBeforeSave: false });
 
   await createActivityLog(
-    req,
+    req.user._id,
     `${isActive !== undefined ? (isActive ? 'Activated' : 'Deactivated') : 'Toggled status of'} user: ${updatedUser.fullName}`,
     'user',
     {

@@ -25,9 +25,10 @@ import { Search } from '@mui/icons-material';
 import HostelTable from '../../components/hostels/HostelTable';
 import HostelCard from '../../components/hostels/HostelCard';
 import HostelForm from '../../components/hostels/HostelForm';
-import InfoCard from '../../components/cards/InfoCard';
+import HostelInfoCard from './HostelInfoCard';
 import Pagination from '../../components/pagination.jsx/Pagination';
 import * as hostelService from '../../services/hostelService';
+import * as roomService from '../../services/roomService';
 
 import './Hostels.css';
 
@@ -35,10 +36,30 @@ const ITEMS_PER_PAGE = 9;
 
 const Hostels = ({ isCreateMode = false }) => {
   const [hostels, setHostels] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
   const [isFormModalOpen, setIsFormModalOpen] = useState(isCreateMode);
+
+  const currentUser = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    } catch (err) {
+      console.error('Failed to parse user from storage', err);
+      return {};
+    }
+  }, []);
+
+  const userRole = currentUser?.role || 'manager';
+  const canCreateHostel = userRole === 'manager' || userRole === 'admin';
+
+  const filterHostelsByRole = (list) => {
+    // Backend already handles filtering based on user role
+    // Admins receive all hostels, managers receive only their own
+    // This frontend filter serves as a safety measure
+    return list;
+  };
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedHostel, setSelectedHostel] = useState(null);
   const [hostelToDelete, setHostelToDelete] = useState(null);
@@ -50,13 +71,29 @@ const Hostels = ({ isCreateMode = false }) => {
   });
   const [formError, setFormError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isContactAdminModalOpen, setIsContactAdminModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchHostels = async () => {
       try {
         setIsLoading(true);
-        const data = await hostelService.getAllHostels();
-        setHostels(data);
+        const [hostelData, roomData] = await Promise.all([
+          hostelService.getAllHostels(),
+          roomService.getAllRooms()
+        ]);
+        let hostelsList = Array.isArray(hostelData) ? hostelData : [];
+        const roomsList = Array.isArray(roomData) ? roomData : [];
+
+        // Calculate room count for each hostel
+        const hostelsWithRoomCount = hostelsList.map(hostel => {
+          const roomCount = roomsList.filter(room => room.hostelId?._id === hostel._id).length;
+          return {
+            ...hostel,
+            roomCount: roomCount
+          };
+        });
+        setHostels(filterHostelsByRole(hostelsWithRoomCount));
+        setRooms(roomsList);
         setError(null);
       } catch (err) {
         setError(err.message);
@@ -67,7 +104,16 @@ const Hostels = ({ isCreateMode = false }) => {
     fetchHostels();
   }, []);
 
+  useEffect(() => {
+    if (!canCreateHostel && isFormModalOpen) {
+      setIsFormModalOpen(false);
+    }
+  }, [canCreateHostel, isFormModalOpen]);
+
   const handleAddNew = () => {
+    if (!canCreateHostel) {
+      return;
+    }
     setSelectedHostel(null);
     setFormError(null);
     setIsFormModalOpen(true);
@@ -89,10 +135,16 @@ const Hostels = ({ isCreateMode = false }) => {
     try {
       await hostelService.deleteHostel(hostelToDelete._id);
       setHostels(prev => prev.filter(h => h._id !== hostelToDelete._id));
-    } catch (err) {
-      setError(err.message);
-    } finally {
       setIsDeleteModalOpen(false);
+    } catch (err) {
+      if (err.response?.status === 403) {
+        setIsDeleteModalOpen(false);
+        setIsContactAdminModalOpen(true);
+      } else {
+        setError(err.response?.data?.message || err.message);
+        setIsDeleteModalOpen(false);
+      }
+    } finally {
       setHostelToDelete(null);
     }
   };
@@ -104,9 +156,10 @@ const Hostels = ({ isCreateMode = false }) => {
         const updatedHostel = await hostelService.updateHostel(selectedHostel._id, formData);
         setHostels(prev => prev.map(h => (h._id === selectedHostel._id ? updatedHostel : h)));
       } else {
-        const newHostel = await hostelService.createHostel(formData);
-        const data = await hostelService.getAllHostels();
-        setHostels(data);
+        await hostelService.createHostel(formData);
+        const allHostels = await hostelService.getAllHostels();
+        const hostelsList = Array.isArray(allHostels) ? allHostels : [];
+        setHostels(filterHostelsByRole(hostelsList));
       }
       setIsFormModalOpen(false);
     } catch (err) {
@@ -143,7 +196,7 @@ const Hostels = ({ isCreateMode = false }) => {
     return Math.ceil(filteredHostels.length / ITEMS_PER_PAGE);
   }, [filteredHostels]);
 
-  const uniqueLocations = useMemo(() => [...new Set(hostels.map(h => h.location))], [hostels]);
+  const uniqueLocations = useMemo(() => [...new Set((hostels || []).map(h => h.location))], [hostels]);
 
   return (
     <div className="hostels-page-container">
@@ -153,104 +206,21 @@ const Hostels = ({ isCreateMode = false }) => {
           <Typography variant="h5" component="h1">
             Hostel Management
           </Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={handleAddNew} 
-            startIcon={<Plus size={16} />}
-          >
-            Add New Hostel
-          </Button>
+          {canCreateHostel && (
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={handleAddNew} 
+              startIcon={<Plus size={16} />}
+            >
+              Add New Hostel
+            </Button>
+          )}
         </Box>
 
         {/* Info Cards */}
-        <Box sx={{ 
-          mb: 4,
-          width: '100%',
-          maxWidth: '100%',
-          mx: 'auto',
-          px: { xs: 2, sm: 3, md: 4 }
-        }}>
-          <Grid 
-            container 
-            spacing={{ xs: 2, sm: 3, md: 4 }}
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'stretch',
-              width: '100%'
-            }}
-          >
-            <Grid 
-              item 
-              xs={12} 
-              sm={6} 
-              md={4}
-              sx={{
-                display: 'flex',
-                minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33% - 24px)' }
-              }}
-            >
-              <InfoCard
-                title="Total Hostels"
-                value={filteredHostels.length}
-                icon={<Building size={22} />}
-                color="primary"
-                sx={{ 
-                  height: '100%',
-                  minHeight: '140px',
-                  width: '100%',
-                  flex: 1
-                }}
-              />
-            </Grid>
-            <Grid 
-              item 
-              xs={12} 
-              sm={6} 
-              md={4}
-              sx={{
-                display: 'flex',
-                minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33% - 24px)' }
-              }}
-            >
-              <InfoCard
-                title="Total Rooms"
-                value={filteredHostels.reduce((acc, h) => acc + (h.rooms?.length || 0), 0)}
-                icon={<BedDouble size={22} />}
-                color="success"
-                sx={{ 
-                  height: '100%',
-                  minHeight: '140px',
-                  width: '100%',
-                  flex: 1
-                }}
-              />
-            </Grid>
-            <Grid 
-              item 
-              xs={12} 
-              sm={6} 
-              md={4}
-              sx={{
-                display: 'flex',
-                minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(33% - 24px)' }
-              }}
-            >
-              <InfoCard
-                title="Available Hostels"
-                value={filteredHostels.filter(h => h.availability).length}
-                icon={<CheckCircle size={22} />}
-                color="warning"
-                sx={{ 
-                  height: '100%',
-                  minHeight: '140px',
-                  width: '100%',
-                  flex: 1
-                }}
-              />
-            </Grid>
-          </Grid>
+        <Box sx={{ mb: 3 }}>
+          <HostelInfoCard loading={isLoading} hostels={hostels} rooms={rooms} />
         </Box>
 
         {/* Filters and Search Section */}
@@ -355,7 +325,7 @@ const Hostels = ({ isCreateMode = false }) => {
       />
 
       <Dialog
-        open={isFormModalOpen}
+        open={canCreateHostel && isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}
         fullWidth
         maxWidth="md"
@@ -382,6 +352,42 @@ const Hostels = ({ isCreateMode = false }) => {
           <Button onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>
           <Button onClick={handleConfirmDelete} color="error">
             Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={isContactAdminModalOpen} onClose={() => setIsContactAdminModalOpen(false)}>
+        <DialogTitle sx={{ color: '#ef4444', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <AlertTriangle size={24} /> Delete Permission Denied
+        </DialogTitle>
+        <DialogContent sx={{ minWidth: 400 }}>
+          <DialogContentText>
+            As a manager, you don't have permission to delete hostels. Only administrators can perform deletion operations.
+          </DialogContentText>
+          <Box sx={{ 
+            mt: 3, 
+            p: 2, 
+            backgroundColor: '#f0f9ff',
+            borderRadius: 2,
+            border: '1px solid #3b82f6',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1
+          }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#1f2937' }}>
+              To delete this hostel, please:
+            </Typography>
+            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              📧 Contact your administrator
+            </Typography>
+            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              💬 Send a deletion request with details
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsContactAdminModalOpen(false)} variant="contained" color="primary">
+            Understood
           </Button>
         </DialogActions>
       </Dialog>

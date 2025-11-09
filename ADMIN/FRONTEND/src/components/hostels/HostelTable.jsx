@@ -10,7 +10,7 @@ const HostelTable = ({ hostels, onEdit, onDelete }) => {
     { Header: 'Hostel Name', accessor: 'name', Cell: (row) => <span style={{ fontWeight: 500 }}>{row.name}</span> },
     { Header: 'Location', accessor: 'location' },
     { Header: 'Gender', accessor: 'HostelGender' },
-    { Header: 'Rooms', accessor: (row) => row.rooms?.length || 0 },
+    { Header: 'Rooms', accessor: 'roomCount' },
     {
       Header: 'Availability',
       accessor: 'availability',

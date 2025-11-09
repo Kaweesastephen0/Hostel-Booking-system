@@ -3,15 +3,15 @@ import { MapPin, BedDouble, Star, Milestone, Users } from 'lucide-react';
 import './HostelCard.css';
 
 const HostelCard = ({ hostel, onSelect }) => {
-  const { name, location, image, availability, rating, rooms, distance, HostelGender } = hostel;
-  const roomCount = rooms?.length || 0;
+  const { name, location, images, availability, rating, availableRooms, distance, HostelGender } = hostel;
+  const hostelImage = images?.[0]?.url || 'https://via.placeholder.com/400x250';
+
   const status = availability ? 'Available' : 'Full';
 
   return (
     <div className="hostel-card" onClick={() => onSelect(hostel)}>
       <div className="hostel-card-image-container">
-        <img src={image || 'https://via.placeholder.com/400x250'} alt={name} className="hostel-card-image" />
-        <span className={`hostel-card-status status-${status.toLowerCase()}`}>{status}</span>
+<img src={hostelImage} alt={name} className="hostel-card-image" />        <span className={`hostel-card-status status-${status.toLowerCase()}`}>{status}</span>
         {rating.average > 0 && (
           <div className="hostel-card-rating">
             <Star size={14} fill="var(--color-warning, #f59e0b)" stroke="var(--color-warning, #f59e0b)" />
@@ -28,7 +28,7 @@ const HostelCard = ({ hostel, onSelect }) => {
           </div>
           <div className="info-item">
             <BedDouble size={14} />
-            <span>{roomCount} Rooms</span>
+            <span>{availableRooms || 0} Rooms</span>
           </div>
           <div className="info-item">
             <Milestone size={14} />

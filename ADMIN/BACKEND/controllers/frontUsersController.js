@@ -34,7 +34,7 @@ export const updateFrontUser = asyncHandler(async (req, res, next) => {
   if (!user) return next(new ErrorResponse('Front user not found', 404));
   
   await createActivityLog(
-    req,
+    req.user._id,
     `Updated front user: ${user.firstName} ${user.surname}`,
     'user',
     {
@@ -68,7 +68,7 @@ export const deleteFrontUser = asyncHandler(async (req, res, next) => {
   await user.deleteOne();
 
   await createActivityLog(
-    req,
+    req.user._id,
     `Deleted front user: ${user.firstName} ${user.surname}`,
     'user',
     userData

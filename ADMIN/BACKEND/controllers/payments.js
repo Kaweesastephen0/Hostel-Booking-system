@@ -66,7 +66,7 @@ export const createPayment = asyncHandler(async (req, res) => {
   });
 
   await createActivityLog(
-    req,
+    req.user._id,
     `Created payment: ${payment.reference || booking.reference}`,
     'payment',
     {
@@ -105,35 +105,60 @@ export const getPayments = asyncHandler(async (req, res) => {
   const sortDirection = order === 'asc' ? 1 : -1;
   const sortField = typeof sort === 'string' && sort.trim() ? sort : 'createdAt';
 
-  const query = {};
+  const paymentQuery = {};
+  const bookingQuery = {};
+
+  // Apply manager filter from middleware (non-admin users only see their own payments)
+  if (req.managerFilter) {
+    Object.assign(bookingQuery, req.managerFilter);
+  }
 
   if (bookingId) {
-    query.booking = bookingId;
+    paymentQuery.booking = bookingId;
   }
 
   if (search && typeof search === 'string') {
-    query.$or = [
+    paymentQuery.$or = [
       { reference: { $regex: search, $options: 'i' } },
       { notes: { $regex: search, $options: 'i' } },
     ];
   }
 
   if (status && status !== 'all') {
-    query.status = status;
+    paymentQuery.status = status;
   }
 
   if (method && method !== 'all') {
-    query.method = method;
+    paymentQuery.method = method;
+  }
+
+  // If manager filter is needed, get bookings first
+  let bookingIds = null;
+  if (req.managerFilter && Object.keys(bookingQuery).length > 0) {
+    const matchingBookings = await Booking.find(bookingQuery).select('_id').lean();
+    bookingIds = matchingBookings.map(b => b._id);
+    if (bookingIds.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          payments: [],
+          total: 0,
+          page: pageNumber,
+          limit: limitNumber,
+        },
+      });
+    }
+    paymentQuery.booking = { $in: bookingIds };
   }
 
   const [payments, total] = await Promise.all([
-    Payment.find(query)
+    Payment.find(paymentQuery)
       .sort({ [sortField]: sortDirection })
       .skip(skip)
       .limit(limitNumber)
       .populate('booking', 'reference guestName roomNumber')
       .lean(),
-    Payment.countDocuments(query),
+    Payment.countDocuments(paymentQuery),
   ]);
 
   res.status(200).json({
@@ -242,7 +267,7 @@ export const updatePayment = asyncHandler(async (req, res) => {
   const updatedPayment = await payment.save();
 
   await createActivityLog(
-    req,
+    req.user._id,
     `Updated payment for booking: ${payment.booking}`,
     'payment',
     {
@@ -286,7 +311,7 @@ export const deletePayment = asyncHandler(async (req, res) => {
   await payment.deleteOne();
 
   await createActivityLog(
-    req,
+    req.user._id,
     `Deleted payment for booking: ${payment.booking}`,
     'payment',
     paymentData

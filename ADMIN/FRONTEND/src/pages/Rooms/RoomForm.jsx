@@ -20,7 +20,7 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
     bookingPrice: '',
     roomDescription: '',
     maxOccupancy: 1,
-    image: ''
+    roomImages: [{ url: '', isPrimary: true }]
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -32,7 +32,7 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
     const fetchHostels = async () => {
       try {
         const response = await hostelService.getAllHostels();
-        setHostels(response || []);
+        setHostels(Array.isArray(response) ? response : []);
       } catch (error) {
         console.error('Failed to fetch hostels for form', error);
         setSnackbar({
@@ -45,6 +45,13 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
     fetchHostels();
 
     if (room) {
+      const existingImages = Array.isArray(room.roomImages) && room.roomImages.length > 0
+        ? room.roomImages.map((img, index) => ({
+            url: img.url,
+            isPrimary: index === 0 ? true : Boolean(img.isPrimary)
+          }))
+        : [{ url: room.primaryRoomImage || '', isPrimary: true }];
+
       setFormData({
         hostelId: room.hostelId?._id || room.hostelId || '',
         roomNumber: room.roomNumber || '',
@@ -54,7 +61,7 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
         bookingPrice: room.bookingPrice || '',
         roomDescription: room.roomDescription || '',
         maxOccupancy: room.maxOccupancy || 1,
-        image: room.image || ''
+        roomImages: existingImages
       });
     } else {
       setFormData(initialFormState);
@@ -69,6 +76,17 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
     }
   };
 
+  const handlePrimaryImageChange = (e) => {
+    const { value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      roomImages: [{ url: value, isPrimary: true }]
+    }));
+    if (errors.roomImages) {
+      setErrors((prev) => ({ ...prev, roomImages: '' }));
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
     
@@ -80,7 +98,7 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
     if (!formData.bookingPrice || formData.bookingPrice <= 0) newErrors.bookingPrice = 'Valid booking price is required';
     if (!formData.roomDescription?.trim()) newErrors.roomDescription = 'Room description is required';
     if (!formData.maxOccupancy || formData.maxOccupancy < 1) newErrors.maxOccupancy = 'Maximum occupancy must be at least 1';
-    if (!formData.image?.trim()) newErrors.image = 'Image URL is required';
+    if (!formData.roomImages[0]?.url?.trim()) newErrors.roomImages = 'Image URL is required';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -101,6 +119,13 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
     setIsSubmitting(true);
 
     try {
+      const roomImages = formData.roomImages
+        .filter((img) => img?.url?.trim())
+        .map((img, index) => ({
+          url: img.url.trim(),
+          isPrimary: index === 0 ? true : Boolean(img.isPrimary)
+        }));
+
       const roomData = {
         hostelId: formData.hostelId,
         roomNumber: formData.roomNumber.trim(),
@@ -110,7 +135,7 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
         bookingPrice: Number(formData.bookingPrice),
         roomDescription: formData.roomDescription.trim(),
         maxOccupancy: Number(formData.maxOccupancy),
-        image: formData.image.trim()
+        roomImages
       };
 
       let response;
@@ -268,17 +293,17 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
       </div>
 
       <div className="form-group">
-        <label htmlFor="image">Image URL *</label>
+        <label htmlFor="roomImage">Primary Image URL *</label>
         <input
-          id="image"
-          name="image"
+          id="roomImage"
+          name="roomImage"
           type="text"
-          value={formData.image}
-          onChange={handleChange}
-          className={errors.image ? 'error' : ''}
+          value={formData.roomImages[0]?.url || ''}
+          onChange={handlePrimaryImageChange}
+          className={errors.roomImages ? 'error' : ''}
           placeholder="https://example.com/image.png"
         />
-        {errors.image && <div className="error-message">{errors.image}</div>}
+        {errors.roomImages && <div className="error-message">{errors.roomImages}</div>}
       </div>
 
       <div className="form-actions">

@@ -22,7 +22,13 @@ const RoomCard = ({ room, onEdit, onDelete }) => {
 
   // Get primary room image or first image
   const getPrimaryImage = () => {
-    return room.primaryRoomImage;
+    if (room.primaryRoomImage) {
+      return room.primaryRoomImage;
+    }
+    if (Array.isArray(room.roomImages) && room.roomImages.length > 0) {
+      return room.roomImages[0].url;
+    }
+    return '';
   };
 
   // Format room type for display
@@ -62,12 +68,9 @@ const RoomCard = ({ room, onEdit, onDelete }) => {
           <Typography variant="h6" className="room-card-price">
             UGX {(room.roomPrice || 0).toLocaleString()}
           </Typography>
-          <Typography variant="caption" className="room-card-booking-price">
-            Booking: UGX {(room.bookingPrice || 0).toLocaleString()}
-          </Typography>
         </Box>
       </Box>
-      
+
       <CardContent className="room-card-content">
         <Typography variant="h6" component="div" className="room-card-title">
           Room {room.roomNumber}
@@ -78,7 +81,11 @@ const RoomCard = ({ room, onEdit, onDelete }) => {
         </Typography>
 
         <Typography variant="body2" color="text.secondary" className="room-card-description">
-          {room.roomDescription || 'No description available.'}
+          {room.description || room.roomDescription || 'No description available.'}
+        </Typography>
+
+        <Typography variant="subtitle1" className="room-card-booking-price">
+          Booking: UGX {(room.bookingPrice || 0).toLocaleString()}
         </Typography>
 
         <Box className="room-card-details">

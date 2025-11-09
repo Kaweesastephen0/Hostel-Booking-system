@@ -1,9 +1,11 @@
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: none;
+    overflow: hidden;
 }
 
 .data-table {
@@ -13,22 +15,40 @@
 }
 
 .data-table thead {
-    background-color: #f9fafb; /* Gray-50 */
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .data-table th {
-    padding: 0.75rem 1.5rem;
+    padding: 1rem 1.5rem;
     text-align: left;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    color: #4b5563; /* Gray-600 */
+    color: #64748b;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-bottom: 2px solid #e5e7eb; /* Gray-200 */
+    letter-spacing: 0.5px;
+    background: transparent;
+    position: relative;
+}
+
+.data-table th::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 20px;
+    background: #e2e8f0;
+}
+
+.data-table th:last-child::after {
+    display: none;
 }
 
 .data-table tbody tr {
-    border-bottom: 1px solid #e5e7eb; /* Gray-200 */
+    border-bottom: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
 }
 
 .data-table tbody tr:last-child {
@@ -36,16 +56,37 @@
 }
 
 .data-table tbody tr:hover {
-    background-color: #f9fafb; /* Gray-50 */
+    background-color: #f9fafb;
 }
 
 .data-table td {
     padding: 1rem 1.5rem;
-    color: #374151; /* Gray-700 */
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.data-table tbody tr:nth-child(even) {
+    background: #ffffff;
 }
 
 .no-data {
     text-align: center;
-    padding: 2rem;
-    color: #6b7280; /* Gray-500 */
+    padding: 3rem 2rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .data-table {
+        font-size: 0.75rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.75rem 1rem;
+    }
+
+    .data-table th {
+        font-size: 0.65rem;
+    }
 }

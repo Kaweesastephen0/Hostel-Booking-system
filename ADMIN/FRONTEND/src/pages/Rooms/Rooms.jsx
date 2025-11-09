@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Plus, BedDouble, Tag, DollarSign, Table, LayoutGrid, 
-  Wrench, Users, CheckCircle
+  Wrench, Users, CheckCircle, AlertTriangle
 } from 'lucide-react';
 import { useSidebar } from '../../context/SidebarContext';
 import {
@@ -30,7 +30,7 @@ import { Search } from '@mui/icons-material';
 import RoomTable from './RoomTable';
 import RoomCard from './RoomCard'; 
 import RoomForm from './RoomForm';
-import InfoCard from '../../components/cards/InfoCard';
+import RoomInfoCard from './RoomInfoCard';
 import * as roomService from '../../services/roomService';
 import * as hostelService from '../../services/hostelService';
 import Pagination from '../../components/pagination.jsx/Pagination';
@@ -55,24 +55,39 @@ const RoomsPage = ({ isCreateMode = false }) => {
   const [allHostels, setAllHostels] = useState([]);
   const [formError, setFormError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
+  const [viewMode, setViewMode] = useState('grid');
+  const [isContactAdminModalOpen, setIsContactAdminModalOpen] = useState(false);
 
-  // Stats for info cards
-  const stats = useMemo(() => {
-    return {
-      totalRooms: rooms.length,
-      availableRooms: rooms.filter(room => room.status === 'available').length,
-      occupiedRooms: rooms.filter(room => room.status === 'booked').length,
-      maintenanceRooms: rooms.filter(room => room.status === 'under_maintenance').length
-    };
-  }, [rooms]);
+  const currentUser = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    } catch (err) {
+      console.error('Failed to parse user from storage', err);
+      return {};
+    }
+  }, []);
+
+  const userRole = currentUser?.role || 'manager';
+
+  const filterHostelsByRole = (list) => {
+    // Backend already handles filtering based on user role
+    // Admins receive all hostels, managers receive only their own
+    return list;
+  };
+
+  const filterRoomsByRole = (list) => {
+    // Backend already handles filtering based on user role
+    // Admins receive all rooms, managers receive only rooms from their hostels or rooms they manage
+    return list;
+  };
 
   useEffect(() => {
     const fetchRooms = async () => {
       try {
         setIsLoading(true);
         const data = await roomService.getAllRooms();
-        setRooms(data);
+        const roomsList = Array.isArray(data) ? data : [];
+        setRooms(filterRoomsByRole(roomsList));
         setError(null);
       } catch (err) {
         setError(err.message);
@@ -88,9 +103,11 @@ const RoomsPage = ({ isCreateMode = false }) => {
     const fetchHostelsForFilter = async () => {
       try {
         const data = await hostelService.getAllHostels();
-        setAllHostels(data);
+        const hostelsList = Array.isArray(data) ? data : [];
+        setAllHostels(filterHostelsByRole(hostelsList));
       } catch (err) {
         console.error("Failed to fetch hostels for room filters:", err);
+        setAllHostels([]);
       }
     };
     fetchHostelsForFilter();
@@ -118,10 +135,16 @@ const RoomsPage = ({ isCreateMode = false }) => {
     try {
       await roomService.deleteRoom(roomToDelete._id);
       setRooms(prev => prev.filter(r => r._id !== roomToDelete._id));
-    } catch (err) {
-      setError(err.message);
-    } finally {
       setIsDeleteModalOpen(false);
+    } catch (err) {
+      if (err.response?.status === 403 && err.response?.data?.message?.includes('cannot delete')) {
+        setIsDeleteModalOpen(false);
+        setIsContactAdminModalOpen(true);
+      } else {
+        setError(err.message);
+        setIsDeleteModalOpen(false);
+      }
+    } finally {
       setRoomToDelete(null);
     }
   };
@@ -130,23 +153,17 @@ const RoomsPage = ({ isCreateMode = false }) => {
     setFormError(null);
     try {
       if (selectedRoom) {
-        const updatedRoom = await roomService.updateRoom(selectedRoom._id, formData);
-        setRooms(prev => prev.map(r => r._id === selectedRoom._id ? updatedRoom : r));
+        await roomService.updateRoom(selectedRoom._id, formData);
       } else {
-        const newRoom = await roomService.createRoom(formData);
-        const updatedRooms = await roomService.getAllRooms();
-        setRooms(updatedRooms);
+        await roomService.createRoom(formData);
       }
+      const refreshedRooms = await roomService.getAllRooms();
+      const roomsList = Array.isArray(refreshedRooms) ? refreshedRooms : [];
+      setRooms(filterRoomsByRole(roomsList));
       setIsFormModalOpen(false);
     } catch (err) {
       setFormError(err.response?.data?.message || err.message || 'Failed to save room');
     }
-  };
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setCurrentPage(1); // Reset to first page on filter change
-    setFilters(prev => ({ ...prev, [name]: value }));
   };
 
   const filteredRooms = useMemo(() => {
@@ -175,137 +192,26 @@ const RoomsPage = ({ isCreateMode = false }) => {
     return Math.ceil(filteredRooms.length / ITEMS_PER_PAGE);
   }, [filteredRooms]);
 
-  const uniqueHostelsForFilter = useMemo(() => {
-    return allHostels.map(h => ({ _id: h._id, name: h.name }));
-  }, [allHostels]);
-
   return (
     <div className={`rooms-page-container ${isCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'}`}>
       {/* Header Section */}
       <Box sx={{ mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h5" fontWeight="600">Rooms Management</Typography>
-          <Button
-            variant="contained"
-            startIcon={<Plus size={20} />}
-            onClick={handleAddNew}
-          >
-            Add New Room
-          </Button>
+          {(userRole === 'manager' || userRole === 'admin') && (
+            <Button
+              variant="contained"
+              startIcon={<Plus size={20} />}
+              onClick={handleAddNew}
+            >
+              Add New Room
+            </Button>
+          )}
         </Box>
 
         {/* Info Cards */}
-        {/* Info Cards */}
-        <Box sx={{ 
-          mb: 4,
-          width: '100%',
-          maxWidth: '100%',
-          mx: 'auto',
-          px: { xs: 2, sm: 3, md: 4 }
-        }}>
-          <Grid 
-            container 
-            spacing={{ xs: 2, sm: 3, md: 4 }}
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'stretch',
-              width: '100%'
-            }}
-          >
-            <Grid 
-              item 
-              xs={12} 
-              sm={6} 
-              md={3} 
-              sx={{
-                display: 'flex',
-                minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(25% - 24px)' }
-              }}
-            >
-              <InfoCard
-                title="Total Rooms"
-                value={stats.totalRooms}
-                icon={<BedDouble size={22} />}
-                color="primary"
-                sx={{ 
-                  height: '100%',
-                  minHeight: '140px',
-                  width: '100%',
-                  flex: 1
-                }}
-              />
-            </Grid>
-            <Grid 
-              item 
-              xs={12} 
-              sm={6} 
-              md={3}
-              sx={{
-                display: 'flex',
-                minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(25% - 24px)' }
-              }}
-            >
-              <InfoCard
-                title="Available"
-                value={stats.availableRooms}
-                icon={<CheckCircle size={22} />}
-                color="success"
-                sx={{ 
-                  height: '100%',
-                  minHeight: '140px',
-                  width: '100%',
-                  flex: 1
-                }}
-              />
-            </Grid>
-            <Grid 
-              item 
-              xs={12} 
-              sm={6} 
-              md={3}
-              sx={{
-                display: 'flex',
-                minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(25% - 24px)' }
-              }}
-            >
-              <InfoCard
-                title="Occupied"
-                value={stats.occupiedRooms}
-                icon={<Users size={22} />}
-                color="warning"
-                sx={{ 
-                  height: '100%',
-                  minHeight: '140px',
-                  width: '100%',
-                  flex: 1
-                }}
-              />
-            </Grid>
-            <Grid 
-              item 
-              xs={12} 
-              sm={6} 
-              md={3}
-              sx={{
-                display: 'flex',
-                minWidth: { xs: '100%', sm: 'calc(50% - 16px)', md: 'calc(25% - 24px)' }
-              }}
-            >
-              <InfoCard
-                title="Maintenance"
-                value={stats.maintenanceRooms}
-                icon={<Wrench size={22} />}
-                color="error"
-                sx={{ 
-                  height: '100%',
-                  minHeight: '140px',
-                  width: '100%',
-                  flex: 1
-                }}
-              />
-            </Grid>
-          </Grid>
+        <Box sx={{ mb: 3 }}>
+          <RoomInfoCard loading={isLoading} rooms={rooms} />
         </Box>
 
         {/* Filters and Search */}
@@ -342,7 +248,7 @@ const RoomsPage = ({ isCreateMode = false }) => {
               onChange={(e) => setFilters({ ...filters, hostelId: e.target.value })}
             >
               <MenuItem value="all">All Hostels</MenuItem>
-              {allHostels.map((hostel) => (
+              {(allHostels ?? []).map((hostel) => (
                 <MenuItem key={hostel._id} value={hostel._id}>
                   {hostel.name}
                 </MenuItem>
@@ -414,14 +320,16 @@ const RoomsPage = ({ isCreateMode = false }) => {
               ? 'Try adjusting your filters or search terms'
               : 'Get started by adding your first room'}
           </Typography>
-          <Button
-            variant="outlined"
-            startIcon={<Plus size={20} />}
-            onClick={handleAddNew}
-            sx={{ mt: 2 }}
-          >
-            Add New Room
-          </Button>
+          {(userRole === 'manager' || userRole === 'admin') && (
+            <Button
+              variant="outlined"
+              startIcon={<Plus size={20} />}
+              onClick={handleAddNew}
+              sx={{ mt: 2 }}
+            >
+              Add New Room
+            </Button>
+          )}
         </Box>
       ) : (
         <Box sx={{ mb: 4 }}>
@@ -482,7 +390,7 @@ const RoomsPage = ({ isCreateMode = false }) => {
       />
 
       <Dialog
-        open={isFormModalOpen}
+        open={isFormModalOpen && (selectedRoom || userRole === 'manager' || userRole === 'admin')}
         onClose={() => setIsFormModalOpen(false)}
         fullWidth
         maxWidth="md"
@@ -509,6 +417,42 @@ const RoomsPage = ({ isCreateMode = false }) => {
         <DialogActions>
           <Button onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>
           <Button onClick={handleConfirmDelete} color="error">Delete</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={isContactAdminModalOpen} onClose={() => setIsContactAdminModalOpen(false)}>
+        <DialogTitle sx={{ color: '#ef4444', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <AlertTriangle size={24} /> Delete Permission Denied
+        </DialogTitle>
+        <DialogContent sx={{ minWidth: 400 }}>
+          <DialogContentText>
+            As a manager, you don't have permission to delete rooms. Only administrators can perform deletion operations.
+          </DialogContentText>
+          <Box sx={{ 
+            mt: 3, 
+            p: 2, 
+            backgroundColor: '#f0f9ff',
+            borderRadius: 2,
+            border: '1px solid #3b82f6',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1
+          }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#1f2937' }}>
+              To delete this room, please:
+            </Typography>
+            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              📧 Contact your administrator
+            </Typography>
+            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              💬 Send a deletion request with details
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsContactAdminModalOpen(false)} variant="contained" color="primary">
+            Understood
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
