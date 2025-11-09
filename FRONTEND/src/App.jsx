@@ -3,8 +3,8 @@ import { Routes, Route, useLocation } from "react-router-dom";
 
 // Pages
 import HomePage from "./pages/HomePage.jsx";
-import Aboutus from "./pages/Aboutus.jsx";
-import Contactus from "./pages/Contactus.jsx";
+import Aboutus from "./pages/aboutus.jsx";
+import Contactus from "./pages/contactus.jsx";
 import SearchResultsPage from "./pages/SearchResultPage.jsx";
 import RoomListingPage from "./pages/roomListings/RoomList.jsx";
 import RoomDetails from "./pages/RoomDetails/RoomDetails.jsx";
