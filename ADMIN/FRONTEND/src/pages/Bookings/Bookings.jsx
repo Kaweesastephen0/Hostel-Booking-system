@@ -556,7 +556,7 @@ const Bookings = () => {
     },
     {
       id: 'roomNumber',
-      label: 'Room',
+      label: 'Room ID',
       minWidth: 50,
       format: (value) => value || '—',
     },
