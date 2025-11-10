@@ -1,0 +1,451 @@
+/* Container */
+.container {
+  width: 100%;
+  background-color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* Section */
+.section {
+  padding: 5rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: white;
+}
+
+/* Content Wrapper */
+.contentWrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0 50px;
+}
+
+/* Text Content */
+.textContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.textContentWhite {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Titles */
+.mainTitle {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #0a3d5c;
+  line-height: 1.2;
+  letter-spacing: 2px;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.titleWhite {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: white;
+  line-height: 1.2;
+  letter-spacing: 2px;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* Descriptions */
+.description {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #4b5563;
+  margin: 0;
+}
+
+.descriptionWhite {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #e5e7eb;
+  margin: 0;
+}
+
+/* Buttons */
+.button {
+  background: linear-gradient(135deg, #0a3d5c 0%, #0d5278 50%, #0a3d5c 100%);
+  color: white;
+  border: none;
+  padding: 0.875rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  width: fit-content;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(10, 61, 92, 0.3);
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(10, 61, 92, 0.4);
+}
+
+.buttonWhite {
+  background: white;
+  color: #0a3d5c;
+  border: none;
+  padding: 0.875rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  width: fit-content;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+.buttonWhite:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.5);
+}
+
+/* Image Content */
+.imageContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mainImage {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(10, 61, 92, 0.2);
+}
+
+/* Stats Section */
+.statsSection {
+  background: linear-gradient(135deg, #0a3d5c 0%, #0d5278 50%, #0a3d5c 100%);
+  padding: 5rem 2rem;
+}
+
+.statsGrid {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.statCard {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.statNumber {
+  font-size: 3rem;
+  font-weight: 900;
+  color: white;
+  margin: 0 0 0.5rem 0;
+}
+
+.statLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 0.75rem 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.statDescription {
+  font-size: 0.875rem;
+  color: #d1d5db;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Mission Section */
+.missionSection {
+  background: linear-gradient(135deg, #0a3d5c 0%, #0d5278 50%, #0a3d5c 100%);
+  padding: 5rem 2rem;
+}
+
+/* Elegant Section */
+.elegantSection {
+  background: white;
+  padding: 5rem 2rem;
+}
+
+.elegantHeader {
+  max-width: 1400px;
+  margin: 0 auto 3rem auto;
+  text-align: center;
+}
+
+.elegantTitle {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #12295a;
+  line-height: 1.2;
+  letter-spacing: 2px;
+  margin: 0 0 1.5rem 0;
+  text-transform: uppercase;
+}
+
+.elegantDescription {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #12295a;
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+/* Gallery Grid */
+.galleryGrid {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.galleryItem {
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.galleryItem:hover {
+  transform: scale(1.02);
+}
+
+.galleryImage {
+  width: 100%;
+  height: 450px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.galleryItem:hover .galleryImage {
+  transform: scale(1.1);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .contentWrapper {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 0 20px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .galleryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  /* Container overflow fix */
+  .container {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Section padding */
+  .section,
+  .statsSection,
+  .missionSection,
+  .elegantSection {
+    padding: 3rem 1rem;
+  }
+
+  /* Content wrapper - HORIZONTAL LAYOUT ON MOBILE */
+  .contentWrapper {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0;
+    align-items: center;
+  }
+
+  /* Stats Grid - HORIZONTAL LAYOUT ON MOBILE */
+  .statsGrid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.25rem;
+    padding: 0;
+  }
+
+  /* Stat Cards */
+  .statCard {
+    padding: 0.5rem 0.25rem;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Gallery Grid - HORIZONTAL LAYOUT ON MOBILE */
+  .galleryGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  /* Gallery Items */
+  .galleryItem {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Square Images on Mobile */
+  .mainImage {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
+  .galleryImage {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
+  /* Image Content */
+  .imageContent {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Text Content Compact */
+  .textContent,
+  .textContentWhite {
+    gap: 0.75rem;
+  }
+
+  /* Typography */
+  .mainTitle,
+  .titleWhite {
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+  }
+
+  .elegantTitle {
+    font-size: 1.75rem;
+    letter-spacing: 1px;
+  }
+
+  .description,
+  .descriptionWhite {
+    font-size: 0.65rem;
+    line-height: 1.4;
+  }
+
+  .elegantDescription {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  /* Buttons */
+  .button,
+  .buttonWhite {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.6rem;
+  }
+
+  /* Stats Typography - Compact for mobile */
+  .statNumber {
+    font-size: 1.25rem;
+  }
+
+  .statLabel {
+    font-size: 0.5rem;
+    letter-spacing: 0.5px;
+  }
+
+  .statDescription {
+    display: none;
+  }
+
+  /* Main Images - Compact for horizontal mobile layout */
+  .mainImage {
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Tighter padding for small phones */
+  .section,
+  .statsSection,
+  .missionSection,
+  .elegantSection {
+    padding: 2.5rem 0.5rem;
+  }
+
+  .contentWrapper {
+    gap: 0.35rem;
+  }
+
+  .statsGrid {
+    gap: 0.2rem;
+  }
+
+  .statCard {
+    padding: 0.4rem 0.2rem;
+  }
+
+  .galleryGrid {
+    gap: 0.35rem;
+  }
+
+  .mainTitle,
+  .titleWhite {
+    font-size: 0.75rem;
+  }
+
+  .elegantTitle {
+    font-size: 1.5rem;
+  }
+
+  .description,
+  .descriptionWhite {
+    font-size: 0.55rem;
+    line-height: 1.3;
+  }
+
+  .button,
+  .buttonWhite {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.55rem;
+  }
+
+  /* Further compact stat typography for very small phones */
+  .statNumber {
+    font-size: 1rem;
+  }
+
+  .statLabel {
+    font-size: 0.45rem;
+  }
+}

@@ -100,3 +100,116 @@
   color: #374151;
   margin-right: 8px;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .headerContent {
+    padding: 3px 8px;
+    height: 60px;
+    gap: 4px;
+  }
+
+  .sortOptions {
+    gap: 8px;
+  }
+
+  .sortOption {
+    padding-right: 8px;
+  }
+
+  .sortOption:last-child {
+    padding-right: 4px;
+  }
+
+  .sortLabel {
+    font-size: 8px;
+  }
+
+  .sortValue {
+    font-size: 11px;
+  }
+
+  .brandIcon {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+  }
+
+  .brandNameLink {
+    font-size: 12px;
+  }
+
+  .brandPhone a {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+
+  .userIcons {
+    margin-right: 4px;
+    margin-left: 4px;
+  }
+
+  .userIcons svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .userName {
+    font-size: 10px;
+    margin-right: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .headerContent {
+    padding: 2px 4px;
+    height: 50px;
+    gap: 2px;
+  }
+
+  .sortOptions {
+    gap: 4px;
+  }
+
+  .sortOption {
+    padding-right: 4px;
+  }
+
+  .sortLabel {
+    font-size: 7px;
+  }
+
+  .sortValue {
+    font-size: 9px;
+  }
+
+  .brandIcon {
+    width: 14px;
+    height: 14px;
+    margin-right: 2px;
+  }
+
+  .brandNameLink {
+    font-size: 10px;
+  }
+
+  .brandPhone a {
+    font-size: 7px;
+    letter-spacing: 0.5px;
+  }
+
+  .userIcons {
+    margin-right: 2px;
+    margin-left: 2px;
+  }
+
+  .userIcons svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .userName {
+    font-size: 8px;
+    margin-right: 2px;
+  }
+}
