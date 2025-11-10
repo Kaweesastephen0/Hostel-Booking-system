@@ -40,9 +40,9 @@ const RoomDetails = () => {
 
   // Handle book now button click
   const handleBookNow = () => {
-    const user = JSON.parse(sessionStorage.getItem('user'));
+    const user = JSON.parse(sessionStorage.getItem('userData'));
     
-    if (!user || !user.token) {
+    if (!user) {
       // If no user in session, redirect to login
       navigate(`/login?redirect=booking&roomId=${roomId}`);
       return;
@@ -66,7 +66,7 @@ const RoomDetails = () => {
 
   // Check for redirect after login
   useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem('user'));
+    const user = JSON.parse(sessionStorage.getItem('userData'));
     const isAuth = !!(user && user.token);
     setIsAuthenticated(isAuth);
     
