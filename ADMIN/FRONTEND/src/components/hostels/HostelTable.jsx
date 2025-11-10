@@ -3,23 +3,35 @@ import { Edit, Trash2 } from 'lucide-react';
 import DataTable from '../table/DataTable';
 import './HostelTable.css';
 
-const HostelTable = ({ hostels, onEdit, onDelete }) => {
-  // will  fetch hostels from API: GET /api/hostels
+const formatLabel = (value, fallback = '') => {
+  const normalized = (value || fallback).toString().toLowerCase();
+  return normalized.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+};
 
+const HostelTable = ({ hostels, onEdit, onDelete }) => {
   const columns = useMemo(() => [
     { Header: 'Hostel Name', accessor: 'name', Cell: (row) => <span style={{ fontWeight: 500 }}>{row.name}</span> },
     { Header: 'Location', accessor: 'location' },
     { Header: 'Gender', accessor: 'HostelGender' },
-    { Header: 'Rooms', accessor: 'roomCount' },
     {
-      Header: 'Availability',
-      accessor: 'availability',
+      Header: 'Category',
+      accessor: 'category',
       Cell: (row) => (
-        <span className={`status-badge status-${row.availability ? 'available' : 'full'}`}>
-          {row.availability ? 'Available' : 'Full'}
+        <span className={`category-badge category-${(row.category || 'standard').toString().toLowerCase()}`}>
+          {formatLabel(row.category, 'standard')}
         </span>
       ),
     },
+    {
+      Header: 'Status',
+      accessor: 'status',
+      Cell: (row) => (
+        <span className={`status-badge status-${(row.status || 'operational').toString().toLowerCase()}`}>
+          {formatLabel(row.status, 'operational')}
+        </span>
+      ),
+    },
+    { Header: 'Rooms', accessor: 'roomCount' },
     {
       Header: 'Actions',
       accessor: 'actions',

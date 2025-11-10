@@ -50,6 +50,16 @@ const hostelSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    category: {
+        type: String,
+        enum: ['budget', 'standard', 'premium', 'luxury'],
+        default: 'standard'
+    },
+    status: {
+        type: String,
+        enum: ['operational', 'maintenance', 'closed'],
+        default: 'operational'
+    },
     rating: {
         average: {
             type: Number,
@@ -77,6 +87,23 @@ const hostelSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true
+});
+
+hostelSchema.pre('save', function(next) {
+    this.availability = this.status === 'operational';
+    next();
+});
+
+hostelSchema.pre('findOneAndUpdate', function(next) {
+    const update = this.getUpdate();
+    if (update && update.status) {
+        if (update.$set) {
+            update.$set.availability = update.$set.status === 'operational';
+        } else {
+            update.availability = update.status === 'operational';
+        }
+    }
+    next();
 });
 
 // Add indexes for better performance

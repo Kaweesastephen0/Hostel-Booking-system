@@ -168,8 +168,14 @@
   white-space: nowrap;
 }
 
-.logout {
-  cursor: pointer;
+
+.logout-link {
   display: flex;
   align-items: center;
+  justify-content: flex-start; 
+  width: calc(100% - 16px); 
+  margin: 2 14px; 
+  padding: 0px 2px; 
+  border-radius: 8px;
 }
+

@@ -3,15 +3,22 @@ import { MapPin, BedDouble, Star, Milestone, Users } from 'lucide-react';
 import './HostelCard.css';
 
 const HostelCard = ({ hostel, onSelect }) => {
-  const { name, location, images, availability, rating, availableRooms, distance, HostelGender } = hostel;
+  const { name, location, images, rating, availableRooms, distance, HostelGender } = hostel;
   const hostelImage = images?.[0]?.url || 'https://via.placeholder.com/400x250';
 
-  const status = availability ? 'Available' : 'Full';
+  const normalizeValue = (value, fallback) => (value || fallback).toString().toLowerCase();
+  const formatLabel = (value) => value.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+
+  const statusValue = normalizeValue(hostel.status, 'operational');
+  const categoryValue = normalizeValue(hostel.category, 'standard');
+  const statusLabel = formatLabel(statusValue);
+  const categoryLabel = formatLabel(categoryValue);
 
   return (
     <div className="hostel-card" onClick={() => onSelect(hostel)}>
       <div className="hostel-card-image-container">
-<img src={hostelImage} alt={name} className="hostel-card-image" />        <span className={`hostel-card-status status-${status.toLowerCase()}`}>{status}</span>
+        <img src={hostelImage} alt={name} className="hostel-card-image" />
+        <span className={`hostel-card-status status-${statusValue}`}>{statusLabel}</span>
         {rating.average > 0 && (
           <div className="hostel-card-rating">
             <Star size={14} fill="var(--color-warning, #f59e0b)" stroke="var(--color-warning, #f59e0b)" />
@@ -20,7 +27,10 @@ const HostelCard = ({ hostel, onSelect }) => {
         )}
       </div>
       <div className="hostel-card-content">
-        <h3 className="hostel-card-name">{name}</h3>
+        <div className="hostel-card-header">
+          <h3 className="hostel-card-name">{name}</h3>
+          <span className={`hostel-card-category category-${categoryValue}`}>{categoryLabel}</span>
+        </div>
         <div className="hostel-card-info">
           <div className="info-item">
             <MapPin size={14} />

@@ -126,12 +126,14 @@ const ProfilePage = () => {
       return;
     }
 
+    console.log('Changing password with:', password);
     try {
       setIsChangingPassword(true);
       await userService.changePassword(password.currentPassword, password.newPassword);
       setPassword({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
       showSnackbar('Password changed successfully.', 'success');
     } catch (err) {
+      console.error('Password change error:', err);
       setError(err.message || 'Failed to change password');
       console.error('Password change error:', err);
       showSnackbar(err.message || 'Failed to change password', 'error');
@@ -243,4 +245,3 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
-

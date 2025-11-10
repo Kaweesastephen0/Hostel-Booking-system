@@ -3,12 +3,26 @@ import ErrorResponse from '../utils/errorResponse.js';
 import asyncHandler from '../middleware/async.js';
 import { createActivityLog } from '../utils/activityLogger.js';
 
+const normalizeHostelMeta = (hostel) => {
+  const statusValue = (hostel.status || 'operational').toString().toLowerCase();
+  const categoryValue = (hostel.category || 'standard').toString().toLowerCase();
+  const allowedStatus = ['operational', 'maintenance', 'closed'];
+  const allowedCategory = ['budget', 'standard', 'premium', 'luxury'];
+  const status = allowedStatus.includes(statusValue) ? statusValue : 'operational';
+  const category = allowedCategory.includes(categoryValue) ? categoryValue : 'standard';
+  return { status, category, availability: status === 'operational' };
+};
+
 export const createHostel = asyncHandler(async (req, res) => {
   // Set manager to the logged-in user
   const hostelData = {
     ...req.body,
     manager: req.user._id
   };
+  const meta = normalizeHostelMeta(hostelData);
+  hostelData.status = meta.status;
+  hostelData.category = meta.category;
+  hostelData.availability = meta.availability;
   
   const hostel = await HostelModel.create(hostelData);
   
@@ -20,7 +34,9 @@ export const createHostel = asyncHandler(async (req, res) => {
       hostelId: hostel._id,
       name: hostel.name,
       location: hostel.location,
-      gender: hostel.HostelGender
+      gender: hostel.HostelGender,
+      category: hostel.category,
+      status: hostel.status
     }
   );
   
@@ -51,12 +67,32 @@ export const updateHostel = asyncHandler(async (req, res) => {
     throw new ErrorResponse(`Hostel not found with id of ${req.params.id}`, 404);
   }
 
-  const oldData = { name: hostel.name, location: hostel.location, gender: hostel.HostelGender };
+  const hostelObject = hostel.toObject();
+  const oldMeta = normalizeHostelMeta(hostelObject);
+  const updates = { ...req.body };
+  const merged = { ...hostelObject, ...updates };
+  const meta = normalizeHostelMeta(merged);
+  if (updates.status !== undefined) {
+    updates.status = meta.status;
+    updates.availability = meta.availability;
+  }
+  if (updates.category !== undefined) {
+    updates.category = meta.category;
+  }
+  const oldData = {
+    name: hostel.name,
+    location: hostel.location,
+    gender: hostel.HostelGender,
+    category: oldMeta.category,
+    status: oldMeta.status
+  };
 
-  hostel = await HostelModel.findByIdAndUpdate(req.params.id, req.body, {
+  hostel = await HostelModel.findByIdAndUpdate(req.params.id, updates, {
     new: true,
     runValidators: true
   });
+
+  const newMeta = normalizeHostelMeta(hostel);
 
   await createActivityLog(
     req.user._id,
@@ -65,8 +101,14 @@ export const updateHostel = asyncHandler(async (req, res) => {
     {
       hostelId: hostel._id,
       oldData,
-      newData: { name: hostel.name, location: hostel.location, gender: hostel.HostelGender },
-      changes: req.body
+      newData: {
+        name: hostel.name,
+        location: hostel.location,
+        gender: hostel.HostelGender,
+        category: newMeta.category,
+        status: newMeta.status
+      },
+      changes: updates
     }
   );
 
@@ -96,7 +138,9 @@ export const deleteHostel = asyncHandler(async (req, res) => {
       hostelId: hostel._id,
       name: hostelName,
       location: hostel.location,
-      gender: hostel.HostelGender
+      gender: hostel.HostelGender,
+      category: hostel.category,
+      status: hostel.status
     }
   );
 
@@ -120,18 +164,13 @@ export const getAllHostels = async(req, res) => {
 
         // Add price information to each hostel
         const hostelsWithPrices = hostels.map(hostel => {
-            // Get all room prices from populated rooms
+            const meta = normalizeHostelMeta(hostel);
             const roomPrices = hostel.rooms?.map(room => room.roomPrice) || [];
-            
-            // Calculate starting price (minimum room price)
             const startingPrice = roomPrices.length > 0 ? Math.min(...roomPrices) : 0;
-            
-            // Calculate price range
             const priceRange = roomPrices.length > 0 ? 
                 `UGX ${Math.min(...roomPrices).toLocaleString()} - UGX ${Math.max(...roomPrices).toLocaleString()}` : 
                 'No rooms available';
             
-            // Debug log for first hostel
             if (hostel.name === "Sun ways Hostel") {
                 console.log('Sun ways Hostel debug:');
                 console.log('Rooms count:', hostel.rooms?.length);
@@ -141,7 +180,10 @@ export const getAllHostels = async(req, res) => {
             
             return {
                 ...hostel,
-                roomPrice: startingPrice, // This is the key field for frontend
+                status: meta.status,
+                category: meta.category,
+                availability: meta.availability,
+                roomPrice: startingPrice,
                 priceRange,
                 availableRooms: hostel.rooms?.length || 0
             };
@@ -175,6 +217,7 @@ export const getFeaturedHostels = async(req, res) => {
 
         // Add price information to featured hostels
         const hostelsWithPrices = featuredHostels.map(hostel => {
+            const meta = normalizeHostelMeta(hostel);
             const roomPrices = hostel.rooms?.map(room => room.roomPrice) || [];
             const startingPrice = roomPrices.length > 0 ? Math.min(...roomPrices) : 0;
             const priceRange = roomPrices.length > 0 ? 
@@ -183,6 +226,9 @@ export const getFeaturedHostels = async(req, res) => {
             
             return {
                 ...hostel,
+                status: meta.status,
+                category: meta.category,
+                availability: meta.availability,
                 roomPrice: startingPrice,
                 priceRange,
                 availableRooms: hostel.rooms?.length || 0
@@ -228,11 +274,11 @@ export const getPremiumHostels = async(req, res) => {
 
         // Add price information - MAINTAIN CONSISTENCY with other endpoints
         const hostelsWithPrices = premiumHostels.map(hostel => {
+            const meta = normalizeHostelMeta(hostel);
             const roomPrices = hostel.rooms?.map(room => room.roomPrice) || [];
             const startingPrice = roomPrices.length > 0 ? Math.min(...roomPrices) : 0;
             const premiumRooms = hostel.rooms?.filter(room => room.roomPrice >= 1000000) || [];
             
-            // Debug info
             console.log(`Processing ${hostel.name}:`);
             console.log(`  - All room prices: [${roomPrices.join(', ')}]`);
             console.log(`  - Starting price: ${startingPrice}`);
@@ -241,14 +287,17 @@ export const getPremiumHostels = async(req, res) => {
             
             return {
                 ...hostel,
-                roomPrice: startingPrice, // Keep consistent with other endpoints
-                premiumPrice: Math.max(...roomPrices), // Add separate premium price field
+                status: meta.status,
+                category: meta.category,
+                availability: meta.availability,
+                roomPrice: startingPrice,
+                premiumPrice: Math.max(...roomPrices),
                 premiumRoomsCount: premiumRooms.length,
                 priceRange: roomPrices.length > 0 ? 
                     `UGX ${Math.min(...roomPrices).toLocaleString()} - UGX ${Math.max(...roomPrices).toLocaleString()}` : 
                     'No rooms available',
                 availableRooms: hostel.rooms?.length || 0,
-                isPremium: true // Add flag to identify premium hostels
+                isPremium: true
             };
         });
 
@@ -328,11 +377,15 @@ export const getAffordableHostels = async (req, res) => {
 
         // Add price information
         const hostelsWithPrices = affordableHostels.map(hostel => {
+            const meta = normalizeHostelMeta(hostel);
             const roomPrices = hostel.rooms?.map(room => room.roomPrice) || [];
             const startingPrice = roomPrices.length > 0 ? Math.min(...roomPrices) : 0;
             
             return {
                 ...hostel,
+                status: meta.status,
+                category: meta.category,
+                availability: meta.availability,
                 roomPrice: startingPrice,
                 priceRange: roomPrices.length > 0 ? 
                     `UGX ${Math.min(...roomPrices).toLocaleString()} - UGX ${Math.max(...roomPrices).toLocaleString()}` : 

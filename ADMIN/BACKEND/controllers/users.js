@@ -311,4 +311,4 @@ export default {
   updateUser,
   deleteUser,
   toggleUserStatus,
-}
+});

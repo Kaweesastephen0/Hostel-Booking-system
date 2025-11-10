@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './HostelForm.css';
-import { Building, MapPin, Milestone, Users, Image as ImageIcon, Info, Tag } from 'lucide-react';
+import { Building, MapPin, Milestone, Users, Image as ImageIcon, Info, Tag, Layers, CheckCircle } from 'lucide-react';
 
 const HostelForm = ({ hostel, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -10,6 +10,8 @@ const HostelForm = ({ hostel, onSubmit, onCancel }) => {
     description: '',
     amenities: '',
     HostelGender: 'mixed',
+    category: 'standard',
+    status: 'operational',
     images: [{ url: '', isPrimary: true }],
   });
 
@@ -24,6 +26,8 @@ const HostelForm = ({ hostel, onSubmit, onCancel }) => {
         description: hostel.description || '',
         amenities: Array.isArray(hostel.amenities) ? hostel.amenities.join(', ') : '',
         HostelGender: hostel.HostelGender || 'mixed',
+        category: hostel.category || 'standard',
+        status: hostel.status || 'operational',
         images: hostel.images && hostel.images.length > 0 
           ? hostel.images 
           : [{ url: '', isPrimary: true }]
@@ -61,6 +65,8 @@ const HostelForm = ({ hostel, onSubmit, onCancel }) => {
     if (!formData.name.trim()) newErrors.name = 'Hostel name is required';
     if (!formData.location.trim()) newErrors.location = 'Location is required';
     if (!formData.distance.trim()) newErrors.distance = 'Distance is required';
+    if (!formData.category) newErrors.category = 'Category is required';
+    if (!formData.status) newErrors.status = 'Status is required';
     if (!formData.images[0]?.url?.trim()) newErrors.image = 'Image URL is required';
     
     // Check if there are any errors
@@ -72,8 +78,14 @@ const HostelForm = ({ hostel, onSubmit, onCancel }) => {
     // Clear errors if validation passes
     setErrors({});
 
+    const status = formData.status.toLowerCase();
+    const category = formData.category.toLowerCase();
+
     const finalData = {
       ...formData,
+      status,
+      category,
+      availability: status === 'operational',
       amenities: formData.amenities.split(',').map(item => item.trim()).filter(Boolean),
       images: formData.images.filter(img => img.url && img.url.trim() !== '')
     };
@@ -138,6 +150,39 @@ const HostelForm = ({ hostel, onSubmit, onCancel }) => {
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="category"><Layers size={14} /> Category</label>
+          <select
+            id="category"
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            className={errors.category ? 'error' : ''}
+          >
+            <option value="budget">Budget</option>
+            <option value="standard">Standard</option>
+            <option value="premium">Premium</option>
+            <option value="luxury">Luxury</option>
+          </select>
+          {errors.category && <span className="error-message">{errors.category}</span>}
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="status"><CheckCircle size={14} /> Status</label>
+          <select
+            id="status"
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className={errors.status ? 'error' : ''}
+          >
+            <option value="operational">Operational</option>
+            <option value="maintenance">Maintenance</option>
+            <option value="closed">Closed</option>
+          </select>
+          {errors.status && <span className="error-message">{errors.status}</span>}
         </div>
 
         {/* Description */}

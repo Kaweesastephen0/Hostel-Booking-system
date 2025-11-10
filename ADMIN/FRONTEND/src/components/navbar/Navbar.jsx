@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Search, Bell, User, ChevronDown, Settings, LogOut, Loader } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useNotifications } from '../../hooks/useNotifications';
+import { useSidebar } from '../../context/SidebarContext';
 import searchService from '../../services/searchService';
 import SearchResults from './SearchResults';
 import './Navbar.css';
 
 const Navbar = () => {
+  const { setIsCollapsed } = useSidebar();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,16 +74,30 @@ const Navbar = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     setIsProfileOpen(false);
+    setIsCollapsed(true);
     navigate('/login');
   };
 
   const handleMenuNavigate = (path) => {
     setIsProfileOpen(false);
+    setIsCollapsed(true);
     navigate(path);
   };
 
   const handleNotificationsClick = () => {
     navigate('/settings?tab=notifications');
+  };
+
+  const toggleProfileMenu = () => {
+    setIsProfileOpen((prev) => {
+      const next = !prev;
+      if (next) {
+        setIsCollapsed(false);
+      } else {
+        setIsCollapsed(true);
+      }
+      return next;
+    });
   };
 
   const getPageTitle = () => {
@@ -131,7 +147,7 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-profile" ref={profileRef}>
-          <button className="navbar-profile-btn" onClick={() => setIsProfileOpen(!isProfileOpen)}>
+          <button className="navbar-profile-btn" onClick={toggleProfileMenu}>
             <img src={user.avatar} alt="User Avatar" className="navbar-avatar" />
             <span className="navbar-username">{user.name}</span>
             <ChevronDown size={20} className={`navbar-chevron ${isProfileOpen ? 'open' : ''}`} />

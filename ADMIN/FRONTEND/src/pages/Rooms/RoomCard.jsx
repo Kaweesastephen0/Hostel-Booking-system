@@ -7,16 +7,23 @@ import {
 import './RoomCard.css';
 
 const RoomCard = ({ room, onEdit, onDelete }) => {
-  // Helper function to get status based on availability
   const getRoomStatus = (room) => {
+    if (room.status) {
+      return room.status;
+    }
     return room.isAvailable === false ? 'occupied' : 'available';
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'available': return 'success';
-      case 'occupied': return 'error';
-      default: return 'default';
+      case 'available':
+        return 'success';
+      case 'occupied':
+        return 'error';
+      case 'maintenance':
+        return 'warning';
+      default:
+        return 'default';
     }
   };
 

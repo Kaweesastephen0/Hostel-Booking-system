@@ -51,6 +51,7 @@ const RoomsPage = ({ isCreateMode = false }) => {
   const [filters, setFilters] = useState({
     hostelId: 'all',
     roomType: 'all',
+    status: 'all',
   });
   const [allHostels, setAllHostels] = useState([]);
   const [formError, setFormError] = useState(null);
@@ -87,7 +88,15 @@ const RoomsPage = ({ isCreateMode = false }) => {
         setIsLoading(true);
         const data = await roomService.getAllRooms();
         const roomsList = Array.isArray(data) ? data : [];
-        setRooms(filterRoomsByRole(roomsList));
+        const normalizedRooms = roomsList.map(room => {
+          const status = (room.status || 'available').toLowerCase();
+          return {
+            ...room,
+            status,
+            isAvailable: room.isAvailable !== undefined ? room.isAvailable : status === 'available'
+          };
+        });
+        setRooms(filterRoomsByRole(normalizedRooms));
         setError(null);
       } catch (err) {
         setError(err.message);
@@ -177,9 +186,10 @@ const RoomsPage = ({ isCreateMode = false }) => {
                           room.hostelId.name.toLowerCase().includes(searchTerm.toLowerCase());
 
       const hostelMatch = filters.hostelId === 'all' || room.hostelId._id === filters.hostelId;
-      const typeMatch = filters.roomType === 'all' || room.roomType === filters.roomType; // Added roomType filter
+      const typeMatch = filters.roomType === 'all' || room.roomType === filters.roomType;
+      const statusMatch = filters.status === 'all' || (room.status || 'available') === filters.status;
 
-      return searchMatch && hostelMatch && typeMatch;
+      return searchMatch && hostelMatch && typeMatch && statusMatch;
     });
   }, [rooms, searchTerm, filters]);
 
@@ -266,9 +276,22 @@ const RoomsPage = ({ isCreateMode = false }) => {
               <MenuItem value="all">All Types</MenuItem>
               <MenuItem value="single">Single</MenuItem>
               <MenuItem value="double">Double</MenuItem>
-              <MenuItem value="triple">Triple</MenuItem>
-              <MenuItem value="quad">Quad</MenuItem>
-              <MenuItem value="suite">Suite</MenuItem>
+              <MenuItem value="shared">Shared</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl size="small" sx={{ minWidth: '200px' }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              name="status"
+              value={filters.status}
+              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+              label="Status"
+            >
+              <MenuItem value="all">All Statuses</MenuItem>
+              <MenuItem value="available">Available</MenuItem>
+              <MenuItem value="occupied">Occupied</MenuItem>
+              <MenuItem value="maintenance">Maintenance</MenuItem>
             </Select>
           </FormControl>
 

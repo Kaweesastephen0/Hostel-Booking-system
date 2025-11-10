@@ -43,100 +43,100 @@ const ProfileInfoCard = ({ user, isEditing, onUserChange, onFileChange, onUpdate
         </div>
       </div>
 
-      <div className="profile-divider"></div>
+      <div className="profile-card-body">
+        <div className="profile-divider"></div>
 
-      <form className="profile-form">
-        <div className="form-group">
-          <label htmlFor="fullName">
-            <User size={16} />
-            Full Name
-          </label>
-          <input
-            id="fullName"
-            type="text"
-            name="fullName"
-            value={user.fullName}
-            onChange={onUserChange}
-            disabled={!isEditing}
-            className="form-input"
-            placeholder="Enter your full name"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="email">
-            <Mail size={16} />
-            Email Address
-          </label>
-          <input
-            id="email"
-            type="email"
-            name="email"
-            value={user.email}
-            onChange={onUserChange}
-            disabled={!isEditing}
-            className="form-input"
-            placeholder="Enter your email"
-          />
-        </div>
-
-        <div className="info-section">
-          <div className="info-item">
-            <span className="info-label">Role</span>
-            <span className="info-value role-badge">{user.role.charAt(0).toUpperCase() + user.role.slice(1)}</span>
+        <form className="profile-form">
+          <div className="form-group">
+            <label htmlFor="fullName">
+              <User size={16} />
+              Full Name
+            </label>
+            <input
+              id="fullName"
+              type="text"
+              name="fullName"
+              value={user.fullName}
+              onChange={onUserChange}
+              disabled={!isEditing}
+              className="form-input"
+              placeholder="Enter your full name"
+            />
           </div>
-          
-          {user.createdAt && (
-            <div className="info-item">
-              <span className="info-label">
-                <Calendar size={14} />
-                Joined
-              </span>
-              <span className="info-value">
-                {new Date(user.createdAt).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'short', 
-                  day: 'numeric' 
-                })}
-              </span>
-            </div>
-          )}
 
-          {user.lastLogin && (
+          <div className="form-group">
+            <label htmlFor="email">
+              <Mail size={16} />
+              Email Address
+            </label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              value={user.email}
+              onChange={onUserChange}
+              disabled={!isEditing}
+              className="form-input"
+              placeholder="Enter your email"
+            />
+          </div>
+
+          <div className="info-section info-grid">
             <div className="info-item">
-              <span className="info-label">
-                <Clock size={14} />
-                Last Login
-              </span>
-              <span className="info-value">
-                {new Date(user.lastLogin).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'short', 
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
-              </span>
+              <span className="info-label">Role</span>
+              <span className="info-value role-badge">{user.role.charAt(0).toUpperCase() + user.role.slice(1)}</span>
             </div>
+            {user.createdAt && (
+              <div className="info-item">
+                <span className="info-label">
+                  <Calendar size={14} />
+                  Joined
+                </span>
+                <span className="info-value">
+                  {new Date(user.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </span>
+              </div>
+            )}
+            {user.lastLogin && (
+              <div className="info-item">
+                <span className="info-label">
+                  <Clock size={14} />
+                  Last Login
+                </span>
+                <span className="info-value">
+                  {new Date(user.lastLogin).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </span>
+              </div>
+            )}
+          </div>
+        </form>
+
+        <div className="form-actions">
+          {!isEditing ? (
+            <button onClick={onUpdateProfile} className="btn btn-primary btn-full">
+              Edit Profile
+            </button>
+          ) : (
+            <>
+              <button onClick={onUpdateProfile} className="btn btn-primary">
+                Save Changes
+              </button>
+              <button onClick={() => setIsEditing(false)} className="btn btn-secondary">
+                Cancel
+              </button>
+            </>
           )}
         </div>
-      </form>
-
-      <div className="form-actions">
-        {!isEditing ? (
-          <button onClick={onUpdateProfile} className="btn btn-primary btn-full">
-            Edit Profile
-          </button>
-        ) : (
-          <>
-            <button onClick={onUpdateProfile} className="btn btn-primary">
-              Save Changes
-            </button>
-            <button onClick={() => setIsEditing(false)} className="btn btn-secondary">
-              Cancel
-            </button>
-          </>
-        )}
       </div>
     </div>
   );

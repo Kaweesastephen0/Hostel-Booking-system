@@ -50,8 +50,46 @@
   text-transform: capitalize;
 }
 
-.status-available { background-color: #16a34a; }
-.status-full { background-color: #dc2626; }
+.status-operational { background-color: #16a34a; }
+.status-maintenance { background-color: #f59e0b; }
+.status-closed { background-color: #dc2626; }
+
+.hostel-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hostel-card-category {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  background-color: #e0f2fe;
+  color: #1d4ed8;
+}
+
+.category-budget {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.category-standard {
+  background-color: #e0f2fe;
+  color: #1d4ed8;
+}
+
+.category-premium {
+  background-color: #ede9fe;
+  color: #5b21b6;
+}
+
+.category-luxury {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
 
 .hostel-card-content {
   padding: 1.25rem;

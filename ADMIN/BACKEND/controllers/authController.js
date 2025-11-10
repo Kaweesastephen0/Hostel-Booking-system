@@ -102,7 +102,7 @@ export const login = asyncHandler(async (req, res, next) => {
      })
     .status(200).json({
     success: true,
-    msg: "Login Successfull",
+    msg: "Login Successful",
     token,
     user: { id: user._id, email: user.email, fullName: user.fullName}
   });

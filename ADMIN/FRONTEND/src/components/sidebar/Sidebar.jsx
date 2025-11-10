@@ -79,14 +79,12 @@ const Sidebar = () => {
       <div className="sidebar-footer">
         <div
           onClick={handleLogout}
-          className="sidebar-link logout"
+          className="sidebar-link logout-link"
           role="button"
           tabIndex={0}
         >
           <div className="sidebar-link-icon">
-            <button onClick={handleLogout}>
-              <LogOut size={20} />
-            </button>
+            <LogOut size={20} />
           </div>
           <span className="sidebar-link-label">Logout</span>
         </div>

@@ -4,7 +4,7 @@ import InfoCard from '../../components/cards/InfoCard';
 
 const RoomInfoCard = ({ rooms, loading }) => {
   const totalRooms = rooms.length;
-  const availableRooms = rooms.filter(r => r.isAvailable).length;
+  const availableRooms = rooms.filter(r => (r.status || 'available') === 'available').length;
   const totalCapacity = rooms.reduce((acc, room) => acc + (room.maxOccupancy || 0), 0);
 
   return (

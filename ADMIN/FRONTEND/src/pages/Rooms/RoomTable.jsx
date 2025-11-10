@@ -6,17 +6,22 @@ import './RoomTable.css';
 const RoomTable = ({ rooms, onEdit, onDelete }) => {
   // Helper function to get status based on availability
   const getRoomStatus = (room) => {
-    // Since RoomModel doesn't have a status field, we'll derive it
-    // You might want to add a proper status field to your RoomModel later
+    if (room.status) {
+      return room.status;
+    }
     return room.isAvailable === false ? 'occupied' : 'available';
   };
 
-  // Helper function to get status badge class
   const getStatusClass = (status) => {
     switch (status) {
-      case 'available': return 'status-available';
-      case 'occupied': return 'status-occupied';
-      default: return 'status-unknown';
+      case 'available':
+        return 'status-available';
+      case 'occupied':
+        return 'status-occupied';
+      case 'maintenance':
+        return 'status-maintenance';
+      default:
+        return 'status-unknown';
     }
   };
 

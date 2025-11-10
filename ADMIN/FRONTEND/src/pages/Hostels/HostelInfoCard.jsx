@@ -5,8 +5,7 @@ import InfoCard from '../../components/cards/InfoCard';
 const HostelInfoCard = ({ hostels, rooms, loading }) => {
   const totalHostels = hostels.length;
   const totalRooms = rooms.length;
-  const availableHostels = hostels.filter(h => h.availability).length;
-  const issuesCount = hostels.filter(h => !h.availability).length;
+  const operationalHostels = hostels.filter(h => (h.status || 'operational') === 'operational').length;
 
   return (
     <div className="dashboard-summary-cards">
@@ -21,8 +20,8 @@ const HostelInfoCard = ({ hostels, rooms, loading }) => {
         icon={<BedDouble size={24} />}
       />
       <InfoCard
-        title="Available Hostels"
-        value={loading ? <Loader2 className="animate-spin" size={24} /> : availableHostels}
+        title="Operational Hostels"
+        value={loading ? <Loader2 className="animate-spin" size={24} /> : operationalHostels}
         icon={<CheckCircle size={24} />}
         color="success"
       />

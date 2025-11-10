@@ -4,6 +4,42 @@ import { createActivityLog } from '../utils/activityLogger.js';
 import Hostel from '../models/HostelModel.js';
 import asyncHandler from '../middleware/async.js';
 
+const CATEGORY_THRESHOLDS = {
+  luxury: 1200000,
+  premium: 1000000,
+  standard: 600000
+};
+
+const determineHostelCategory = (prices = []) => {
+  const validPrices = prices.filter((price) => typeof price === 'number' && !Number.isNaN(price));
+  if (validPrices.length === 0) {
+    return 'standard';
+  }
+  const allAffordable = validPrices.every((price) => price < CATEGORY_THRESHOLDS.standard);
+  if (allAffordable) {
+    return 'budget';
+  }
+  const maxPrice = Math.max(...validPrices);
+  if (maxPrice >= CATEGORY_THRESHOLDS.luxury) {
+    return 'luxury';
+  }
+  if (maxPrice >= CATEGORY_THRESHOLDS.premium) {
+    return 'premium';
+  }
+  return 'standard';
+};
+
+const updateHostelCategoryForHostel = async (hostelId) => {
+  if (!hostelId) {
+    return null;
+  }
+  const rooms = await roomModel.find({ hostelId }).select('roomPrice').lean();
+  const prices = rooms.map((room) => room.roomPrice);
+  const category = determineHostelCategory(prices);
+  await Hostel.findByIdAndUpdate(hostelId, { category });
+  return category;
+};
+
 export const getAllRooms = async(req, res) => {
     try {
         let rooms;
@@ -49,7 +85,10 @@ export const getAllRooms = async(req, res) => {
                         roomImages: 1,
                         maxOccupancy: 1,
                         primaryRoomImage: 1,
-                        isAvailable: 1,
+                        status: 1,
+                        isAvailable: {
+                            $eq: ['$status', 'available']
+                        },
                         createdAt: 1,
                         updatedAt: 1
                     }
@@ -61,6 +100,15 @@ export const getAllRooms = async(req, res) => {
                 .populate('hostelId') 
                 .lean();
         }
+        
+        rooms = rooms.map(room => {
+            const normalizedStatus = room.status || 'available';
+            return {
+                ...room,
+                status: normalizedStatus,
+                isAvailable: room.isAvailable !== undefined ? room.isAvailable : normalizedStatus === 'available'
+            };
+        });
         
         if (rooms.length > 0) {
             console.log(`found ${rooms.length} rooms`);
@@ -224,8 +272,8 @@ export const createRoom = asyncHandler(async (req, res) => {
   };
 
   const room = await roomModel.create(roomData);
+  await updateHostelCategoryForHostel(hostelId);
 
-  // Log the activity
   if (req.user) {
     await createActivityLog(
       req.user._id,
@@ -267,8 +315,8 @@ export const updateRoom = asyncHandler(async (req, res) => {
     new: true,
     runValidators: true
   });
+  await updateHostelCategoryForHostel(room.hostelId);
 
-  // Log the activity
   if (req.user) {
     await createActivityLog(
       req.user._id,
@@ -303,8 +351,8 @@ export const deleteRoom = asyncHandler(async (req, res) => {
   };
 
   await room.deleteOne();
+  await updateHostelCategoryForHostel(room.hostelId);
 
-  // Log the activity
   if (req.user) {
     await createActivityLog(req.user._id, `Deleted room: ${room.roomNumber}`, 'room', roomDataForLog);
   }

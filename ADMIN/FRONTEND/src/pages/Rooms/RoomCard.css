@@ -45,6 +45,26 @@
     z-index: 1;
 }
 
+.room-card-status-chip.status-available {
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+.room-card-status-chip.status-occupied {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+.room-card-status-chip.status-maintenance {
+    background-color: #f59e0b;
+    color: #ffffff;
+}
+
+.room-card-status-chip.status-unknown {
+    background-color: #94a3b8;
+    color: #1e293b;
+}
+
 .room-card-overlay {
     position: absolute;
     bottom: 0;

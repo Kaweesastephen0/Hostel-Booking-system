@@ -4,6 +4,19 @@ import * as hostelService from '../../services/hostelService';
 import * as roomService from '../../services/roomService';
 import './RoomForm.css';
 
+const createInitialFormState = () => ({
+  hostelId: '',
+  roomNumber: '',
+  roomType: 'single',
+  roomGender: 'mixed',
+  status: 'available',
+  roomPrice: '',
+  bookingPrice: '',
+  roomDescription: '',
+  maxOccupancy: 1,
+  roomImages: Array.from({ length: 5 }, (_, index) => ({ url: '', isPrimary: index === 0 }))
+});
+
 const RoomForm = ({ room, onSubmit, onCancel }) => {
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -11,19 +24,7 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
     severity: 'success'
   });
 
-  const initialFormState = {
-    hostelId: '',
-    roomNumber: '',
-    roomType: 'single',
-    roomGender: 'mixed',
-    roomPrice: '',
-    bookingPrice: '',
-    roomDescription: '',
-    maxOccupancy: 1,
-    roomImages: [{ url: '', isPrimary: true }]
-  };
-
-  const [formData, setFormData] = useState(initialFormState);
+  const [formData, setFormData] = useState(createInitialFormState);
   const [hostels, setHostels] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,26 +46,31 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
     fetchHostels();
 
     if (room) {
-      const existingImages = Array.isArray(room.roomImages) && room.roomImages.length > 0
-        ? room.roomImages.map((img, index) => ({
-            url: img.url,
-            isPrimary: index === 0 ? true : Boolean(img.isPrimary)
-          }))
+      const existingImagesSource = Array.isArray(room.roomImages) && room.roomImages.length > 0
+        ? room.roomImages
         : [{ url: room.primaryRoomImage || '', isPrimary: true }];
+
+      const normalizedImages = existingImagesSource.slice(0, 5).map((img, index) => ({
+        url: img?.url || '',
+        isPrimary: index === 0 ? true : Boolean(img?.isPrimary)
+      }));
+
+      const filledImages = Array.from({ length: 5 }, (_, index) => normalizedImages[index] || { url: '', isPrimary: index === 0 });
 
       setFormData({
         hostelId: room.hostelId?._id || room.hostelId || '',
         roomNumber: room.roomNumber || '',
         roomType: room.roomType || 'single',
         roomGender: room.roomGender || 'mixed',
+        status: room.status || 'available',
         roomPrice: room.roomPrice || '',
         bookingPrice: room.bookingPrice || '',
         roomDescription: room.roomDescription || '',
         maxOccupancy: room.maxOccupancy || 1,
-        roomImages: existingImages
+        roomImages: filledImages
       });
     } else {
-      setFormData(initialFormState);
+      setFormData(createInitialFormState());
     }
   }, [room]);
 
@@ -78,13 +84,22 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
 
   const handlePrimaryImageChange = (e) => {
     const { value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      roomImages: [{ url: value, isPrimary: true }]
-    }));
+    setFormData((prev) => {
+      const updatedImages = [...prev.roomImages];
+      updatedImages[0] = { url: value, isPrimary: true };
+      return { ...prev, roomImages: updatedImages };
+    });
     if (errors.roomImages) {
       setErrors((prev) => ({ ...prev, roomImages: '' }));
     }
+  };
+
+  const handleAdditionalImageChange = (index, value) => {
+    setFormData((prev) => {
+      const updatedImages = [...prev.roomImages];
+      updatedImages[index] = { url: value, isPrimary: false };
+      return { ...prev, roomImages: updatedImages };
+    });
   };
 
   const validateForm = () => {
@@ -94,6 +109,7 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
     if (!formData.roomNumber?.trim()) newErrors.roomNumber = 'Room number is required';
     if (!formData.roomType) newErrors.roomType = 'Room type is required';
     if (!formData.roomGender) newErrors.roomGender = 'Room gender is required';
+    if (!formData.status) newErrors.status = 'Status is required';
     if (!formData.roomPrice || formData.roomPrice <= 0) newErrors.roomPrice = 'Valid room price is required';
     if (!formData.bookingPrice || formData.bookingPrice <= 0) newErrors.bookingPrice = 'Valid booking price is required';
     if (!formData.roomDescription?.trim()) newErrors.roomDescription = 'Room description is required';
@@ -131,6 +147,7 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
         roomNumber: formData.roomNumber.trim(),
         roomType: formData.roomType,
         roomGender: formData.roomGender,
+        status: formData.status,
         roomPrice: Number(formData.roomPrice),
         bookingPrice: Number(formData.bookingPrice),
         roomDescription: formData.roomDescription.trim(),
@@ -232,6 +249,22 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
         </div>
 
         <div className="form-group">
+          <label htmlFor="status">Status *</label>
+          <select
+            id="status"
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className={errors.status ? 'error' : ''}
+          >
+            <option value="available">Available</option>
+            <option value="occupied">Occupied</option>
+            <option value="maintenance">Maintenance</option>
+          </select>
+          {errors.status && <div className="error-message">{errors.status}</div>}
+        </div>
+
+        <div className="form-group">
           <label htmlFor="roomPrice">Room Price (UGX) *</label>
           <input 
             id="roomPrice" 
@@ -305,6 +338,20 @@ const RoomForm = ({ room, onSubmit, onCancel }) => {
         />
         {errors.roomImages && <div className="error-message">{errors.roomImages}</div>}
       </div>
+
+      {[1, 2, 3, 4].map((imageIndex) => (
+        <div className="form-group" key={`roomImage${imageIndex + 1}`}>
+          <label htmlFor={`roomImage${imageIndex + 1}`}>Image URL {imageIndex + 1}</label>
+          <input
+            id={`roomImage${imageIndex + 1}`}
+            name={`roomImage${imageIndex + 1}`}
+            type="text"
+            value={formData.roomImages[imageIndex]?.url || ''}
+            onChange={(e) => handleAdditionalImageChange(imageIndex, e.target.value)}
+            placeholder="https://example.com/image.png"
+          />
+        </div>
+      ))}
 
       <div className="form-actions">
         <button 

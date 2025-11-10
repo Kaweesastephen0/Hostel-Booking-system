@@ -67,7 +67,8 @@ const Hostels = ({ isCreateMode = false }) => {
   const [filters, setFilters] = useState({
     location: 'all',
     gender: 'all',
-    availability: 'all',
+    category: 'all',
+    status: 'all',
   });
   const [formError, setFormError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,7 +93,17 @@ const Hostels = ({ isCreateMode = false }) => {
             roomCount: roomCount
           };
         });
-        setHostels(filterHostelsByRole(hostelsWithRoomCount));
+        const normalizedHostels = hostelsWithRoomCount.map(hostel => {
+          const status = (hostel.status || 'operational').toLowerCase();
+          const category = (hostel.category || 'standard').toLowerCase();
+          return {
+            ...hostel,
+            status,
+            category,
+            availability: status === 'operational'
+          };
+        });
+        setHostels(filterHostelsByRole(normalizedHostels));
         setRooms(roomsList);
         setError(null);
       } catch (err) {
@@ -181,9 +192,10 @@ const Hostels = ({ isCreateMode = false }) => {
 
       const locationMatch = filters.location === 'all' || hostel.location === filters.location;
       const genderMatch = filters.gender === 'all' || hostel.HostelGender?.toLowerCase() === filters.gender;
-      const availabilityMatch = filters.availability === 'all' || hostel.availability.toString() === filters.availability;
+      const categoryMatch = filters.category === 'all' || (hostel.category || 'standard') === filters.category;
+      const statusMatch = filters.status === 'all' || (hostel.status || 'operational') === filters.status;
 
-      return searchMatch && locationMatch && genderMatch && availabilityMatch;
+      return searchMatch && locationMatch && genderMatch && categoryMatch && statusMatch;
     });
   }, [hostels, searchTerm, filters]);
 
@@ -268,11 +280,23 @@ const Hostels = ({ isCreateMode = false }) => {
           </FormControl>
 
           <FormControl size="small" sx={{ minWidth: '180px' }}>
-            <InputLabel>Availability</InputLabel>
-            <Select name="availability" value={filters.availability} onChange={handleFilterChange} label="Availability">
-              <MenuItem value="all">All Availabilities</MenuItem>
-              <MenuItem value="true">Available</MenuItem>
-              <MenuItem value="false">Not Available</MenuItem>
+            <InputLabel>Category</InputLabel>
+            <Select name="category" value={filters.category} onChange={handleFilterChange} label="Category">
+              <MenuItem value="all">All Categories</MenuItem>
+              <MenuItem value="budget">Budget</MenuItem>
+              <MenuItem value="standard">Standard</MenuItem>
+              <MenuItem value="premium">Premium</MenuItem>
+              <MenuItem value="luxury">Luxury</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl size="small" sx={{ minWidth: '180px' }}>
+            <InputLabel>Status</InputLabel>
+            <Select name="status" value={filters.status} onChange={handleFilterChange} label="Status">
+              <MenuItem value="all">All Statuses</MenuItem>
+              <MenuItem value="operational">Operational</MenuItem>
+              <MenuItem value="maintenance">Maintenance</MenuItem>
+              <MenuItem value="closed">Closed</MenuItem>
             </Select>
           </FormControl>
 
