@@ -43,8 +43,12 @@ const RoomDetails = () => {
     const user = JSON.parse(sessionStorage.getItem('userData'));
     
     if (!user) {
-      // If no user in session, redirect to login
-      navigate(`/login?redirect=booking&roomId=${roomId}`);
+      // Store the current URL as return URL for after login
+      const returnUrl = `/room/${roomId}`;
+      sessionStorage.setItem('returnUrl', returnUrl);
+      
+      // Redirect to login
+      navigate('/login');
       return;
     }
     
@@ -64,32 +68,34 @@ const RoomDetails = () => {
     }
   };
 
-  // Check for redirect after login
+  // Check for authentication status and handle redirects
   useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem('userData'));
+    const user = JSON.parse(sessionStorage.getItem('userData') || localStorage.getItem('userData') || '{}');
     const isAuth = !!(user && user.token);
     setIsAuthenticated(isAuth);
     
-    const params = new URLSearchParams(location.search);
-    const redirect = params.get('redirect');
-    
-    if (redirect === 'booking' && isAuth && room) {
-      // Clean up the URL first
-      const cleanUrl = window.location.pathname;
-      window.history.replaceState({}, document.title, cleanUrl);
+    // If user is authenticated and there's a return URL, handle the redirect
+    if (isAuth && room) {
+      const returnUrl = sessionStorage.getItem('returnUrl');
       
-      // Then navigate to booking
-      navigate('/booking', { 
-        state: { 
-          roomId: room._id,
-          roomType: room.roomType,
-          price: room.roomPrice,
-          hostelName: room.hostelId?.name || 'Hostel',
-          roomNumber: room.roomNumber
-        }
-      });
+      if (returnUrl && returnUrl.startsWith('/room/')) {
+        // Clean up the URL and stored return URL
+        sessionStorage.removeItem('returnUrl');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        // Navigate to booking with room details
+        navigate('/booking', { 
+          state: { 
+            roomId: room._id,
+            roomType: room.roomType,
+            price: room.roomPrice,
+            hostelName: room.hostelId?.name || 'Hostel',
+            roomNumber: room.roomNumber
+          }
+        });
+      }
     }
-  }, [location, room]); // Add room as a dependency
+  }, [location, room, navigate]);
 
   // Show error message if there's an error
   useEffect(() => {

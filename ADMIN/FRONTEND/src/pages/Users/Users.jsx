@@ -205,7 +205,8 @@ const Users = () => {
       const token = localStorage.getItem('token');
 
 
-      const response = await fetch(`${API_BASE_URL}/users/${user.id}`, {
+      // Always use 'admin' as the source since we're only managing admin users in this interface
+      const response = await fetch(`${API_BASE_URL}/users/admin/${user.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

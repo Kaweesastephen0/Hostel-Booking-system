@@ -34,6 +34,34 @@ const steps = [
 ];
 
 const Booking = () => {
+  // Helper function to safely access room properties with fallbacks
+  const getRoomProperty = (property, defaultValue = '') => {
+    if (!roomDetails) return formData[property] || defaultValue;
+    
+    // Handle nested properties
+    if (property === 'hostel') {
+      return roomDetails.hostelId?.name || roomDetails.hostelName || formData.hostel || defaultValue;
+    }
+    
+    // Handle direct properties with fallback to formData
+    return roomDetails[property] !== undefined ? roomDetails[property] : (formData[property] || defaultValue);
+  };
+
+  // Calculate price with discount for long stays
+  const calculateRoomPrice = (months) => {
+    const basePrice = parseFloat(roomDetails?.price) || 0;
+    if (!basePrice) return 0;
+    
+    let price = basePrice * months;
+    
+    // Apply 10% discount for 12-month stays
+    if (months === 12) {
+      price *= 0.9;
+    }
+    
+    return Math.round(price);
+  };
+
   // State
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -60,18 +88,21 @@ const Booking = () => {
 
   // Function to fetch room details by ID
   const fetchRoomDetails = async (roomId) => {
-    if (!roomId) return;
+    if (!roomId) {
+      console.warn('No room ID provided to fetchRoomDetails');
+      return;
+    }
 
     try {
       setIsLoading(true);
       
       // Get user data from localStorage or sessionStorage
-      const userData = JSON.parse(localStorage.getItem('userData') || sessionStorage.getItem('userData') || '{}');
+      const userData = JSON.parse(sessionStorage.getItem('userData') || sessionStorage.getItem('userData') || '{}');
       const token = userData?.token;
 
       if (!token) {
         // Save the current URL to redirect back after login
-        const returnUrl = window.location.pathname + window.location.search;
+        const returnUrl = `/booking?roomId=${roomId}`;
         sessionStorage.setItem('returnUrl', returnUrl);
         navigate('/login');
         return;
@@ -89,9 +120,9 @@ const Booking = () => {
       if (!response.ok) {
         if (response.status === 401) {
           // Token might be expired, clear user data and redirect to login
-          localStorage.removeItem('userData');
           sessionStorage.removeItem('userData');
-          const returnUrl = window.location.pathname + window.location.search;
+          sessionStorage.removeItem('userData');
+          const returnUrl = `/booking?roomId=${roomId}`;
           sessionStorage.setItem('returnUrl', returnUrl);
           navigate('/login');
           return;
@@ -154,7 +185,7 @@ const Booking = () => {
       // Handle authentication errors
       if (error.message === 'Authentication required' || error.message.includes('401')) {
         // Clear any stale auth data
-        localStorage.removeItem('userData');
+     
         sessionStorage.removeItem('userData');
         
         // Set return URL for after login
@@ -174,19 +205,51 @@ const Booking = () => {
     }
   };
 
-  // Auto-fill user details
+  // Auto-fill user details from session/local storage and handle room data loading
   useEffect(() => {
-    const userData = JSON.parse(sessionStorage.getItem('userData') || localStorage.getItem('userData'));
-    if (userData) {
+    const initializeBooking = async () => {
+      const userData = JSON.parse(sessionStorage.getItem('userData') || localStorage.getItem('userData') || '{}');
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomId = urlParams.get('roomId');
+      const stateRoomId = window.history.state?.state?.roomId;
+      const finalRoomId = roomId || stateRoomId;
+
+      if (!userData?.token) {
+        // If no user is logged in, redirect to login with return URL
+        const returnUrl = window.location.pathname + (finalRoomId ? `?roomId=${finalRoomId}` : '');
+        sessionStorage.setItem('returnUrl', returnUrl);
+        navigate('/login');
+        return;
+      }
+
+      // If we have a room ID, fetch room details
+      if (finalRoomId) {
+        try {
+          await fetchRoomDetails(finalRoomId);
+        } catch (error) {
+          console.error('Error loading room details:', error);
+          // Don't redirect here to prevent loops - the error is already handled in fetchRoomDetails
+          return;
+        }
+      } else {
+        // If no room ID is provided, we might want to redirect to room selection
+        // or show an error, depending on your application's flow
+        console.warn('No room ID provided in URL or state');
+      }
+
+      // Update form data with user information
       setFormData(prev => ({
         ...prev,
         fullName: `${userData.firstName || ''} ${userData.surname || ''}`.trim(),
         email: userData.email || '',
         phone: userData.phone || '',
         idNumber: userData.studentNumber || userData.idNumber || userData.studentId || '',
-        gender: userData.gender?.toLowerCase() || ''
+        gender: userData.gender?.toLowerCase() || '',
+        checkIn: prev.checkIn || new Date(Date.now() + 86400000).toISOString().split('T')[0]
       }));
-    }
+    };
+
+    initializeBooking();
   }, []);
 
   // Watch for URL parameter changes and update room details
@@ -196,14 +259,24 @@ const Booking = () => {
       const roomId = urlParams.get('roomId');
       
       if (roomId) {
-        try {
-          await fetchRoomDetails(roomId);
-        } catch (error) {
-          console.error('Error in handleUrlChange:', error);
-          // Don't redirect here to prevent infinite loops
-          // The fetchRoomDetails function will handle the redirect if needed
+        // Only fetch if we don't already have the room details or if the room ID has changed
+        if (!roomDetails || roomDetails._id !== roomId) {
+          try {
+            await fetchRoomDetails(roomId);
+          } catch (error) {
+            console.error('Error in handleUrlChange:', error);
+            // Show error to user but don't redirect to prevent loops
+            await showError('Failed to load room details. Please try again.');
+          }
         }
+      } else if (roomDetails) {
+        // If we have room details but no room ID in URL, update the URL
+        const url = new URL(window.location);
+        url.searchParams.set('roomId', roomDetails._id);
+        window.history.replaceState({}, '', url);
       } else {
+        // No room ID and no room details - this might be a direct booking URL
+        console.warn('No room ID provided in URL');
         setIsLoading(false);
       }
     };
@@ -229,7 +302,7 @@ const Booking = () => {
     const { name, value } = e.target;
 
     // Don't update read-only fields
-    const readOnlyFields = ['roomNumber', 'roomType', 'hostel'];
+    const readOnlyFields = ['roomNumber', 'roomType', 'hostel', 'idNumber', 'gender'];
     if (roomDetails && readOnlyFields.includes(name)) {
       return;
     }
@@ -289,18 +362,18 @@ const Booking = () => {
       }
     }
 
-    const isValid = Object.keys(newErrors).length === 0;
-    setErrors(newErrors);
-    return isValid;
-  };
+const isValid = Object.keys(newErrors).length === 0;
+setErrors(newErrors);
+return isValid;
+};
 
-  // Show error message using SweetAlert2
-  const showError = (message) => {
-    return Swal.fire({
+  // Helper function to show error messages using SweetAlert2
+  const showError = async (message) => {
+    return await Swal.fire({
       icon: 'error',
       title: 'Error',
       text: message,
-      confirmButtonColor: '#2563eb',
+      confirmButtonText: 'OK'
     });
   };
 
@@ -518,82 +591,83 @@ const Booking = () => {
         return (
           <div className={styles.formSection}>
             <h2>Personal Information</h2>
-            {renderFormField({
-              name: 'fullName',
-              label: 'Full Name',
-              placeholder: 'Your full name',
-            })}
-            {renderFormField({
-              name: 'email',
-              label: 'Email Address',
-              placeholder: 'your@email.com',
-              icon: <Mail size={20} className={styles.inputIcon} />,
-            })}
-            {renderFormField({
-              name: 'phone',
-              label: 'Phone Number',
-              placeholder: 'Enter your phone number',
-              icon: <Phone size={20} className={styles.inputIcon} />,
-            })}
             <div className={styles.formGroup}>
-              <label>Gender</label>
-              <div className={styles.inputContainer}>
-                {formData.gender ? (
-                  <input
-                    type="text"
-                    name="gender"
-                    value={formData.gender === 'male' ? 'Male' : 'Female'}
-                    readOnly
-                    className={styles.readOnlyInput}
-                  />
-                ) : (
-                  <select
-                    name="gender"
-                    value={formData.gender || ''}
-                    onChange={handleChange}
-                    className={`${styles.formInput} ${errors.gender ? styles.errorInput : ''}`}
-                    required
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                  </select>
-                )}
-              </div>
-              {errors.gender && <span className={styles.error}>{errors.gender}</span>}
-            </div>
-
-            <div className={styles.formGroup}>
-              <label>ID/Student Number</label>
-              <div className={styles.inputContainer}>
+              <label>Full Name</label>
+              <div className={styles.inputWithIcon}>
+                <User size={20} className={styles.inputIcon} />
                 <input
                   type="text"
-                  name="idNumber"
-                  value={formData.idNumber}
-                  onChange={handleChange}
+                  name="fullName"
+                  value={formData.fullName}
                   readOnly
                   className={styles.readOnlyInput}
                 />
               </div>
-              {errors.idNumber && <span className={styles.error}>{errors.idNumber}</span>}
             </div>
+
             <div className={styles.formGroup}>
-              <label>Location</label>
-              <div className={styles.inputContainer}>
-                <div className={styles.inputWithIcon}>
-                  <MapPin size={20} className={styles.inputIcon} />
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location || ''}
-                    onChange={handleChange}
-                    className={`${styles.formInput} ${errors.location ? styles.errorInput : ''}`}
-                    placeholder="Your current location"
-                    required
-                  />
-                </div>
-                {errors.location && <span className={styles.error}>{errors.location}</span>}
+              <label>Email</label>
+              <div className={styles.inputWithIcon}>
+                <Mail size={20} className={styles.inputIcon} />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  readOnly
+                  className={styles.readOnlyInput}
+                />
               </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Phone Number</label>
+              <div className={styles.inputWithIcon}>
+                <Smartphone size={20} className={styles.inputIcon} />
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  readOnly
+                  className={styles.readOnlyInput}
+                />
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Gender</label>
+              <div className={styles.inputWithIcon}>
+                <UserCircle size={20} className={styles.inputIcon} />
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  disabled
+                  className={styles.readOnlyInput}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                  <option value="prefer-not-to-say">Prefer not to say</option>
+                </select>
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>ID/Student Number</label>
+              <div className={styles.inputWithIcon}>
+                <CreditCard size={20} className={styles.inputIcon} />
+                <input
+                  type="text"
+                  name="idNumber"
+                  value={formData.idNumber}
+                  readOnly
+                  className={styles.readOnlyInput}
+                />
+              </div>
+            </div>
+
+            <div className={styles.note}>
+              <p>Note: To update your personal information, please go to your profile settings.</p>
             </div>
           </div>
         );
@@ -601,13 +675,64 @@ const Booking = () => {
         return (
           <div className={styles.formSection}>
             <h2>Accommodation Details</h2>
+            
+            {roomDetails && (
+              <div className={styles.roomDetails}>
+                <div className={styles.roomImageContainer}>
+                  {roomDetails.images?.[0] ? (
+                    <img 
+                      src={roomDetails.images[0]} 
+                      alt={`${roomDetails.roomType} room`} 
+                      className={styles.roomImage}
+                    />
+                  ) : (
+                    <div className={styles.roomImagePlaceholder}>
+                      <Bed size={48} className={styles.roomIcon} />
+                    </div>
+                  )}
+                </div>
+                
+                <div className={styles.roomInfo}>
+                  <h3>{roomDetails.hostelId?.name || formData.hostel}</h3>
+                  
+                  <div className={styles.roomSpecs}>
+                    <div className={styles.specItem}>
+                      <DoorOpen size={20} className={styles.specIcon} />
+                      <span>Room {roomDetails.roomNumber || formData.roomNumber}</span>
+                    </div>
+                    <div className={styles.specItem}>
+                      <Users size={20} className={styles.specIcon} />
+                      <span>{roomDetails.capacity || 1} {roomDetails.capacity === 1 ? 'Person' : 'People'}</span>
+                    </div>
+                    <div className={styles.specItem}>
+                      <Bed size={20} className={styles.specIcon} />
+                      <span>{formData.roomType || roomDetails.roomType}</span>
+                    </div>
+                    {roomDetails.amenities?.length > 0 && (
+                      <div className={styles.amenities}>
+                        <span className={styles.amenitiesLabel}>Amenities:</span>
+                        <div className={styles.amenitiesList}>
+                          {roomDetails.amenities.slice(0, 3).map((amenity, index) => (
+                            <span key={index} className={styles.amenityTag}>{amenity}</span>
+                          ))}
+                          {roomDetails.amenities.length > 3 && (
+                            <span className={styles.amenityMore}>+{roomDetails.amenities.length - 3} more</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className={styles.formGroup}>
               <label>Hostel</label>
               <div className={styles.inputContainer}>
                 <input
                   type="text"
                   name="hostel"
-                  value={formData.hostel}
+                  value={getRoomProperty('hostel')}
                   readOnly
                   className={styles.readOnlyInput}
                 />
@@ -620,7 +745,7 @@ const Booking = () => {
                 <input
                   type="text"
                   name="roomType"
-                  value={formData.roomType}
+                  value={getRoomProperty('roomType')}
                   readOnly
                   className={styles.readOnlyInput}
                 />
@@ -633,39 +758,64 @@ const Booking = () => {
                 <input
                   type="text"
                   name="roomNumber"
-                  value={formData.roomNumber}
+                  value={getRoomProperty('roomNumber')}
                   readOnly
                   className={styles.readOnlyInput}
                 />
-                {errors.roomNumber && <span className={styles.error}>{errors.roomNumber}</span>}
               </div>
             </div>
+            
             <div className={styles.formGroup}>
               <label>Check-in Date</label>
-              <input
-                type="date"
-                name="checkIn"
-                value={formData.checkIn}
-                onChange={handleChange}
-                min={new Date().toISOString().split('T')[0]}
-                className={errors.checkIn ? styles.errorInput : ''}
-                required
-              />
+              <div className={styles.inputWithIcon}>
+                <Calendar size={20} className={styles.inputIcon} />
+                <input
+                  type="date"
+                  name="checkIn"
+                  value={formData.checkIn}
+                  onChange={handleChange}
+                  min={new Date().toISOString().split('T')[0]}
+                  className={`${styles.formInput} ${errors.checkIn ? styles.errorInput : ''}`}
+                  required
+                />
+              </div>
               {errors.checkIn && <span className={styles.error}>{errors.checkIn}</span>}
             </div>
+            
             <div className={styles.formGroup}>
               <label>Duration</label>
               <select
                 name="duration"
                 value={formData.duration}
                 onChange={handleChange}
+                className={styles.formInput}
                 required
               >
                 <option value="">Select duration</option>
-                <option value="monthly">Monthly</option>
-                <option value="semester">Per Semester</option>
-                <option value="annually">Annually</option>
+                <option value="1">1 Month - UGX {roomDetails?.price?.toLocaleString() || ''}</option>
+                <option value="4">4 Months - UGX {roomDetails?.price ? (roomDetails.price * 4).toLocaleString() : ''}</option>
+                <option value="12">12 Months - UGX {roomDetails?.price ? calculateRoomPrice(12).toLocaleString() : ''} (10% off)</option>
               </select>
+              {roomDetails?.minimumStay && (
+                <div className={styles.note}>
+                  Minimum stay: {roomDetails.minimumStay} {roomDetails.minimumStay === 1 ? 'month' : 'months'}
+                </div>
+              )}
+            </div>
+            
+            <div className={styles.priceSummary}>
+              <div className={styles.priceRow}>
+                <span>Room Price ({formData.duration || '1'} {formData.duration === '1' ? 'Month' : 'Months'}):</span>
+                <span>UGX {roomDetails?.price ? calculateRoomPrice(parseInt(formData.duration || 1)).toLocaleString() : '0'}</span>
+              </div>
+              <div className={styles.priceRow}>
+                <span>Booking Fee:</span>
+                <span>UGX 50,000</span>
+              </div>
+              <div className={styles.priceTotal}>
+                <span>Total:</span>
+                <span>UGX {roomDetails?.price ? (calculateRoomPrice(parseInt(formData.duration || 1)) + 50000).toLocaleString() : '0'}</span>
+              </div>
             </div>
           </div>
         );
@@ -682,8 +832,8 @@ const Booking = () => {
                   <span>{formData.roomType} Room</span>
                 </div>
                 <div className={styles.summaryItem}>
-                  <span>Room Price ({formData.duration || 'duration'}):</span>
-                  <span>UGX {roomDetails.roomPrice?.toLocaleString() || 'N/A'}</span>
+                  <span>Room Price ({formData.duration || '1'} {formData.duration === '1' ? 'Month' : 'Months'}):</span>
+                  <span>UGX {calculateRoomPrice(parseInt(formData.duration || 1)).toLocaleString()}</span>
                 </div>
                 <div className={styles.summaryItem}>
                   <span>Booking Fee:</span>
@@ -691,7 +841,7 @@ const Booking = () => {
                 </div>
                 <div className={styles.summaryTotal}>
                   <span>Total Amount:</span>
-                  <strong>UGX {(roomDetails.roomPrice + 50000)?.toLocaleString() || 'N/A'}</strong>
+                  <strong>UGX {(calculateRoomPrice(parseInt(formData.duration || 1)) + 50000).toLocaleString()}</strong>
                 </div>
               </div>
             )}

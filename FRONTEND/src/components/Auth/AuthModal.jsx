@@ -155,38 +155,41 @@ function Auth() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store only user data (not token) in sessionStorage
+        // Store user data in the appropriate storage
         const storage = formData.rememberMe ? localStorage : sessionStorage;
         storage.setItem('userData', JSON.stringify(data));
         storage.setItem('lastLoginTime', new Date().toISOString());
 
+        // Reset form data
         resetFormData();
 
-        // Dispatch custom event to update header
+        // Notify other components about auth state change
         window.dispatchEvent(new Event('authStateChanged'));
 
-        // Check for return URL in sessionStorage (set by the booking page)
-        const returnUrl = sessionStorage.getItem('returnUrl');
+        // Check for return URL in this order:
+        // 1. returnUrl in sessionStorage (set by protected routes)
+        // 2. returnUrl in URL parameters
+        // 3. Default to home page
+        const searchParams = new URLSearchParams(window.location.search);
+        let returnUrl = sessionStorage.getItem('returnUrl') || searchParams.get('returnUrl');
 
-        if (returnUrl) {
-          // Remove the returnUrl from sessionStorage to prevent it from being used again
+        // Clean up stored return URL if it exists
+        if (sessionStorage.getItem('returnUrl')) {
           sessionStorage.removeItem('returnUrl');
-          // Redirect to the stored URL (e.g., /booking?roomId=123)
-          navigate(returnUrl);
-        } else {
-          // Fall back to the previous redirect logic if no returnUrl is found
-          const searchParams = new URLSearchParams(window.location.search);
-          const redirect = searchParams.get('redirect');
-          const roomId = searchParams.get('roomId');
-
-          if (redirect === 'booking' && roomId) {
-            // Redirect to booking page with room ID
-            navigate(`/booking?roomId=${roomId}`);
-          } else {
-            // Default redirect to home page
-            navigate('/');
-          }
         }
+
+        // Clean up URL parameters
+        if (window.location.search) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        // Handle special case for room booking flow
+        if (!returnUrl && searchParams.get('redirect') === 'booking' && searchParams.get('roomId')) {
+          returnUrl = `/booking?roomId=${searchParams.get('roomId')}`;
+        }
+
+        // Navigate to the target URL or home page
+        navigate(returnUrl || '/');
       } else {
         setError(data.message || 'Login failed');
       }

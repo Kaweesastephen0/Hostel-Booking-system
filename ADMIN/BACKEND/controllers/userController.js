@@ -417,17 +417,44 @@ export const toggleUserStatus = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const { source, id } = req.params;
-    const Model = source === 'admin' ? AdminUser : User;
     
-    const user = await Model.findByIdAndDelete(id);
-    
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+    if (!id || !source) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'User ID and source are required' 
+      });
     }
     
-    res.status(200).json({ success: true, data: {} });
+    // Only allow deletion from admin source since we're only using AdminUser
+    if (source !== 'admin') {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid user source' 
+      });
+    }
+    
+    // Since we're only using AdminUser, we can directly use it
+    const user = await AdminUser.findByIdAndDelete(id);
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+    
+    res.status(200).json({ 
+      success: true, 
+      message: 'User deleted successfully',
+      data: { id: user._id }
+    });
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Server Error' });
+    console.error('Error deleting user:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete user',
+      error: error.message 
+    });
   }
 };
 
