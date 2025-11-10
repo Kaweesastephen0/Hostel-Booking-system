@@ -15,7 +15,7 @@ import API_URL from './config/api';
  */
 const validatePasswordStrength = (password) => {
   const errors = [];
-  
+
   if (password.length < 8) {
     errors.push('At least 8 characters');
   }
@@ -31,7 +31,7 @@ const validatePasswordStrength = (password) => {
   if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
     errors.push('One special character (!@#$%^&*...)');
   }
-  
+
   return {
     isValid: errors.length === 0,
     errors
@@ -91,51 +91,51 @@ function Auth() {
 
   // FORM VALIDATION HELPERS
   //Checks if login form is complete and valid
-   
+
   const isLoginFormValid = () => {
     return formData.email.trim() !== '' && formData.password.trim() !== '';
   };
 
   //Checks if registration form is complete and valid
   const isRegisterFormValid = () => {
-    const baseFieldsValid = 
+    const baseFieldsValid =
       formData.firstName.trim() !== '' &&
       formData.surname.trim() !== '' &&
       formData.email.trim() !== '' &&
       formData.password.trim() !== '' &&
       formData.confirmPassword.trim() !== '';
-    
-    const userTypeFieldValid = 
-      formData.userType === 'student' 
-        ? formData.studentNumber.trim() !== '' 
+
+    const userTypeFieldValid =
+      formData.userType === 'student'
+        ? formData.studentNumber.trim() !== ''
         : formData.nin.trim() !== '';
-    
+
     return baseFieldsValid && userTypeFieldValid && passwordValidation.isValid;
   };
 
-  
+
   // EVENT HANDLERS
   // Handles input field changes
-   
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
-    
+
     setFormData(prev => ({
       ...prev,
       [name]: newValue
     }));
-    
+
     // Validate password strength in real-time for registration
     if (name === 'password' && authMode === 'register') {
       setPasswordValidation(validatePasswordStrength(value));
     }
-    
+
     setError('');
   };
 
   // Handles login form submission
-  
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -155,7 +155,7 @@ function Auth() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store only user data (not token) in localStorage
+        // Store only user data (not token) in sessionStorage
         const storage = formData.rememberMe ? localStorage : sessionStorage;
         storage.setItem('userData', JSON.stringify(data));
         storage.setItem('lastLoginTime', new Date().toISOString());
@@ -166,7 +166,18 @@ function Auth() {
         // Dispatch custom event to update header
         window.dispatchEvent(new Event('authStateChanged'));
 
-        navigate('/');
+        // Check for redirect URL in query params
+        const searchParams = new URLSearchParams(window.location.search);
+        const redirect = searchParams.get('redirect');
+        const roomId = searchParams.get('roomId');
+
+        if (redirect === 'booking' && roomId) {
+          // Redirect to booking page with room ID
+          navigate(`/booking?roomId=${roomId}`);
+        } else {
+          // Default redirect to home page
+          navigate('/');
+        }
       } else {
         setError(data.message || 'Login failed');
       }
@@ -177,8 +188,8 @@ function Auth() {
     }
   };
 
-  
-   // Handles registration form submission
+
+  // Handles registration form submission
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -232,7 +243,7 @@ function Auth() {
     }
   };
 
-  
+
   // MODE SWITCHING
   const switchToForgotPassword = () => {
     resetFormData();
@@ -249,7 +260,7 @@ function Auth() {
     setAuthMode('login');
   };
 
-   // RENDER
+  // RENDER
   return (
     <div className={styles.pageContainer}>
       {/* Back Button */}
@@ -265,9 +276,9 @@ function Auth() {
             <h1 className={styles.brandTitle}>MUK-Book</h1>
             <p className={styles.brandTagline}>Your trusted accommodation partner</p>
           </div>
-          <img 
-            src="https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
-            alt="Hostel accommodation" 
+          <img
+            src="https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+            alt="Hostel accommodation"
             className={styles.heroImg}
           />
         </div>
@@ -344,9 +355,9 @@ function Auth() {
                   </button>
                 </div>
 
-                <button 
-                  type="submit" 
-                  disabled={loading || !isLoginFormValid()} 
+                <button
+                  type="submit"
+                  disabled={loading || !isLoginFormValid()}
                   className={styles.submitBtn}
                 >
                   {loading ? 'Logging in...' : 'Login'}
@@ -573,9 +584,9 @@ function Auth() {
                   </div>
                 </div>
 
-                <button 
-                  type="submit" 
-                  disabled={loading || !isRegisterFormValid()} 
+                <button
+                  type="submit"
+                  disabled={loading || !isRegisterFormValid()}
                   className={styles.submitBtn}
                 >
                   {loading ? 'Creating Account...' : 'Register'}
@@ -621,7 +632,7 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
 
 
   //Validates if step 1 form is complete
-   
+
   const isStep1Valid = () => {
     return formData.email.trim() !== '';
   };
@@ -637,7 +648,7 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
   };
 
   //Handles password input change with validation
-  
+
   const handlePasswordChange = (value) => {
     setNewPassword(value);
     setPasswordValidation(validatePasswordStrength(value));
@@ -754,9 +765,9 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
             </div>
           </div>
 
-          <button 
-            type="submit" 
-            disabled={loading || !isStep1Valid()} 
+          <button
+            type="submit"
+            disabled={loading || !isStep1Valid()}
             className={styles.submitBtn}
           >
             {loading ? 'Sending...' : 'Send Reset Code'}
@@ -844,9 +855,9 @@ function ForgotPasswordForm({ onBack, formData, handleChange, error, setError })
             )}
           </div>
 
-          <button 
-            type="submit" 
-            disabled={loading || !isStep2Valid()} 
+          <button
+            type="submit"
+            disabled={loading || !isStep2Valid()}
             className={styles.submitBtn}
           >
             {loading ? 'Resetting...' : 'Reset Password'}

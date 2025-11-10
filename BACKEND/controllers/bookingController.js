@@ -1,12 +1,11 @@
 import Booking from "../models/Booking.js";
-import pkg from "express-validator";
-const { validateResults } = pkg;
+import { validationResult } from "express-validator";
 
 
 export const createBooking = async (req, res) => {
  try{
   // Error validation
-  const errors = validateResults(req);
+  const errors = validationResult(req);
   if(!errors.isEmpty()){
     return res.status(400).json({
       errors: errors.array().map((err) => err.msg)
@@ -14,10 +13,12 @@ export const createBooking = async (req, res) => {
   }
 
   const { fullName, gender, age, occupation, idNumber, phone, email, location, 
-    hostelName, roomType, duration, checkIn, paymentMethod, bookingFee, paymentNumber
+    hostelName, roomNumber, roomType, duration, checkIn, paymentMethod, bookingFee, paymentNumber
   } = req.body;
-  const form = new Booking({fullName, gender, age, occupation, idNumber, phone, email, location, 
-    hostelName, roomType, duration, checkIn, paymentMethod, bookingFee, paymentNumber});
+  const form = new Booking({
+    fullName, gender, age, occupation, idNumber, phone, email, location, 
+    hostelName, roomNumber, roomType, duration, checkIn, paymentMethod, bookingFee, paymentNumber
+  });
     await form.save();
 
     res.status(201).json({ message: "Booking successfully"});

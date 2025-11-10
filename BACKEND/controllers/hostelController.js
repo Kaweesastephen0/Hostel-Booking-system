@@ -245,11 +245,11 @@ export const getSearchbarQuery = async (req, res) => {
     try {
         const { location, roomType, minPrice, maxPrice } = req.query;
 
-        console.log("🔍 SEARCH STARTED - Params:", { location, roomType, minPrice, maxPrice });
+        console.log(" SEARCH STARTED - Params:", { location, roomType, minPrice, maxPrice });
 
         // At least ONE field required
         if (!location && !roomType && !minPrice && !maxPrice) {
-            console.log("❌ No search criteria provided");
+            console.log(" No search criteria provided");
             return res.status(400).json({
                 success: false,
                 message: 'Please provide at least one search criteria',
@@ -261,10 +261,10 @@ export const getSearchbarQuery = async (req, res) => {
         // LOCATION SEARCH
         if (location && location.trim()) {
             const searchTerm = location.trim().toLowerCase();
-            console.log(`📍 Searching for location: "${searchTerm}"`);
+            console.log(` Searching for location: "${searchTerm}"`);
             
             const allHostels = await HostelModel.find({}).lean();
-            console.log(`📊 Total hostels in DB: ${allHostels.length}`);
+            console.log(` Total hostels in DB: ${allHostels.length}`);
             
             hostels = allHostels.filter(hostel => {
                 const hostelLocation = (hostel.location || '').toLowerCase();
@@ -272,19 +272,19 @@ export const getSearchbarQuery = async (req, res) => {
                 
                 const matches = hostelLocation.includes(searchTerm) || hostelName.includes(searchTerm);
                 if (matches) {
-                    console.log(`✅ Matched hostel: ${hostel.name} (${hostel.location})`);
+                    console.log(` Matched hostel: ${hostel.name} (${hostel.location})`);
                 }
                 return matches;
             });
             
-            console.log(`📍 Location search found: ${hostels.length} hostels`);
+            console.log(` Location search found: ${hostels.length} hostels`);
         } else {
             hostels = await HostelModel.find({}).lean();
-            console.log(`📊 No location filter, using all: ${hostels.length} hostels`);
+            console.log(` No location filter, using all: ${hostels.length} hostels`);
         }
 
         if (hostels.length === 0) {
-            console.log("❌ No hostels found after location filter");
+            console.log(" No hostels found after location filter");
             return res.status(200).json({
                 success: true,
                 data: [],
@@ -295,34 +295,34 @@ export const getSearchbarQuery = async (req, res) => {
 
         // Get rooms for these hostels
         const hostelIds = hostels.map(h => h._id);
-        console.log(`🏨 Hostel IDs to search: ${hostelIds.length}`);
+        console.log(` Hostel IDs to search: ${hostelIds.length}`);
         
         const roomQuery = { hostelId: { $in: hostelIds } };
         const allRooms = await roomModel.find(roomQuery).lean();
-        console.log(`🛏️ Found ${allRooms.length} rooms for these hostels`);
+        console.log(` Found ${allRooms.length} rooms for these hostels`);
 
         // Apply room type filter
         let filteredRooms = allRooms;
         if (roomType && roomType.trim()) {
             const roomTypeLower = roomType.trim().toLowerCase();
-            console.log(`🔍 Filtering by room type: "${roomTypeLower}"`);
+            console.log(` Filtering by room type: "${roomTypeLower}"`);
             
             filteredRooms = allRooms.filter(room => 
                 (room.roomType || '').toLowerCase().includes(roomTypeLower)
             );
-            console.log(`🛏️ After room type filter: ${filteredRooms.length} rooms`);
+            console.log(` After room type filter: ${filteredRooms.length} rooms`);
         }
 
         // Apply price filter
         if (minPrice || maxPrice) {
-            console.log(`💰 Price filter: ${minPrice || 'none'} - ${maxPrice || 'none'}`);
+            console.log(` Price filter: ${minPrice || 'none'} - ${maxPrice || 'none'}`);
             filteredRooms = filteredRooms.filter(room => {
                 const price = room.roomPrice;
                 if (minPrice && price < Number(minPrice)) return false;
                 if (maxPrice && room.roomPrice > Number(maxPrice)) return false;
                 return true;
             });
-            console.log(`🛏️ After price filter: ${filteredRooms.length} rooms`);
+            console.log(` After price filter: ${filteredRooms.length} rooms`);
         }
 
         // Build results
@@ -356,7 +356,7 @@ export const getSearchbarQuery = async (req, res) => {
                 };
             });
 
-        console.log(`🎯 FINAL RESULTS: ${results.length} hostels`);
+        console.log(` FINAL RESULTS: ${results.length} hostels`);
         results.forEach(hostel => {
             console.log(`   - ${hostel.name}: ${hostel.matchingRoomsCount} rooms, UGX ${hostel.priceRange.min.toLocaleString()} - UGX ${hostel.priceRange.max.toLocaleString()}`);
         });
@@ -369,7 +369,7 @@ export const getSearchbarQuery = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("❌ SEARCH ERROR:", error);
+        console.error(" SEARCH ERROR:", error);
         return res.status(500).json({
             success: false,
             message: 'Server error',
