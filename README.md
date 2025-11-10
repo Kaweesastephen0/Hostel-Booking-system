@@ -100,10 +100,12 @@ Hostel-Booking-system/
 │   │   │   ├── HostelList.jsx   # Hostel listing page
 │   │   │   └── HostelList.css
 |   |   |   |___
+|
 │   │   ├── services/
 │   │   │   └── hostelService.js # API service
 │   │   ├── App.jsx              # Main app component
-│   │   └── App.css              # App styles
+│   │   └── App.css 
+             # App styles
 │   └── package.json
 └── SETUP_GUIDE.md
 ```

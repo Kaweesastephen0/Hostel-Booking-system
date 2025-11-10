@@ -160,3 +160,6 @@ app.listen(PORT, () => {
     console.log(`Health check: http://localhost:${PORT}/api/health`);
     console.log(`Hostels API: http://localhost:${PORT}/api/hostels`);
 })
+
+
+
