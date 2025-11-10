@@ -116,7 +116,7 @@ export default function SearchBar({ onSearch }) {
         <div className={styles.inputWrapper}>
           <input
             type="text"
-            placeholder="Enter location (Makerere, Kikoni, Katanga...)"
+            placeholder="Enter location (Makerere...)"
             className={styles.input}
             value={location}
             onChange={(e) => setLocation(e.target.value)}
