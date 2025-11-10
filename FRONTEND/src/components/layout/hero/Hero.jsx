@@ -8,7 +8,7 @@ import { useHostels } from '../../../hooks/useHostels';
 // Helper function to get hostel image
 const getHostelImage = (hostel) => {
   if (!hostel?.images || !Array.isArray(hostel.images) || hostel.images.length === 0) {
-    return 'https://images.pexels.com/photos/20237982/pexels-photo-20237982.jpeg'; // Fallback image
+    return 'No image'; 
   }
   
   // Get the primary image or first image
@@ -16,7 +16,7 @@ const getHostelImage = (hostel) => {
   const firstImage = hostel.images[0];
   const targetImage = primaryImage || firstImage;
   
-  return targetImage?.url || 'https://images.pexels.com/photos/20237982/pexels-photo-20237982.jpeg';
+  return targetImage?.url || 'No image';
 };
 
 export default function Hero({ onSearch }) {
