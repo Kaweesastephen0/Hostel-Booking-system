@@ -209,25 +209,27 @@
   .affordableSection,
   .midrangeSection,
   .standardSection {
-    padding: 60px 16px;
+    padding: 40px 12px;
   }
 
   .affordableSection {
-    padding: 20px 16px;
+    padding: 15px 12px;
   }
-  
+
   .midrangeSection {
-    padding: 20px 0;
+    padding: 15px 0;
   }
 
   .midrangeSection .sectionHeader {
-    margin-left: 20px;
+    margin-left: 12px;
+    margin-bottom: 15px;
   }
-  
+
   .sectionHeader {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    gap: 12px;
+    margin-bottom: 15px;
   }
 
   .headerInfo {
@@ -235,22 +237,201 @@
   }
 
   .sectionTitle {
-    font-size: 20px;
-  }
-
-  .midrangeSection .sectionTitle {
     font-size: 18px;
   }
 
+  .midrangeSection .sectionTitle {
+    font-size: 17px;
+  }
+
+  .language {
+    font-size: 12px;
+  }
+
+  .date {
+    font-size: 12px;
+  }
+
+  .horizontalScrollContainer {
+    padding: 8px 0;
+  }
+
   .propertiesGridHorizontal {
-    gap: 20px;
+    gap: 16px;
+    padding: 8px 5px;
   }
 
   .midrangeSection .propertiesGridHorizontal {
-    gap: 20px;
+    gap: 16px;
+    padding: 15px 0;
+    padding-right: 16px;
   }
 
   .loadingSkeleton {
-    min-width: 280px;
+    min-width: 240px;
+    height: 280px;
+  }
+
+  .midrangeSection .loadingSkeleton {
+    min-width: 260px;
+    height: 340px;
+  }
+
+  .errorMessage {
+    padding: 40px 15px;
+    font-size: 16px;
+  }
+
+  .midrangeSection .errorMessage {
+    font-size: 17px;
+    padding: 35px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .premiumSection,
+  .affordableSection,
+  .midrangeSection,
+  .standardSection {
+    padding: 30px 10px;
+  }
+
+  .affordableSection {
+    padding: 12px 10px;
+  }
+
+  .midrangeSection {
+    padding: 12px 0;
+  }
+
+  .midrangeSection .sectionHeader {
+    margin-left: 10px;
+    margin-bottom: 12px;
+  }
+
+  .sectionHeader {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .sectionTitle {
+    font-size: 16px;
+  }
+
+  .midrangeSection .sectionTitle {
+    font-size: 15px;
+  }
+
+  .language {
+    font-size: 11px;
+  }
+
+  .date {
+    font-size: 11px;
+  }
+
+  .horizontalScrollContainer {
+    padding: 6px 0;
+  }
+
+  .horizontalScrollContainer::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .propertiesGridHorizontal {
+    gap: 14px;
+    padding: 6px 3px;
+  }
+
+  .midrangeSection .propertiesGridHorizontal {
+    gap: 14px;
+    padding: 12px 0;
+    padding-right: 14px;
+  }
+
+  .loadingSkeleton {
+    min-width: 220px;
+    height: 260px;
+  }
+
+  .midrangeSection .loadingSkeleton {
+    min-width: 240px;
+    height: 320px;
+  }
+
+  .errorMessage {
+    padding: 30px 12px;
+    font-size: 15px;
+  }
+
+  .midrangeSection .errorMessage {
+    font-size: 16px;
+    padding: 28px 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .premiumSection,
+  .affordableSection,
+  .midrangeSection,
+  .standardSection {
+    padding: 25px 8px;
+  }
+
+  .affordableSection {
+    padding: 10px 8px;
+  }
+
+  .midrangeSection {
+    padding: 10px 0;
+  }
+
+  .midrangeSection .sectionHeader {
+    margin-left: 8px;
+    margin-bottom: 10px;
+  }
+
+  .sectionHeader {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .sectionTitle {
+    font-size: 15px;
+  }
+
+  .midrangeSection .sectionTitle {
+    font-size: 14px;
+  }
+
+  .propertiesGridHorizontal {
+    gap: 12px;
+    padding: 5px 2px;
+  }
+
+  .midrangeSection .propertiesGridHorizontal {
+    gap: 12px;
+    padding: 10px 0;
+    padding-right: 12px;
+  }
+
+  .loadingSkeleton {
+    min-width: 200px;
+    height: 240px;
+  }
+
+  .midrangeSection .loadingSkeleton {
+    min-width: 220px;
+    height: 300px;
+  }
+
+  .errorMessage {
+    padding: 25px 10px;
+    font-size: 14px;
+  }
+
+  .midrangeSection .errorMessage {
+    font-size: 15px;
+    padding: 25px 10px;
   }
 }
