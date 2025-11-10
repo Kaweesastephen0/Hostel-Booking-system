@@ -83,7 +83,7 @@ const Aboutus = () => {
 
           <div className={styles.teamCard}>
             <img
-              src="https://res.cloudinary.com/dtpyrqass/image/upload/v1762774247/WhatsApp_Image_2025-11-09_at_13.15.11_054beef8_y6pvxr.jpg"
+              src="https://res.cloudinary.com/dtpyrqass/image/upload/v1762776699/WhatsApp_Image_2025-11-10_at_04.08.57_2cbf7d44_f9rntb.jpg"
               alt="Team Member"
             />
             <h3>BUKENYA UMAR</h3>
@@ -92,7 +92,7 @@ const Aboutus = () => {
 
           <div className={styles.teamCard}>
             <img
-              src="https://res.cloudinary.com/dtpyrqass/image/upload/v1762773804/WhatsApp_Image_2025-11-09_at_13.06.38_2ed8dfe8_m8nuwp.jpg"
+              src="https://res.cloudinary.com/dtpyrqass/image/upload/v1762776606/WhatsApp_Image_2025-11-10_at_04.09.22_411cc0db_irh2a0.jpg"
               alt="Team Member"
             />
             <h3>MULINDWA RAYMOND</h3>
