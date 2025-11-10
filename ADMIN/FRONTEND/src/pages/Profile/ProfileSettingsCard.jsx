@@ -136,7 +136,7 @@ const ProfileSettingsCard = ({
             <button
               type="submit"
               className="btn btn-primary btn-full"
-              disabled={isChangingPassword || !password.currentPassword || !passwordsMatch}
+              disabled={isChangingPassword}
             >
               {isChangingPassword ? 'Updating...' : 'Update Password'}
             </button>

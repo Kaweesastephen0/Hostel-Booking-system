@@ -177,7 +177,7 @@ export const getUsers = asyncHandler(async (req, res) => {
       message: 'Error fetching users',
       error: error.message
     });
-}
+});
 
 export const getUserById = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -311,4 +311,4 @@ export default {
   updateUser,
   deleteUser,
   toggleUserStatus,
-});
+};

@@ -139,7 +139,34 @@ const GeneralSettings = ({ role = 'manager', settings = {}, onUpdate = () => {} 
         }
     };
 
-    const renderFormField = (label, name, value, type = 'text', placeholder = '', required = false, error = null) => (
+    const [dirtyCards, setDirtyCards] = useState({});
+
+    const handleCardChange = (e, cardName) => {
+        handleChange(e);
+        setDirtyCards(prev => ({ ...prev, [cardName]: true }));
+    };
+
+    const handleCardSubmit = async (cardName) => {
+        // Logic to save only the fields in the specific card
+        setSaving(true);
+        setMessage(null);
+        try {
+            // You might need to create a specific update function for each card
+            await updateSettings(form);
+            setMessage({ type: 'success', text: 'Settings saved successfully!' });
+            setDirtyCards(prev => ({ ...prev, [cardName]: false }));
+            setTimeout(() => {
+                setMessage(null);
+                onUpdate();
+            }, 2000);
+        } catch (err) {
+            setMessage({ type: 'error', text: err.message || 'Failed to save settings.' });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const renderFormField = (label, name, value, type = 'text', placeholder = '', required = false, error = null, cardName) => (
         <div className="form-group">
             <label className="form-label">
                 {label}
@@ -149,7 +176,7 @@ const GeneralSettings = ({ role = 'manager', settings = {}, onUpdate = () => {} 
                 <textarea
                     name={name}
                     value={value}
-                    onChange={handleChange}
+                    onChange={(e) => handleCardChange(e, cardName)}
                     placeholder={placeholder}
                     className={`form-input ${error ? 'error' : ''}`}
                 />
@@ -158,7 +185,7 @@ const GeneralSettings = ({ role = 'manager', settings = {}, onUpdate = () => {} 
                     type={type}
                     name={name}
                     value={value}
-                    onChange={handleChange}
+                    onChange={(e) => handleCardChange(e, cardName)}
                     placeholder={placeholder}
                     className={`form-input ${error ? 'error' : ''}`}
                 />
@@ -175,10 +202,17 @@ const GeneralSettings = ({ role = 'manager', settings = {}, onUpdate = () => {} 
                     <p className="card-description">Manage the core identity of your booking platform.</p>
                 </div>
                 <div className="card-body">
-                    {renderFormField('System Name', 'systemName', form.systemName, 'text', 'e.g., Hostel Booking Pro', true, validationErrors.systemName)}
-                    {renderFormField('System Logo URL', 'systemLogoUrl', form.systemLogoUrl, 'text', 'https://...')}
-                    {renderFormField('System Domain', 'systemDomain', form.systemDomain, 'text', 'e.g., hostelbooking.com', true, validationErrors.systemDomain)}
+                    {renderFormField('System Name', 'systemName', form.systemName, 'text', 'e.g., Hostel Booking Pro', true, validationErrors.systemName, 'systemIdentity')}
+                    {renderFormField('System Logo URL', 'systemLogoUrl', form.systemLogoUrl, 'text', 'https://...', false, null, 'systemIdentity')}
+                    {renderFormField('System Domain', 'systemDomain', form.systemDomain, 'text', 'e.g., hostelbooking.com', true, validationErrors.systemDomain, 'systemIdentity')}
                 </div>
+                {dirtyCards.systemIdentity && (
+                    <div className="card-footer">
+                        <button onClick={() => handleCardSubmit('systemIdentity')} className="btn btn-primary" disabled={saving}>
+                            {saving ? 'Saving...' : 'Save'}
+                        </button>
+                    </div>
+                )}
             </div>
 
             <div className="settings-card">
@@ -402,15 +436,7 @@ const GeneralSettings = ({ role = 'manager', settings = {}, onUpdate = () => {} 
 
             {role === 'admin' ? renderAdminSettings() : renderManagerSettings()}
 
-            <div className="form-actions">
-                <button type="submit" className="btn btn-primary" disabled={saving}>
-                    {saving ? (
-                        <><Loader size={16} className="animate-spin" /> Saving...</>
-                    ) : (
-                        <><Save size={16} /> Save Settings</>
-                    )}
-                </button>
-            </div>
+
         </form>
     );
 };
