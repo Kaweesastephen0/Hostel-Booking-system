@@ -1,8 +1,6 @@
 /* components/hostels/shared/HostelSection.module.css */
 
-/* ============================================
-   SECTION CONTAINERS
-   ============================================ */
+
 
 .premiumSection,
 .affordableSection,
@@ -22,9 +20,7 @@
   font-family: 'Roboto', sans-serif;
 }
 
-/* ============================================
-   SECTION HEADER
-   ============================================ */
+
 
 .sectionHeader {
   display: flex;
@@ -69,9 +65,6 @@
   color: #6b7280;
 }
 
-/* ============================================
-   OPTIMIZED SCROLL CONTAINER
-   ============================================ */
 
 .horizontalScrollContainer {
   width: 100%;
@@ -125,10 +118,6 @@
   background: rgba(255, 255, 255, 0.5);
 }
 
-/* ============================================
-   OPTIMIZED GRID LAYOUT
-   ============================================ */
-
 .propertiesGridHorizontal {
   display: flex;
   gap: 32px;
@@ -146,9 +135,7 @@
   padding-right: 24px;
 }
 
-/* ============================================
-   LOADING STATES (Skeleton Only)
-   ============================================ */
+
 
 .loadingMessage {
   display: flex;
@@ -196,9 +183,7 @@
   }
 }
 
-/* ============================================
-   ERROR STATES
-   ============================================ */
+
 
 .errorMessage {
   text-align: center;
@@ -218,9 +203,6 @@
   background: rgba(255, 107, 107, 0.1);
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
 
 @media (max-width: 768px) {
   .premiumSection,
