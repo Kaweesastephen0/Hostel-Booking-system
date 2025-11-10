@@ -36,11 +36,11 @@
 @media (max-width: 640px) {
   .footerGrid {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 16px;
   }
-  
+
   .footer {
-    padding: 48px 24px 24px;
+    padding: 24px 16px 16px;
   }
 }
 
@@ -79,6 +79,22 @@
   gap: 8px;
 }
 
+@media (max-width: 640px) {
+  .footerHeading {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+
+  .footerList {
+    gap: 4px;
+  }
+
+  .footerLink {
+    font-size: 12px;
+    gap: 4px;
+  }
+}
+
 .footerLink:hover {
   color: #ffffff;
 }
@@ -108,12 +124,26 @@
   letter-spacing: 0.5px;
 }
 
+@media (max-width: 640px) {
+  .badge,
+  .badgeNew {
+    font-size: 9px;
+    padding: 1px 5px;
+  }
+}
+
 /* Divider */
 .divider {
   width: 100%;
   height: 1px;
   background-color: rgba(255, 255, 255, 0.15);
   margin: 32px 0;
+}
+
+@media (max-width: 640px) {
+  .divider {
+    margin: 12px 0;
+  }
 }
 
 /* Bottom Bar */
@@ -133,6 +163,12 @@
   }
 }
 
+@media (max-width: 640px) {
+  .bottomBar {
+    gap: 12px;
+  }
+}
+
 /* Social Icons */
 .socialIcons {
   display: flex;
@@ -140,16 +176,15 @@
   align-items: center;
 }
 
-.socialLink {
-  color: #ffffff;
-  transition: opacity 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+@media (max-width: 640px) {
+  .socialIcons {
+    gap: 10px;
+  }
 
-.socialLink:hover {
-  opacity: 0.7;
+  .socialIcons svg {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 /* Bottom Center Links */
@@ -169,6 +204,12 @@
   }
 }
 
+@media (max-width: 640px) {
+  .bottomCenter {
+    gap: 6px;
+  }
+}
+
 .bottomLink {
   font-size: 14px;
   color: #d4e5f0;
@@ -181,9 +222,21 @@
   color: #ffffff;
 }
 
+@media (max-width: 640px) {
+  .bottomLink {
+    font-size: 11px;
+  }
+}
+
 .separator {
   color: #d4e5f0;
   font-size: 14px;
+}
+
+@media (max-width: 640px) {
+  .separator {
+    font-size: 11px;
+  }
 }
 
 /* Currency Selector */
@@ -198,6 +251,12 @@
   color: #ffffff;
   font-weight: 500;
   white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .currency {
+    font-size: 11px;
+  }
 }
 
 .flag {

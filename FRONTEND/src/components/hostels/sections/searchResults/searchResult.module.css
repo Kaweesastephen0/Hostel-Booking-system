@@ -3,6 +3,7 @@
 .container {
   width: 100%;
   margin: 0 auto;
+  padding-top: 90px; /* Space for fixed header on desktop */
 }
 
 .resultsWrapper {
@@ -398,5 +399,17 @@
 
   .priceSection {
     width: 100%;
+  }
+
+  /* Adjust padding for mobile to match header height */
+  .container {
+    padding-top: 70px; /* Space for 60px header + 10px margin */
+  }
+}
+
+@media (max-width: 480px) {
+  /* Adjust padding for mobile to match header height */
+  .container {
+    padding-top: 60px; /* Space for 50px header + 10px margin */
   }
 }

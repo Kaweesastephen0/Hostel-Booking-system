@@ -61,6 +61,8 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .input {
@@ -72,7 +74,10 @@
   background: transparent;
   width: 100%;
   cursor: pointer;
-}
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+ }
 
 .input::placeholder {
   color: #12295a ;
@@ -277,27 +282,83 @@
   background: #0052cc;
 }
 
+.priceInputGroup {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.priceInput {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.priceInput label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 600;
+}
+
+.priceField {
+  padding: 10px 12px;
+  border: 2px solid #f0f0f0;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.priceField:focus {
+  border-color: #0066ff;
+}
+
+.priceInfo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #12295a ;
+  cursor: pointer;
+}
+
+.iconPrice {
+  color: #666;
+  flex-shrink: 0;
+}
+
 @media (max-width: 1024px) {
   .searchContainer {
-    flex-direction: column;
+    flex-wrap: nowrap;
     gap: 0;
-    overflow: hidden;
+    overflow-x: auto;
   }
 
   .searchField {
-    border-right: none;
-    border-bottom: 2px solid #f0f0f0;
-    width: 100%;
-    padding: 16px 20px;
+    padding: 10px 12px;
+    border-right: 1px solid #f0f0f0;
+    flex: 1;
+    min-width: 120px;
   }
 
-  .searchField:last-of-type {
-    border-bottom: none;
+  .searchField.location {
+    flex: 1.2;
+  }
+
+  .searchField.guests {
+    flex: 1;
+  }
+
+  .searchField.price {
+    flex: 1;
+    border-right: none;
   }
 
   .searchBtn {
-    width: 100%;
-    padding: 18px;
+    padding: 12px 20px;
+    font-size: 14px;
+    white-space: nowrap;
   }
 
   /* Mobile dropdown adjustments */
@@ -318,50 +379,270 @@
 }
 
 @media (max-width: 640px) {
+  .searchContainer {
+    gap: 0;
+    flex-wrap: nowrap;
+    margin-top: 70px; /* Space for header + some breathing room */
+  }
+
   .searchField {
-    padding: 14px 16px;
+    padding: 8px 8px;
+    gap: 4px;
+    min-width: 100px;
+  }
+
+  .searchField.location {
+    flex: 1.2;
+  }
+
+  .searchField.guests {
+    flex: 0.9;
+  }
+
+  .searchField.price {
+    flex: 0.9;
+  }
+
+  .icon,
+  .iconUsers,
+  .iconPrice {
+    width: 14px;
+    height: 14px;
   }
 
   .input {
-    font-size: 14px;
+    font-size: 11px;
+  }
+
+  .input::placeholder {
+    font-size: 10px;
   }
 
   .dateRange,
-  .guestInfo {
-    font-size: 14px;
+  .guestInfo,
+  .priceInfo {
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .clearBtn {
+    padding: 2px;
+    display: none;
+  }
+
+  .clearBtn svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .dropdownIcon {
+    width: 12px;
+    height: 12px;
+    margin-left: 2px;
   }
 
   .searchBtn {
-    font-size: 16px;
-    padding: 16px;
+    font-size: 30px;
+    padding: 8px 12px;
+    white-space: nowrap;
   }
 
   .roomTypeOptions {
     grid-template-columns: 1fr;
+    gap: 6px;
   }
 
   .dropdown {
-    padding: 16px;
+    padding: 10px;
+    width: 85%;
+    max-width: 320px;
+    max-height: 70vh;
+  }
+
+  .dropdownSection {
+    margin-bottom: 10px;
+  }
+
+  .dropdownSection h4 {
+    font-size: 11px;
+    margin-bottom: 6px;
   }
 
   .counterBtn {
-    width: 28px;
-    height: 28px;
-    font-size: 14px;
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
   }
 
   .counterValue {
-    font-size: 14px;
+    font-size: 11px;
   }
 
   .roomTypeBtn {
-    padding: 10px 12px;
-    font-size: 13px;
+    padding: 6px 8px;
+    font-size: 11px;
   }
 
   .applyBtn {
-    padding: 10px;
-    font-size: 14px;
+    padding: 6px;
+    font-size: 11px;
+    margin-top: 6px;
+  }
+
+  .priceInputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .priceInput {
+    gap: 4px;
+  }
+
+  .priceInput label {
+    font-size: 10px;
+  }
+
+  .priceField {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .searchContainer {
+    gap: 0;
+    flex-wrap: nowrap;
+    margin-top: 60px; /* Space for smaller header + breathing room */
+  }
+
+  .searchField {
+    padding: 6px 6px;
+    gap: 3px;
+    min-width: 80px;
+  }
+
+  .searchField.location {
+    flex: 1.3;
+  }
+
+  .searchField.guests {
+    flex: 0.85;
+  }
+
+  .searchField.price {
+    flex: 0.85;
+  }
+
+  .icon,
+  .iconUsers,
+  .iconPrice {
+    width: 12px;
+    height: 12px;
+  }
+
+  .input {
+    font-size: 9px;
+    
+  }
+
+  .input::placeholder {
+    font-size: 8px;
+  }
+
+  .dateRange,
+  .guestInfo,
+  .priceInfo {
+    font-size: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .clearBtn {
+    display: none;
+  }
+
+  .clearBtn svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .dropdownIcon {
+    width: 10px;
+    height: 10px;
+    margin-left: 1px;
+  }
+
+  .searchBtn {
+    font-size: 15px;
+    padding: 6px 10px;
+    white-space: nowrap;
+  }
+
+  .dropdown {
+    padding: 8px;
+    width: 90%;
+    max-width: 280px;
+    max-height: 65vh;
+  }
+
+  .dropdownSection {
+    margin-bottom: 8px;
+  }
+
+  .dropdownSection h4 {
+    font-size: 10px;
+    margin-bottom: 5px;
+  }
+
+  .roomTypeOptions {
+    gap: 5px;
+  }
+
+  .roomTypeBtn {
+    padding: 5px 6px;
+    font-size: 10px;
+    border-width: 1px;
+  }
+
+  .applyBtn {
+    padding: 5px;
+    font-size: 10px;
+    margin-top: 5px;
+  }
+
+  .priceInputGroup {
+    gap: 5px;
+    margin-bottom: 5px;
+  }
+
+  .priceInput {
+    gap: 3px;
+  }
+
+  .priceInput label {
+    font-size: 9px;
+  }
+
+  .priceField {
+    font-size: 10px;
+    padding: 5px 6px;
+    border-width: 1px;
+  }
+
+  .counterBtn {
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+    border-width: 1px;
+  }
+
+  .counterValue {
+    font-size: 10px;
   }
 }
 /* Semester Dropdown Styles */
