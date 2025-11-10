@@ -64,42 +64,111 @@ const Booking = () => {
 
     try {
       setIsLoading(true);
-      const token = Cookies.get('token');
+      
+      // Get user data from localStorage or sessionStorage
+      const userData = JSON.parse(localStorage.getItem('userData') || sessionStorage.getItem('userData') || '{}');
+      const token = userData?.token;
+
       if (!token) {
-        throw new Error('Authentication required');
+        // Save the current URL to redirect back after login
+        const returnUrl = window.location.pathname + window.location.search;
+        sessionStorage.setItem('returnUrl', returnUrl);
+        navigate('/login');
+        return;
       }
 
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/rooms/${roomId}`, {
+        method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include' // Include cookies in the request
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch room details');
+        if (response.status === 401) {
+          // Token might be expired, clear user data and redirect to login
+          localStorage.removeItem('userData');
+          sessionStorage.removeItem('userData');
+          const returnUrl = window.location.pathname + window.location.search;
+          sessionStorage.setItem('returnUrl', returnUrl);
+          navigate('/login');
+          return;
+        }
+        throw new Error(`Failed to fetch room details: ${response.statusText}`);
       }
 
       const roomData = await response.json();
+      
+      if (!roomData) {
+        throw new Error('No data received from server');
+      }
+
       if (roomData.success && roomData.data) {
         const room = roomData.data;
         setRoomDetails(room);
 
+        // Format room type for display
+        const formatRoomType = (type) => {
+          if (!type) return '';
+          return type
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+        };
+
+        // Set default check-in date to tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const formattedDate = tomorrow.toISOString().split('T')[0];
+
         setFormData(prev => ({
           ...prev,
           roomNumber: room.roomNumber || '',
-          roomType: room.roomType || '',
+          roomType: formatRoomType(room.roomType) || '',
           hostel: room.hostelId?.name || room.hostelName || '',
-          duration: room.minimumStay?.toString() || prev.duration || '1'
+          duration: room.minimumStay?.toString() || prev.duration || '1',
+          // Set default check-in date to tomorrow if not already set
+          checkIn: prev.checkIn || formattedDate,
+          // Set price if available
+          price: room.price?.toString() || prev.price || ''
         }));
+
+        // Update URL to include roomId for page refresh
+        const url = new URL(window.location);
+        url.searchParams.set('roomId', roomId);
+        window.history.pushState({}, '', url);
+      } else {
+        throw new Error(roomData.message || 'Failed to load room details');
       }
     } catch (error) {
       console.error('Error fetching room details:', error);
-      if (error.message === 'Authentication required') {
-        sessionStorage.setItem('returnUrl', window.location.pathname);
-        navigate('/login');
-      } else {
-        await showError(error.message || 'Failed to load room details. Please try again.');
+      
+      // Handle network errors
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        await showError('Network error. Please check your internet connection and try again.');
+        return;
       }
+      
+      // Handle authentication errors
+      if (error.message === 'Authentication required' || error.message.includes('401')) {
+        // Clear any stale auth data
+        localStorage.removeItem('userData');
+        sessionStorage.removeItem('userData');
+        
+        // Set return URL for after login
+        const returnUrl = window.location.pathname + window.location.search;
+        sessionStorage.setItem('returnUrl', returnUrl);
+        
+        // Redirect to login
+        navigate('/login');
+        return;
+      }
+      
+      // Handle other errors
+      const errorMessage = error.message || 'Failed to load room details. Please try again.';
+      await showError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -122,11 +191,18 @@ const Booking = () => {
 
   // Watch for URL parameter changes and update room details
   useEffect(() => {
-    const handleUrlChange = () => {
+    const handleUrlChange = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const roomId = urlParams.get('roomId');
+      
       if (roomId) {
-        fetchRoomDetails(roomId);
+        try {
+          await fetchRoomDetails(roomId);
+        } catch (error) {
+          console.error('Error in handleUrlChange:', error);
+          // Don't redirect here to prevent infinite loops
+          // The fetchRoomDetails function will handle the redirect if needed
+        }
       } else {
         setIsLoading(false);
       }
@@ -142,7 +218,7 @@ const Booking = () => {
     return () => {
       window.removeEventListener('popstate', handleUrlChange);
     };
-  }, []);
+  }, [navigate]); // Add navigate to dependency array
 
   // Navigation between steps
   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, steps.length - 1));

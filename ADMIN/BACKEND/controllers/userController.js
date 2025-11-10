@@ -484,26 +484,44 @@ export const createUser = async (req, res) => {
   try {
     const { fullName, email, password, role } = req.body;
     
+    // Validate required fields
+    if (!fullName || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Full name, email, and password are required.'
+      });
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long.'
+      });
+    }
+    
     // Check if user already exists
-    const existingUser = await AdminUser.findOne({ email }) || await User.findOne({ email });
+    const existingUser = await AdminUser.findOne({ email: email.toLowerCase() });
     
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: 'User with this email already exists'
+        message: 'A user with this email already exists.'
       });
     }
     
-    // Create new admin/manager user
+    // Create new admin/manager user - password will be hashed by the pre-save hook
     const user = await AdminUser.create({
-      fullName,
-      email,
-      password,
-      role: role || 'manager'
+      fullName: fullName.trim(),
+      email: email.toLowerCase().trim(),
+      password: password, // Will be hashed by pre-save hook
+      role: role || 'manager',
+      isActive: true
     });
     
     // Remove password from response
-    const { password: _, ...userData } = user._doc;
+    const userData = user.toObject();
+    delete userData.password;
     
     res.status(201).json({
       success: true,

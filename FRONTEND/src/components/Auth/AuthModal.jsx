@@ -160,23 +160,32 @@ function Auth() {
         storage.setItem('userData', JSON.stringify(data));
         storage.setItem('lastLoginTime', new Date().toISOString());
 
-        // Clear form data
         resetFormData();
 
         // Dispatch custom event to update header
         window.dispatchEvent(new Event('authStateChanged'));
 
-        // Check for redirect URL in query params
-        const searchParams = new URLSearchParams(window.location.search);
-        const redirect = searchParams.get('redirect');
-        const roomId = searchParams.get('roomId');
+        // Check for return URL in sessionStorage (set by the booking page)
+        const returnUrl = sessionStorage.getItem('returnUrl');
 
-        if (redirect === 'booking' && roomId) {
-          // Redirect to booking page with room ID
-          navigate(`/booking?roomId=${roomId}`);
+        if (returnUrl) {
+          // Remove the returnUrl from sessionStorage to prevent it from being used again
+          sessionStorage.removeItem('returnUrl');
+          // Redirect to the stored URL (e.g., /booking?roomId=123)
+          navigate(returnUrl);
         } else {
-          // Default redirect to home page
-          navigate('/');
+          // Fall back to the previous redirect logic if no returnUrl is found
+          const searchParams = new URLSearchParams(window.location.search);
+          const redirect = searchParams.get('redirect');
+          const roomId = searchParams.get('roomId');
+
+          if (redirect === 'booking' && roomId) {
+            // Redirect to booking page with room ID
+            navigate(`/booking?roomId=${roomId}`);
+          } else {
+            // Default redirect to home page
+            navigate('/');
+          }
         }
       } else {
         setError(data.message || 'Login failed');
