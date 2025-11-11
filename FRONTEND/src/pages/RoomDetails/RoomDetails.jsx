@@ -37,6 +37,7 @@ const RoomDetails = () => {
   const [error, setError] = useState(null);
   const [imagesLoaded, setImagesLoaded] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showAllImages, setShowAllImages] = useState(false);
 
   // Handle book now button click
   const handleBookNow = () => {
@@ -171,6 +172,55 @@ const RoomDetails = () => {
     return icons[Object.keys(icons).find((key) => amenity.includes(key))] || <Shield size={18} />;
   };
 
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    const shareTitle = `Room ${room.roomNumber} - ${room.hostelId?.name || 'Hostel'}`;
+    const shareText = `Check out this room: Room ${room.roomNumber} at UGX ${room.roomPrice?.toLocaleString() || "0"}/semester`;
+
+    try {
+      if (navigator.share) {
+        // Use Web Share API if available
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        });
+      } else {
+        // Fallback: Copy to clipboard
+        await navigator.clipboard.writeText(shareUrl);
+        Swal.fire({
+          title: 'Link Copied!',
+          text: 'The room link has been copied to your clipboard',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      // If share was cancelled or failed, try clipboard as fallback
+      if (error.name !== 'AbortError') {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          Swal.fire({
+            title: 'Link Copied!',
+            text: 'The room link has been copied to your clipboard',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        } catch (clipboardError) {
+          Swal.fire({
+            title: 'Error',
+            text: 'Could not share or copy the link',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+      }
+    }
+  };
+
   const handleOtherRoomClick = async (otherRoomId) => {
     navigate(`/rooms/${otherRoomId}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -214,24 +264,63 @@ const RoomDetails = () => {
       );
     }
 
+    // For 2 or more images
+    const rightImages = images.slice(1, 4); // Get exactly 3 images for the right side
+    const remainingCount = images.length - 4; // Calculate remaining images
+
+    // Always show 3 slots on the right, fill empty ones with placeholders
+    const rightSlots = Array(3).fill(null).map((_, i) => rightImages[i] || null);
+
     return (
-      <div className={styles.imageContainer}>
-        <div className={styles.leftImageBox}>
-          <img src={images[0]} alt="Main Room" loading="lazy" />
+      <>
+        <div className={styles.imageContainer}>
+          <div className={styles.leftImageBox}>
+            <img src={images[0]} alt="Main Room" loading="lazy" />
+          </div>
+          <div className={styles.rightImageBox}>
+            {rightSlots.map((src, i) => (
+              <div key={i} className={styles.images}>
+                {src ? (
+                  <>
+                    <img src={src} alt={`Room ${i + 2}`} loading="lazy" />
+                    {i === 2 && remainingCount > 0 && (
+                      <div className={styles.viewMoreOverlay} onClick={() => setShowAllImages(true)}>
+                        <button className={styles.viewMoreButton}>
+                          <Plus size={20} color="white" /> 
+                          <span>View More ({remainingCount}+)</span>
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className={styles.emptyImageSlot}>
+                    <span>📷</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-        <div className={styles.rightImageBox}>
-          {images.slice(1, 5).map((src, i) => (
-            <div key={i} className={styles.images}>
-              <img src={src} alt={`Room ${i}`} loading="lazy" />
-              {i === 3 && images.length > 5 && (
-                <div className={styles.moreImage}>
-                  <Plus color="white" /> <span>+{images.length - 5} more</span>
-                </div>
-              )}
+
+        {/* Image Gallery Modal */}
+        {showAllImages && (
+          <div className={styles.imageGalleryModal} onClick={() => setShowAllImages(false)}>
+            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+              <button className={styles.closeModal} onClick={() => setShowAllImages(false)}>
+                ✕
+              </button>
+              <h2 className={styles.modalTitle}>All Images ({images.length})</h2>
+              <div className={styles.galleryGrid}>
+                {images.map((src, i) => (
+                  <div key={i} className={styles.galleryImage}>
+                    <img src={src} alt={`Room ${i + 1}`} loading="lazy" />
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        )}
+      </>
     );
   };
 
@@ -256,7 +345,8 @@ const RoomDetails = () => {
           <MoveLeft /> Back to listing
         </p>
         <div className={styles.icons}>
-          <Share2 /> <Heart />
+          <Share2 onClick={handleShare} className={styles.shareIcon} /> 
+          <Heart />
         </div>
       </div>
 
@@ -274,17 +364,19 @@ const RoomDetails = () => {
 
       {/* Location */}
       <div className={styles.locationBox}>
-        <div className={styles.inner3}>
-          <MapPin /> {room.hostelId?.location || "Location not specified"}
-        </div>
-        <div className={styles.inner3}>
-          <Users /> Preferred:{" "}
-          {room.roomGender
-            ? room.roomGender.charAt(0).toUpperCase() + room.roomGender.slice(1)
-            : "Mixed"}
-        </div>
-        <div className={styles.inner3}>
-          <Clock /> Posted: {new Date(room.createdAt).toLocaleDateString()}
+        <div className={styles.threeLocations}>
+          <div className={styles.inner3}>
+            <MapPin /> {room.hostelId?.location || "Location not specified"}
+          </div>
+          <div className={styles.inner3}>
+            <Users /> Preferred:{" "}
+            {room.roomGender
+              ? room.roomGender.charAt(0).toUpperCase() + room.roomGender.slice(1)
+              : "Mixed"}
+          </div>
+          <div className={styles.inner3}>
+            <Clock /> Posted: {new Date(room.createdAt).toLocaleDateString()}
+          </div>
         </div>
         <button 
           className={styles.bookButton}

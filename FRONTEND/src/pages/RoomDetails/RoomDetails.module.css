@@ -34,13 +34,19 @@
     padding-right: 10px;
 }
 
-.Icons {
+.icons {
     display: flex;
     gap: 15px;
 }
 
 .shareIcon {
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.shareIcon:hover {
+    color: #3b82f6;
+    transform: scale(1.1);
 }
 
 /* ============================================
@@ -100,7 +106,7 @@
 }
 
 .leftImageBox {
-    height: 500px;
+    height: 100%;
     position: relative;
     overflow: hidden;
     border-radius: 12px 0 0 12px;
@@ -114,69 +120,173 @@
 }
 
 .rightImageBox {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.rightTopImage {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(3, 1fr);
     gap: 8px;
-    height: 246px;
+    height: 100%;
 }
 
-.rightBottomImage {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    height: 246px;
-}
-
-.images, .images1 {
+.images {
     position: relative;
     overflow: hidden;
     border-radius: 8px;
     background: #f8fafc;
+    width: 100%;
+    height: 100%;
 }
 
-.images img, .images1 img {
+.images img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: opacity 0.3s ease-in;
 }
 
-.images1 {
-    position: relative;
-}
-
 .emptyImageSlot {
     width: 100%;
     height: 100%;
-    background: #f1f5f9;
-    border: 2px dashed #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    color: #94a3b8;
+    font-size: 40px;
 }
 
-.moreImage {
+.viewMoreOverlay {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-weight: 600;
-    gap: 8px;
-    cursor: pointer;
     transition: background 0.3s ease;
 }
 
-.moreImage:hover {
-    background: rgba(0, 0, 0, 0.8);
+.viewMoreOverlay:hover {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.viewMoreButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: rgba(59, 130, 246, 0.9);
+    border: 2px solid white;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.viewMoreButton:hover {
+    background: rgba(59, 130, 246, 1);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Image Gallery Modal */
+.imageGalleryModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modalContent {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 1200px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.closeModal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.closeModal:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+    transform: rotate(90deg);
+}
+
+.modalTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 25px;
+    padding-right: 60px;
+}
+
+.galleryGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.galleryImage {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #f8fafc;
+    aspect-ratio: 4 / 3;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.galleryImage:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.galleryImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* ============================================
@@ -350,6 +460,8 @@
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
 }
 
 .otherRoom:hover {
@@ -388,6 +500,8 @@
 
 .otherRoomInfo {
     padding: 20px;
+    position: relative;
+    z-index: 1;
 }
 
 .roomNumber {
@@ -473,147 +587,300 @@
 
 @media (max-width: 768px) {
     .container {
-        padding: 100px 20px;
+        padding: 80px 15px;
     }
 
     .topBar {
         flex-direction: column;
-        gap: 20px;
+        gap: 15px;
         align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .modalContent {
+        padding: 20px;
+    }
+
+    .modalTitle {
+        font-size: 20px;
+        margin-bottom: 20px;
+        padding-right: 50px;
+    }
+
+    .closeModal {
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+        top: 15px;
+        right: 15px;
+    }
+
+    .galleryGrid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
     }
 
     .subHeadingBox {
         flex-direction: column;
         align-items: flex-start;
-        gap: 15px;
+        gap: 10px;
+        padding: 20px 0;
+        margin-bottom: 20px;
+        font-size: 20px;
     }
 
     .locationBox {
-        flex-direction: column;
-        gap: 25px;
-        align-items: flex-start;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        padding: 15px 0;
+        margin-bottom: 30px;
+        align-items: start;
     }
 
     .threeLocations {
+        display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 8px;
         width: 100%;
+        grid-column: 1;
+        grid-row: 1;
     }
 
     .inner3 {
-        padding-bottom: 15px;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .inner3:last-child {
+        padding: 6px 0;
+        font-size: 13px;
         border-bottom: none;
     }
 
+    .inner3 svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+
     .bookButton {
+        grid-column: 2;
+        grid-row: 1;
+        padding: 8px 16px;
+        font-size: 13px;
+        white-space: nowrap;
+        align-self: flex-start;
+        height: fit-content;
+    }
+
+    .singleImageContainer {
+        height: 300px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+    }
+
+    .singleImageContainer img {
         width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .imageContainer {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        height: auto;
+        gap: 6px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+    }
+
+    .leftImageBox {
+        height: 220px;
+        border-radius: 12px;
+        width: 100%;
+    }
+
+    .rightImageBox {
+        grid-template-rows: 1fr;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        height: 100px;
+    }
+
+    .images {
+        height: 100px;
+        border-radius: 8px;
+    }
+
+    .emptyImageSlot {
+        font-size: 28px;
+    }
+
+    .viewMoreButton {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+
+    .viewMoreButton svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .amenitiesSection {
+        padding: 20px 15px;
+        margin-bottom: 25px;
+    }
+
+    .sectionTitle {
+        font-size: 18px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+    }
+
+    .AmenitiesBox {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .amenitiesColumn li {
+        padding: 8px 0;
+        font-size: 14px;
+    }
+
+    .descriptionBox {
+        padding: 20px 15px;
+        margin-bottom: 25px;
+    }
+
+    .descriptionContent p {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .otherRoomsBox {
+        padding: 20px 15px;
     }
 
     .otherRoomGrid {
         grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .otherRoomImage {
+        height: 180px;
+    }
+
+    .otherRoomInfo {
+        padding: 15px;
+    }
+
+    .roomNumber {
+        font-size: 16px;
+    }
+
+    .roomPrice {
+        font-size: 15px;
+    }
+
+    .roomType {
+        font-size: 13px;
     }
 }
-/* Add these styles to your existing RoomDetails.module.css */
 
-.otherRoom {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    position: relative;
-    cursor: pointer;
-}
+@media (max-width: 480px) {
+    .container {
+        padding: 70px 12px;
+    }
 
-.otherRoom:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
+    .modalContent {
+        padding: 15px;
+        max-height: 95vh;
+    }
 
-.roomOverlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(59, 130, 246, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 16px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
+    .modalTitle {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
 
-.otherRoom:hover .roomOverlay {
-    opacity: 1;
-}
+    .closeModal {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+        top: 10px;
+        right: 10px;
+    }
 
-.roomOverlay span {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 8px 16px;
-    border-radius: 20px;
-    
-}
+    .galleryGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
 
-/* Make sure the existing other room styles are preserved */
-.otherRoomImage {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-    background: #e2e8f0;
-}
+    .subHeadingBox {
+        font-size: 18px;
+    }
 
-.otherRoomImage img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
+    .locationBox {
+        gap: 8px;
+        padding: 12px 0;
+    }
 
-.otherRoom:hover .otherRoomImage img {
-    transform: scale(1.05);
-}
+    .inner3 {
+        font-size: 12px;
+        padding: 5px 0;
+    }
 
-.noRoomImage {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    background: #e2e8f0;
-    color: #94a3b8;
-}
+    .bookButton {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
 
-.otherRoomInfo {
-    padding: 20px;
-    position: relative;
-    z-index: 1;
-}
+    .singleImageContainer {
+        height: 250px;
+    }
 
-.roomNumber {
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 8px;
-    font-size: 18px;
-}
+    .imageContainer {
+        gap: 4px;
+    }
 
-.roomPrice {
-    font-weight: 600;
-    color: #3b82f6;
-    margin-bottom: 8px;
-    font-size: 16px;
-}
+    .leftImageBox {
+        height: 180px;
+    }
 
-.roomType {
-    color: #64748b;
-    font-size: 14px;
-    text-transform: capitalize;
+    .rightImageBox {
+        height: 80px;
+        gap: 4px;
+    }
+
+    .images {
+        height: 80px;
+    }
+
+    .emptyImageSlot {
+        font-size: 20px;
+    }
+
+    .viewMoreButton {
+        padding: 6px 12px;
+        font-size: 10px;
+        gap: 4px;
+    }
+
+    .viewMoreButton svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .amenitiesSection,
+    .descriptionBox,
+    .otherRoomsBox {
+        padding: 15px 12px;
+    }
+
+    .sectionTitle {
+        font-size: 16px;
+    }
+
+    .amenitiesColumn li {
+        font-size: 13px;
+    }
+
+    .otherRoomImage {
+        height: 160px;
+    }
 }
