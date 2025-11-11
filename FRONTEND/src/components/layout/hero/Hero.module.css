@@ -344,7 +344,7 @@
   font-size: 1.25rem;
   width: 100%;
   text-align: center;
-  padding: 2rem;
+  padding: 0rem;
 }
 
 /* Responsive Design */
@@ -420,6 +420,13 @@
   .progressIndicators {
     bottom: 1rem;
   }
+
+.errorMessage {
+    font-size: 0.875rem;
+    height: 550px; /* Adjust if header is smaller on mobile */
+    
+  }
+
 }
 
 @media (max-width: 640px) {
