@@ -37,7 +37,6 @@ const RoomDetails = () => {
   const [error, setError] = useState(null);
   const [imagesLoaded, setImagesLoaded] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showAllImages, setShowAllImages] = useState(false);
 
   // Handle book now button click
   const handleBookNow = () => {
@@ -265,62 +264,41 @@ const RoomDetails = () => {
     }
 
     // For 2 or more images
-    const rightImages = images.slice(1, 4); // Get exactly 3 images for the right side
+    const rightImages = images.slice(1, 4); // Get up to 3 images for the right side
     const remainingCount = images.length - 4; // Calculate remaining images
 
     // Always show 3 slots on the right, fill empty ones with placeholders
     const rightSlots = Array(3).fill(null).map((_, i) => rightImages[i] || null);
 
     return (
-      <>
-        <div className={styles.imageContainer}>
-          <div className={styles.leftImageBox}>
-            <img src={images[0]} alt="Main Room" loading="lazy" />
-          </div>
-          <div className={styles.rightImageBox}>
-            {rightSlots.map((src, i) => (
-              <div key={i} className={styles.images}>
-                {src ? (
-                  <>
-                    <img src={src} alt={`Room ${i + 2}`} loading="lazy" />
-                    {i === 2 && remainingCount > 0 && (
-                      <div className={styles.viewMoreOverlay} onClick={() => setShowAllImages(true)}>
-                        <button className={styles.viewMoreButton}>
-                          <Plus size={20} color="white" /> 
-                          <span>View More ({remainingCount}+)</span>
-                        </button>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className={styles.emptyImageSlot}>
-                    <span>📷</span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+      <div className={styles.imageContainer}>
+        <div className={styles.leftImageBox}>
+          <img src={images[0]} alt="Main Room" loading="lazy" />
         </div>
-
-        {/* Image Gallery Modal */}
-        {showAllImages && (
-          <div className={styles.imageGalleryModal} onClick={() => setShowAllImages(false)}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-              <button className={styles.closeModal} onClick={() => setShowAllImages(false)}>
-                ✕
-              </button>
-              <h2 className={styles.modalTitle}>All Images ({images.length})</h2>
-              <div className={styles.galleryGrid}>
-                {images.map((src, i) => (
-                  <div key={i} className={styles.galleryImage}>
-                    <img src={src} alt={`Room ${i + 1}`} loading="lazy" />
-                  </div>
-                ))}
-              </div>
+        <div className={styles.rightImageBox}>
+          {rightSlots.map((src, i) => (
+            <div key={i} className={styles.images}>
+              {src ? (
+                <>
+                  <img src={src} alt={`Room ${i + 2}`} loading="lazy" />
+                  {i === 2 && remainingCount > 0 && (
+                    <div className={styles.viewMoreOverlay}>
+                      <button className={styles.viewMoreButton}>
+                        <Plus size={20} color="white" /> 
+                        <span>View More ({remainingCount}+)</span>
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className={styles.emptyImageSlot}>
+                  <span>📷</span>
+                </div>
+              )}
             </div>
-          </div>
-        )}
-      </>
+          ))}
+        </div>
+      </div>
     );
   };
 
