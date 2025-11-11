@@ -96,7 +96,7 @@
 /* Multiple Images Layout */
 .imageContainer {
     display: grid;
-    grid-template-columns: 4fr 1fr;
+    grid-template-columns: 5fr 1fr;
     gap: 8px;
     border-radius: 16px;
     overflow: hidden;
