@@ -103,7 +103,7 @@ function SearchResultsPage() {
             marginBottom: '20px',
             borderRadius: '8px'
           }}>
-             About to render {results.length} results
+             Found {results.length} results
           </div>
           <SearchResultsList 
             results={results}
