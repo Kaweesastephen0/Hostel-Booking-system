@@ -3,7 +3,7 @@
 .container {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background-color: #f8f9fa;
-  margin: auto 70px;
+  margin: 0;
   padding: 0;
   color: #1a1a1a;
 }
@@ -66,29 +66,28 @@
 }
 
 /* ============================================
-   ROOM CARD
+   ROOM CARD - MOBILE-FIRST DESIGN
    ============================================ */
 
 .roomCard {
   background: #ffffff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
   cursor: pointer;
   border: 1px solid #e5e7eb;
 }
 
 .roomCard.hovered {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
-  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .roomCardInner {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 120px 1fr;
   gap: 0;
+  min-height: 110px;
 }
 
 .imageSection {
@@ -96,14 +95,14 @@
   overflow: hidden;
   background: #f3f4f6;
   height: 100%;
-  min-height: 200px;
+  min-height: 110px;
 }
 
 .roomImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease, opacity 0.3s ease-in;
+  transition: transform 0.3s ease, opacity 0.3s ease-in;
 }
 
 .noImagePlaceholder {
@@ -117,32 +116,32 @@
 }
 
 .noImageIcon {
-  font-size: 48px;
-  margin-bottom: 8px;
+  font-size: 32px;
+  margin-bottom: 4px;
   opacity: 0.5;
 }
 
 .noImagePlaceholder p {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 500;
   margin: 0;
 }
 
 .heartButton {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  background: #ffffff;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.95);
   border: none;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: all 0.2s ease;
   z-index: 10;
 }
 
@@ -150,8 +149,13 @@
   transform: scale(1.1);
 }
 
+.heartButton svg {
+  width: 13px;
+  height: 13px;
+}
+
 .contentSection {
-  padding: 20px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -159,9 +163,8 @@
 
 .roomHeader {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
+  flex-direction: column;
+  margin-bottom: 4px;
 }
 
 .roomInfo {
@@ -169,68 +172,84 @@
 }
 
 .roomName {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
-  margin-bottom: 6px;
-  color: #1e3a8a;
+  margin-bottom: 2px;
+  color: #1a1a1a;
+  line-height: 1.1;
 }
 
 .hostelName {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 13px;
+  gap: 3px;
+  font-size: 10px;
   color: #6b7280;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
+}
+
+.hostelName svg {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
 }
 
 .roomDescription {
-  font-size: 13px;
+  font-size: 10px;
   color: #6b7280;
-  margin-top: 8px;
-  line-height: 1.5;
+  margin-top: 2px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .features {
   display: flex;
-  gap: 8px;
+  gap: 3px;
   flex-wrap: wrap;
-  margin-bottom: 12px;
+  margin-bottom: 4px;
 }
 
 .featureTag {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
+  gap: 2px;
+  padding: 2px 6px;
   background: #eff6ff;
-  border-radius: 6px;
-  font-size: 11px;
+  border-radius: 3px;
+  font-size: 9px;
   font-weight: 600;
   color: #1e3a8a;
 }
 
+.featureTag svg {
+  width: 9px;
+  height: 9px;
+}
+
 .badges {
   display: flex;
-  gap: 6px;
+  gap: 3px;
   flex-wrap: wrap;
-  margin-top: 8px;
+  margin-top: 3px;
 }
 
 .badge {
-  padding: 4px 10px;
+  padding: 2px 6px;
   background: #f3f4f6;
-  border-radius: 6px;
-  font-size: 11px;
+  border-radius: 3px;
+  font-size: 9px;
   font-weight: 600;
   color: #6b7280;
 }
 
 .availabilityBadge {
-  padding: 4px 10px;
+  padding: 2px 6px;
   background: #dcfce7;
-  border-radius: 6px;
-  font-size: 11px;
+  border-radius: 3px;
+  font-size: 9px;
   font-weight: 600;
   color: #166534;
 }
@@ -238,70 +257,79 @@
 .roomFooter {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  padding-top: 15px;
-  border-top: 1px solid #e5e7eb;
+  align-items: center;
+  padding-top: 5px;
+  margin-top: auto;
 }
 
 .roomDetails {
-  display: flex;
-  gap: 15px;
-  align-items: center;
+  display: none;
 }
 
 .detailItem {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 13px;
+  gap: 3px;
+  font-size: 9px;
   color: #374151;
   font-weight: 500;
 }
 
 .priceSection {
-  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  flex: 1;
 }
 
 .price {
-  font-size: 24px;
+  font-size: 15px;
   font-weight: 700;
   color: #1e3a8a;
   line-height: 1;
 }
 
 .priceLabel {
-  font-size: 11px;
+  font-size: 8px;
   color: #6b7280;
-  margin-top: 3px;
-  margin-bottom: 10px;
+  margin-top: 1px;
 }
 
 .bookingFee {
-  font-size: 12px;
+  font-size: 8px;
   color: #6b7280;
-  margin-top: 4px;
+  margin-top: 1px;
+  display: none;
 }
 
 .viewButton {
   background: #3b82f6;
   color: #ffffff;
-  padding: 10px 20px;
+  padding: 5px 10px;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 9px;
   box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
+  white-space: nowrap;
+  margin-left: auto;
 }
 
 .viewButton:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
   background: #2563eb;
+}
+
+.viewButton svg {
+  width: 13px;
+  height: 13px;
 }
 
 /* ============================================
@@ -334,7 +362,7 @@
 
 .roomCardSkeleton {
   width: 100%;
-  height: 200px;
+  height: 110px;
   background: linear-gradient(
     90deg,
     #e3e8ef 0%,
@@ -424,24 +452,151 @@
 }
 
 /* ============================================
-   RESPONSIVE
+   RESPONSIVE - TABLET AND DESKTOP
    ============================================ */
 
-@media (max-width: 1024px) {
+@media (min-width: 769px) {
+  .container {
+    margin: auto 70px;
+  }
+
   .roomCardInner {
-    grid-template-columns: 1fr;
+    grid-template-columns: 280px 1fr;
+    min-height: 200px;
   }
 
   .imageSection {
-    height: 250px;
+    min-height: 200px;
+  }
+
+  .contentSection {
+    padding: 20px;
+  }
+
+  .roomName {
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .hostelName {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .hostelName svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .roomDescription {
+    font-size: 13px;
+    margin-top: 8px;
+    -webkit-line-clamp: 2;
+  }
+
+  .features {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .featureTag {
+    padding: 4px 10px;
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .featureTag svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .badges {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .badge,
+  .availabilityBadge {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  .roomFooter {
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .roomDetails {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .detailItem {
+    font-size: 13px;
+    gap: 5px;
+  }
+
+  .detailItem svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .priceSection {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  .price {
+    font-size: 24px;
+  }
+
+  .priceLabel {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+
+  .bookingFee {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .viewButton {
+    padding: 10px 20px;
+    font-size: 13px;
+    gap: 4px;
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  .viewButton svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .heartButton {
+    width: 32px;
+    height: 32px;
+    top: 12px;
+    right: 12px;
+  }
+
+  .heartButton svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .noImageIcon {
+    font-size: 48px;
+    margin-bottom: 8px;
+  }
+
+  .noImagePlaceholder p {
+    font-size: 13px;
   }
 }
 
 @media (max-width: 768px) {
-  .container {
-    margin: 0;
-  }
-
   .mainContent {
     padding: 70px 10px 20px 10px;
   }
@@ -473,161 +628,10 @@
     font-size: 11px;
   }
 
-  /* Compact Room Cards */
   .roomCard {
     border-radius: 8px;
   }
 
-  .roomCardInner {
-    grid-template-columns: 1fr;
-  }
-
-  .imageSection {
-    height: 120px;
-    min-height: 120px;
-  }
-
-  .heartButton {
-    width: 24px;
-    height: 24px;
-    top: 6px;
-    right: 6px;
-  }
-
-  .heartButton svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .noImageIcon {
-    font-size: 28px;
-    margin-bottom: 3px;
-  }
-
-  .noImagePlaceholder p {
-    font-size: 10px;
-  }
-
-  /* Compact Content Section */
-  .contentSection {
-    padding: 8px;
-  }
-
-  .roomHeader {
-    margin-bottom: 6px;
-  }
-
-  .roomName {
-    font-size: 13px;
-    margin-bottom: 3px;
-  }
-
-  .hostelName {
-    font-size: 10px;
-    gap: 2px;
-    margin-bottom: 5px;
-  }
-
-  .hostelName svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  .roomDescription {
-    font-size: 10px;
-    margin-top: 3px;
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .features {
-    gap: 3px;
-    margin-bottom: 6px;
-  }
-
-  .featureTag {
-    padding: 2px 6px;
-    font-size: 9px;
-    gap: 2px;
-    border-radius: 3px;
-  }
-
-  .featureTag svg {
-    width: 10px;
-    height: 10px;
-  }
-
-  .badges {
-    gap: 3px;
-    margin-top: 5px;
-  }
-
-  .badge,
-  .availabilityBadge {
-    padding: 2px 6px;
-    font-size: 9px;
-    border-radius: 3px;
-  }
-
-  /* Compact Footer */
-  .roomFooter {
-    flex-direction: row;
-    gap: 8px;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 8px;
-  }
-
-  .roomDetails {
-    display: none;
-  }
-
-  .detailItem {
-    font-size: 10px;
-    gap: 3px;
-  }
-
-  .priceSection {
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    flex: 1;
-  }
-
-  .price {
-    font-size: 15px;
-  }
-
-  .priceLabel {
-    font-size: 9px;
-    margin-top: 1px;
-    margin-bottom: 0;
-  }
-
-  .bookingFee {
-    font-size: 9px;
-    margin-top: 1px;
-  }
-
-  .viewButton {
-    padding: 6px 12px;
-    font-size: 10px;
-    border-radius: 4px;
-    gap: 2px;
-    white-space: nowrap;
-  }
-
-  .viewButton svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  /* Empty State */
   .emptyState {
     padding: 40px 15px;
     border-radius: 8px;
@@ -654,7 +658,6 @@
     border-radius: 6px;
   }
 
-  /* Error State */
   .error {
     padding: 40px 15px;
     font-size: 14px;
@@ -662,14 +665,13 @@
     margin: 10px;
   }
 
-  /* Skeleton Loaders */
   .resultsHeaderSkeleton {
     height: 50px;
     border-radius: 8px;
   }
 
   .roomCardSkeleton {
-    height: 200px;
+    height: 110px;
     border-radius: 8px;
   }
 }
@@ -679,16 +681,15 @@
     padding: 60px 8px 15px 8px;
   }
 
-  .imageSection {
-    height: 100px;
-    min-height: 100px;
-  }
-
   .contentSection {
-    padding: 6px;
+    padding: 6px 8px;
   }
 
-  .roomCardSkeleton {
-    height: 180px;
+  .roomCardInner {
+    min-height: 105px;
+  }
+
+  .imageSection {
+    min-height: 105px;
   }
 }
