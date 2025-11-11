@@ -286,7 +286,7 @@ function Auth() {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}></div>
-        <p className={styles.loadingText}>{navigatingBack ? 'Returning to home...' : 'Loading...'}</p>
+        <p className={styles.loadingText}>{navigatingBack ? 'Returning to home...' : 'Redirecting to sign in...'}</p>
       </div>
     );
   }

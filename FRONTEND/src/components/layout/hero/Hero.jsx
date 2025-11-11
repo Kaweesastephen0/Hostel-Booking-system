@@ -117,7 +117,7 @@ export default function Hero({ onSearch }) {
         <div className={styles.errorBackground} />
         <div className={styles.blueOverlay} />
         <div className={styles.errorMessage}>
-          <p>Error loading featured hostels</p>
+          <p></p>
           <p style={{ fontSize: '14px', opacity: 0.8 }}>{error}</p>
         </div>
         <div className={styles.searchBarWrapper}>
