@@ -12,6 +12,8 @@ function UserProfile() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [navigatingBack, setNavigatingBack] = useState(false);
 
   const [editData, setEditData] = useState({
     firstName: '',
@@ -104,6 +106,8 @@ function UserProfile() {
         studentNumber: parsedData.studentNumber || '',
         nin: parsedData.nin || ''
       });
+      // Simulate loading to show spinner
+      setTimeout(() => setInitialLoading(false), 500);
     } catch (error) {
       console.error('Error parsing user data:', error);
       navigate('/auth');
@@ -237,7 +241,10 @@ function UserProfile() {
 
   const handleBack = () => {
     if (currentView === 'account') {
-      navigate(-1);
+      setNavigatingBack(true);
+      setTimeout(() => {
+        navigate(-1);
+      }, 300);
     } else {
       setCurrentView('account');
       setEditMode(false);
@@ -245,6 +252,15 @@ function UserProfile() {
       setSuccess('');
     }
   };
+
+  if (initialLoading || navigatingBack) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p className={styles.loadingText}>{navigatingBack ? 'Returning to home...' : 'Loading profile...'}</p>
+      </div>
+    );
+  }
 
   if (!userData) {
     return null;

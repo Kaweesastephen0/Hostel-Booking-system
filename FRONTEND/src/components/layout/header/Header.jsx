@@ -9,6 +9,7 @@ const HostelHeader = ({ onSortChange }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
   const [activeSort, setActiveSort] = useState(''); // 🧠 Added active sort state
+  const [isNavigating, setIsNavigating] = useState(false);
 
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -46,8 +47,12 @@ const HostelHeader = ({ onSortChange }) => {
   }, []);
 
   const handleUserIconClick = () => {
-    if (isLoggedIn) navigate('/profile');
-    else navigate('/auth');
+    setIsNavigating(true);
+    // Add a small delay to show the loading state
+    setTimeout(() => {
+      if (isLoggedIn) navigate('/profile');
+      else navigate('/auth');
+    }, 300);
   };
 
   // 🧠 Handles which sort option is clicked and highlights it
@@ -103,7 +108,9 @@ const HostelHeader = ({ onSortChange }) => {
 
         {/* User Profile/Login */}
         <div className={styles.userIcons} onClick={handleUserIconClick}>
-          {isLoggedIn ? (
+          {isNavigating ? (
+            <div className={styles.loadingSpinner}></div>
+          ) : isLoggedIn ? (
             <>
               <span className={styles.userName}>{userName}</span>
               <User size={32} />

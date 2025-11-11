@@ -60,6 +60,8 @@ function Auth() {
   const [passwordValidation, setPasswordValidation] = useState({ isValid: false, errors: [] });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [navigatingBack, setNavigatingBack] = useState(false);
 
   // Reset form data helper
   const resetFormData = () => {
@@ -83,6 +85,9 @@ function Auth() {
 
   // Clear form when component unmounts (user navigates away)
   useEffect(() => {
+    // Simulate loading for smooth transition
+    setTimeout(() => setInitialLoading(false), 500);
+
     return () => {
       resetFormData();
     };
@@ -269,11 +274,28 @@ function Auth() {
     setAuthMode('login');
   };
 
+  const handleBackToHome = () => {
+    setNavigatingBack(true);
+    setTimeout(() => {
+      navigate('/');
+    }, 300);
+  };
+
+   // RENDER
+  if (initialLoading || navigatingBack) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p className={styles.loadingText}>{navigatingBack ? 'Returning to home...' : 'Loading...'}</p>
+      </div>
+    );
+  }
+
   // RENDER
   return (
     <div className={styles.pageContainer}>
       {/* Back Button */}
-      <button className={styles.backBtn} onClick={() => navigate('/')}>
+      <button className={styles.backBtn} onClick={handleBackToHome}>
         <ArrowLeft size={24} />
         <span>Back to Home</span>
       </button>
