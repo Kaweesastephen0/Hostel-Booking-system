@@ -3,6 +3,7 @@ WORKDIR /usr/src/app
 COPY . .
 RUN npm install
 EXPOSE 80
+RUN npm run build
 CMD [ "npm", "start" ]
 
 # Use the official Microsoft base image for Node.js
