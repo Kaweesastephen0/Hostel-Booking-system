@@ -217,7 +217,7 @@ export default function SearchResultsList({ results, loading, searchParams, limi
                       handleHostelClick(hostel._id);
                     }}
                   >
-                    Book Now →
+                    View Room(s)
                   </button>
                 </div>
               </div>
