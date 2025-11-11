@@ -372,33 +372,137 @@
 
 @media (max-width: 768px) {
   .hostelCard {
-    flex-direction: column;
-    height: auto;
+    flex-direction: row;
+    height: 130px;
+    border-radius: 12px;
   }
 
   .imageSection {
-    width: 100%;
-    height: 220px;
+    width: 140px;
+    height: 130px;
+    flex-shrink: 0;
   }
 
   .contentSection {
-    padding: 16px;
+    padding: 10px 12px;
+    gap: 4px;
   }
 
   .hostelName {
-    font-size: 17px;
+    font-size: 15px;
+    line-height: 1.2;
+  }
+
+  .bookmarkBtn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .ratingSection {
+    gap: 8px;
+  }
+
+  .ratingBadge {
+    padding: 3px 8px;
+  }
+
+  .ratingValue {
+    font-size: 13px;
+  }
+
+  .ratingCount {
+    font-size: 11px;
+  }
+
+  .ratingLabel {
+    font-size: 11px;
   }
 
   .amenitiesSection {
-    gap: 12px;
+    gap: 8px;
+    display: none; /* Hide amenities on mobile for compactness */
+  }
+
+  .amenity {
+    font-size: 11px;
+  }
+
+  .locationInfo {
+    font-size: 11px;
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .locationInfo svg {
+    width: 12px;
+    height: 12px;
   }
 
   .footer {
-    gap: 12px;
+    gap: 6px;
+    padding-top: 6px;
+    flex-direction: column;
+    align-items: flex-start;
+    border-top: none;
   }
 
   .priceSection {
-    width: 100%;
+    gap: 4px;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .priceWrapper {
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start;
+  }
+
+  .dealBadge {
+    padding: 3px 6px;
+    font-size: 9px;
+  }
+
+  .price {
+    font-size: 16px;
+  }
+
+  .priceRange {
+    font-size: 13px;
+  }
+
+  .discount {
+    font-size: 10px;
+    display: none; /* Hide discount text on mobile */
+  }
+
+  .bookBtn {
+    display: none;
+  }
+
+  .discountBadge {
+    top: 10px;
+    left: 10px;
+    padding: 4px 8px;
+    font-size: 10px;
+    border-radius: 4px;
+  }
+
+  .favoriteBtn {
+    width: 30px;
+    height: 30px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .favoriteBtn svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .resultsWrapper {
+    gap: 12px;
   }
 
   /* Adjust padding for mobile to match header height */
@@ -408,6 +512,67 @@
 }
 
 @media (max-width: 480px) {
+  .hostelCard {
+    border-radius: 10px;
+    height: 120px;
+  }
+
+  .imageSection {
+    width: 130px;
+    height: 120px;
+  }
+
+  .contentSection {
+    padding: 8px 10px;
+    gap: 3px;
+  }
+
+  .hostelName {
+    font-size: 14px;
+  }
+
+  .header {
+    gap: 8px;
+  }
+
+  .ratingBadge {
+    padding: 2px 6px;
+  }
+
+  .ratingValue,
+  .ratingCount,
+  .ratingLabel {
+    font-size: 10px;
+  }
+
+  .ratingLabel {
+    display: none;
+  }
+
+  .locationInfo {
+    font-size: 10px;
+  }
+
+  .footer {
+    padding-top: 6px;
+  }
+
+  .price {
+    font-size: 15px;
+  }
+
+  .priceRange {
+    font-size: 12px;
+  }
+
+  .bookBtn {
+    display: none;
+  }
+
+  .resultsWrapper {
+    gap: 10px;
+  }
+
   /* Adjust padding for mobile to match header height */
   .container {
     padding-top: 60px; /* Space for 50px header + 10px margin */

@@ -68,8 +68,11 @@ export const HostelCard = ({ hostel, variant = 'standard', onClick }) => {
         <h3 className={styles.hostelName}>{hostel.name}</h3>
       ) : (
         <div className={styles.cardContent}>
-          <div className={styles.hostelName}>{hostel.name}</div>
+          <div className={styles.hostelName}>{hostel.name} {hostel.location && (
+            <div className={styles.address}>{hostel.location}</div>
+          )}</div>
           {genderType && <div className={styles.address}>{genderType}</div>}
+          
         </div>
       )}
     </div>

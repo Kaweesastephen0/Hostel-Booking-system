@@ -33,12 +33,7 @@ function SearchResultsPage() {
 
   // Watch results changes
   useEffect(() => {
-    console.log(" RESULTS CHANGED:");
-    console.log("   - Results:", results);
-    console.log("   - Length:", results?.length);
-    console.log("   - Loading:", loading);
-    console.log("   - Error:", error);
-    console.log("   - Searched:", searched);
+    
   }, [results, loading, error, searched]);
 
   const handleNewSearch = async (newParams) => {
