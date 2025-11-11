@@ -14,6 +14,7 @@ function UserProfile() {
   const [success, setSuccess] = useState('');
   const [initialLoading, setInitialLoading] = useState(true);
   const [navigatingBack, setNavigatingBack] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const [editData, setEditData] = useState({
     firstName: '',
@@ -218,6 +219,8 @@ function UserProfile() {
   };
 
   const handleLogout = async () => {
+    setLoggingOut(true);
+
     try {
       await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
@@ -232,10 +235,15 @@ function UserProfile() {
       // Dispatch custom event to update header
       window.dispatchEvent(new Event('authStateChanged'));
 
-      navigate('/');
+      // Small delay to show the logout message
+      setTimeout(() => {
+        navigate('/');
+      }, 500);
     } catch (error) {
       console.error('Logout error:', error);
-      navigate('/');
+      setTimeout(() => {
+        navigate('/');
+      }, 500);
     }
   };
 
@@ -253,11 +261,13 @@ function UserProfile() {
     }
   };
 
-  if (initialLoading || navigatingBack) {
+  if (initialLoading || navigatingBack || loggingOut) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}></div>
-        <p className={styles.loadingText}>{navigatingBack ? 'Returning to home...' : 'Loading profile...'}</p>
+        <p className={styles.loadingText}>
+          {loggingOut ? 'Logging out...' : navigatingBack ? 'Returning to home...' : 'Loading profile...'}
+        </p>
       </div>
     );
   }

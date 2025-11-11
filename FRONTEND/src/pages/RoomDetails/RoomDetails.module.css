@@ -499,6 +499,17 @@
         margin-bottom: 20px;
     }
 
+    .backBox {
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 4px;
+    }
+
+    .backBox svg {
+        width: 14px;
+        height: 14px;
+    }
+
     .subHeadingBox {
         flex-direction: column;
         align-items: flex-start;
@@ -665,6 +676,17 @@
 @media (max-width: 480px) {
     .container {
         padding: 70px 12px;
+    }
+
+    .backBox {
+        padding: 5px 10px;
+        font-size: 11px;
+        border-radius: 3px;
+    }
+
+    .backBox svg {
+        width: 12px;
+        height: 12px;
     }
 
     .subHeadingBox {
