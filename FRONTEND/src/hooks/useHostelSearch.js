@@ -29,7 +29,7 @@ export const useHostelSearch = () => {
         params.append('maxPrice', searchParams.maxPrice);
       }
 
-      const url = `/api/hostels/search?${params.toString()}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/hostels/search?${params.toString()}`;
       console.log("🌐 Calling API:", url);
 
       const response = await axios.get(url);
