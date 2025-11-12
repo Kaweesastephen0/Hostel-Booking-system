@@ -16,6 +16,7 @@ import Footer from "./components/layout/footer/Footer.jsx";
 import Booking from "./components/booking/Booking";
 import UserProfile from "./components/Auth/UserProfile";
 
+
 const App = () => {
   const location = useLocation();
 
@@ -25,23 +26,24 @@ const App = () => {
     location.pathname.includes("/profile");
 
   return (
-    <div>
+    <div className="app">
       {!noHeaderNoFooter && <Header />}
-
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Auth />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/profile" element={<UserProfile />} />
-        <Route path="/about" element={<Aboutus />} />
-        <Route path="/contact" element={<Contactus />} />
-        <Route path="/search-results" element={<SearchResultsPage />} />
-        <Route path="/rooms/:hostelId" element={<RoomListingPage />} />
-        <Route path="/room/:roomId" element={<RoomDetails />} />
-        <Route path="/booking" element={<Booking />} />
-      </Routes>
-
+      <main>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Auth />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/about" element={<Aboutus />} />
+          <Route path="/contact" element={<Contactus />} />
+          <Route path="/search-results" element={<SearchResultsPage />} />
+          <Route path="/rooms/:hostelId" element={<RoomListingPage />} />
+          <Route path="/room/:roomId" element={<RoomDetails />} />
+          <Route path="/booking" element={<Booking />} />
+        </Routes>
+      </main>
       {!noHeaderNoFooter && <Footer />}
+
     </div>
   );
 };
