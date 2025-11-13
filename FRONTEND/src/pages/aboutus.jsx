@@ -77,26 +77,26 @@ const Aboutus = () => {
               src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600"
               alt="Team Member"
             />
-            <h3>HENRY KIYIMBA</h3>
-            <p>Founder & Lead Developer</p>
+            <h3>KAWEESA STEPHEN</h3>
+            <p>Lead Developer</p>
           </div>
 
           <div className={styles.teamCard}>
             <img
-              src="https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&w=600"
+              src="https://res.cloudinary.com/dtpyrqass/image/upload/v1762776699/WhatsApp_Image_2025-11-10_at_04.08.57_2cbf7d44_f9rntb.jpg"
               alt="Team Member"
             />
             <h3>BUKENYA UMAR</h3>
-            <p>Project Manager</p>
+            <p>Team member</p>
           </div>
 
           <div className={styles.teamCard}>
             <img
-              src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=600"
+              src="https://res.cloudinary.com/dtpyrqass/image/upload/v1762776606/WhatsApp_Image_2025-11-10_at_04.09.22_411cc0db_irh2a0.jpg"
               alt="Team Member"
             />
-            <h3>SAM MUBIRU</h3>
-            <p>UI/UX Designer</p>
+            <h3>MULINDWA RAYMOND</h3>
+            <p>Developer</p>
           </div>
         </div>
       </section>

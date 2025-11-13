@@ -18,7 +18,7 @@
 
 .heroOverlay {
   background: rgba(10, 37, 64, 0.55);
-  backdrop-filter: blur(5px);
+  --webfikbackdrop-filter: blur(5px);
   text-align: center;
   padding: 60px 25px;
   border-radius: 20px;
@@ -30,7 +30,7 @@
   font-size: 60px;
   font-weight: 700;
   background: linear-gradient(90deg, #00c6ff, #0072ff);
-  -webkit-background-clip: text;
+  -webkitbackground-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 15px;
 }
@@ -100,7 +100,7 @@
   padding: 40px 25px;
   box-shadow: 0 8px 20px rgba(0, 86, 179, 0.1);
   transition: all 0.4s ease-in-out;
-  backdrop-filter: blur(10px);
+  --webkitbackdrop-filter: blur(10px);
 }
 
 .valueBox:hover {

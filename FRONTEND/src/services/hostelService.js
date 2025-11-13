@@ -113,3 +113,5 @@ const hostelService = {
 
 export default hostelService;
 
+
+
