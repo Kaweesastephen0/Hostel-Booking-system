@@ -1,5 +1,7 @@
 .propertyCard {
   min-width: 300px;
+  max-width: 300px;
+  width: 300px;
   flex-shrink: 0;
   height: 320px;
   background: whitesmoke;
@@ -267,11 +269,15 @@
 @media (max-width: 768px) {
   .propertyCard {
     min-width: 240px;
+    max-width: 240px;
+    width: 240px;
     height: 280px;
   }
 
   .propertyCard.midrange {
     min-width: 260px;
+    max-width: 260px;
+    width: 260px;
     height: 340px;
   }
 
@@ -340,11 +346,15 @@
 @media (max-width: 480px) {
   .propertyCard {
     min-width: 220px;
+    max-width: 220px;
+    width: 220px;
     height: 260px;
   }
 
   .propertyCard.midrange {
     min-width: 240px;
+    max-width: 240px;
+    width: 240px;
     height: 320px;
   }
 
@@ -409,11 +419,15 @@
 @media (max-width: 360px) {
   .propertyCard {
     min-width: 200px;
+    max-width: 200px;
+    width: 200px;
     height: 240px;
   }
 
   .propertyCard.midrange {
     min-width: 220px;
+    max-width: 220px;
+    width: 220px;
     height: 300px;
   }
 
