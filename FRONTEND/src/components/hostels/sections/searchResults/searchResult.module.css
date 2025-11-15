@@ -3,13 +3,13 @@
 .container {
   width: 100%;
   margin: 0 auto;
-  padding-top: 90px; /* Space for fixed header on desktop */
+  padding-top: 0px; /* Space for fixed header on desktop */
 }
 
 .resultsWrapper {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 14px;
 }
 
 /* ============================================
@@ -373,24 +373,33 @@
 @media (max-width: 768px) {
   .hostelCard {
     flex-direction: row;
-    height: 130px;
+    height: auto;
+    min-height: 140px;
     border-radius: 12px;
   }
 
   .imageSection {
     width: 140px;
-    height: 130px;
+    min-height: 140px;
     flex-shrink: 0;
   }
 
   .contentSection {
     padding: 10px 12px;
     gap: 4px;
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
   }
 
   .hostelName {
     font-size: 15px;
-    line-height: 1.2;
+    line-height: 1.3;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+    white-space: normal;
   }
 
   .bookmarkBtn svg {
@@ -447,29 +456,36 @@
   }
 
   .priceSection {
-    gap: 4px;
+    gap: 6px;
     flex: 1;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
   }
 
   .priceWrapper {
-    flex-direction: column;
-    gap: 0;
-    align-items: flex-start;
+    flex-direction: row;
+    gap: 4px;
+    align-items: baseline;
+    flex-wrap: wrap;
+    flex: 1;
   }
 
   .dealBadge {
     padding: 3px 6px;
     font-size: 9px;
+    flex-shrink: 0;
   }
 
   .price {
-    font-size: 16px;
+    font-size: 15px;
+    white-space: nowrap;
   }
 
   .priceRange {
-    font-size: 13px;
+    font-size: 12px;
+    white-space: nowrap;
   }
 
   .discount {
@@ -507,42 +523,65 @@
 
   /* Adjust padding for mobile to match header height */
   .container {
-    padding-top: 70px; /* Space for 60px header + 10px margin */
+    padding-top: 50px; /* Reduced gap for mobile */
+  }
+
+  .header {
+    gap: 8px;
+    align-items: flex-start;
   }
 }
 
 @media (max-width: 480px) {
   .hostelCard {
     border-radius: 10px;
-    height: 120px;
+    height: auto;
+    min-height: 130px;
   }
 
   .imageSection {
-    width: 130px;
-    height: 120px;
+    width: 120px;
+    min-height: 130px;
   }
 
   .contentSection {
     padding: 8px 10px;
     gap: 3px;
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
   }
 
   .hostelName {
-    font-size: 14px;
+    font-size: 13px;
+    line-height: 1.3;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+    white-space: normal;
   }
 
   .header {
-    gap: 8px;
+    gap: 6px;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  .ratingSection {
+    gap: 6px;
+    flex-wrap: wrap;
   }
 
   .ratingBadge {
     padding: 2px 6px;
+    flex-shrink: 0;
   }
 
   .ratingValue,
   .ratingCount,
   .ratingLabel {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .ratingLabel {
@@ -550,23 +589,40 @@
   }
 
   .locationInfo {
-    font-size: 10px;
+    font-size: 9px;
+    line-height: 1.3;
+    word-wrap: break-word;
+  }
+
+  .locationInfo span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .footer {
     padding-top: 6px;
+    gap: 4px;
+  }
+
+  .priceSection {
+    gap: 4px;
+    width: 100%;
   }
 
   .price {
-    font-size: 15px;
+    font-size: 14px;
+    white-space: nowrap;
   }
 
   .priceRange {
-    font-size: 12px;
+    font-size: 11px;
+    white-space: nowrap;
   }
 
-  .bookBtn {
-    display: none;
+  .dealBadge {
+    font-size: 8px;
+    padding: 2px 5px;
   }
 
   .resultsWrapper {
@@ -575,6 +631,72 @@
 
   /* Adjust padding for mobile to match header height */
   .container {
-    padding-top: 60px; /* Space for 50px header + 10px margin */
+    padding-top: 0px; /* Further reduced gap for smaller mobile screens */
+  }
+}
+
+/* Add extra small screen support (360px and below) */
+@media (max-width: 360px) {
+  .hostelCard {
+    min-height: 125px;
+  }
+
+  .imageSection {
+    width: 110px;
+    min-height: 125px;
+  }
+
+  .contentSection {
+    padding: 7px 9px;
+    gap: 2px;
+  }
+
+  .hostelName {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  .header {
+    gap: 5px;
+  }
+
+  .bookmarkBtn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .ratingBadge {
+    padding: 2px 5px;
+  }
+
+  .ratingValue,
+  .ratingCount {
+    font-size: 8px;
+  }
+
+  .locationInfo {
+    font-size: 8px;
+  }
+
+  .locationInfo svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .price {
+    font-size: 13px;
+  }
+
+  .priceRange {
+    font-size: 10px;
+  }
+
+  .dealBadge {
+    font-size: 7px;
+    padding: 2px 4px;
+  }
+
+  .resultsWrapper {
+    gap: 8px;
   }
 }
