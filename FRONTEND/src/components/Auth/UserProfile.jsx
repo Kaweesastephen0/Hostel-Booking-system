@@ -15,6 +15,7 @@ function UserProfile() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [navigatingBack, setNavigatingBack] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const [editData, setEditData] = useState({
     firstName: '',
@@ -320,7 +321,7 @@ function UserProfile() {
                 </button>
               </div>
 
-              <button className={styles.logoutBtn} onClick={handleLogout}>
+              <button className={styles.logoutBtn} onClick={() => setShowLogoutModal(true)}>
                 <LogOut size={20} />
                 Logout
               </button>
@@ -656,6 +657,36 @@ function UserProfile() {
           )}
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowLogoutModal(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <LogOut size={24} className={styles.modalIcon} />
+              <h3 className={styles.modalTitle}>Confirm Logout</h3>
+            </div>
+            <p className={styles.modalMessage}>Are you sure you want to logout?</p>
+            <div className={styles.modalButtons}>
+              <button
+                className={styles.modalCancelBtn}
+                onClick={() => setShowLogoutModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.modalConfirmBtn}
+                onClick={() => {
+                  setShowLogoutModal(false);
+                  handleLogout();
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
