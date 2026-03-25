@@ -8,7 +8,7 @@
  NB: If anyone is documenting their part, put your name first for identification.
   
 ## Stephen
-          
+             
 #  Complete Setup Guide        
 
 A fully responsive MERN stack application for booking hostels across Uganda, featuring Kampala, Mukono, Jinja, and Gulu cities with UGX pricing.
