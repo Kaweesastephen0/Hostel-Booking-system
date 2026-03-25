@@ -4,7 +4,7 @@
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ## The Hostel Booking system Documentation        
      
-## KAWEESA STEPHEN (GROUP LEADER)
+## KAWEESA STEPHEN (GROUP LEADER)  
  NB: If anyone is documenting their part, put your name first for identification.
   
 ## Stephen
