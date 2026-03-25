@@ -2,7 +2,7 @@
 ![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
-## The Hostel Booking system Documentation        
+## The Hostel Booking system Documentation          
      
 ## KAWEESA STEPHEN (GROUP LEADER)    
  NB: If anyone is documenting their part, put your name first for identification.
